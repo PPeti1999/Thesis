@@ -1,0 +1,6 @@
+@HealthyAPI_HostAddress = http://localhost:5059
+
+GET {{HealthyAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -28,6 +28,7 @@ builder.Services.AddDbContext<Context>(options =>
 });
 // be able inject JWTSERVICES class inside COntroller
 builder.Services.AddScoped<JWTservice>();
+builder.Services.AddScoped<EmailService>();
 
 //defining our IdentityCore Service
 builder.Services.AddIdentityCore<User>(options =>

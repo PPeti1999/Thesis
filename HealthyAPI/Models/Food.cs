@@ -23,7 +23,7 @@ namespace HealthyAPI.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<MealFoods> MealFoods { get; set; }
-        public virtual ICollection<RecipeFoods> RecipeFoods { get; set; }
+        //     public virtual ICollection<MealFoods> MealFoods { get; set; }
+        //    public virtual ICollection<RecipeFoods> RecipeFoods { get; set; }
     }
 }

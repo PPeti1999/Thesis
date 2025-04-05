@@ -15,7 +15,7 @@ namespace HealthyAPI.Models
         public int Calories { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public virtual ICollection<UserActivity> UserActivities { get; set; }
+        //     public virtual ICollection<UserActivity> UserActivities { get; set; }
 
     }
 }

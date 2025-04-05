@@ -20,7 +20,7 @@ namespace HealthyAPI.Models
         public DateTime CreatedAt { get; set; }
 
         // Navigáció: A DailyNote több étkezést (MealEntry) és aktivitást tartalmazhat.
-        public virtual ICollection<MealEntries> MealEntries { get; set; }
-        public virtual ICollection<UserActivity> UserActivities { get; set; }
+            public virtual ICollection<MealEntries> MealEntries { get; set; }
+            public virtual ICollection<UserActivity> UserActivities { get; set; }
     }
 }

@@ -12,11 +12,11 @@ namespace HealthyAPI.Models
         // Tárolhat URL-t, base64 kódolt sztringet, stb.
         public string PhotoData { get; set; }
 
-        // Navigációs tulajdonságok, hogy mely entitások használják ezt a fotót
+        /*// Navigációs tulajdonságok, hogy mely entitások használják ezt a fotót
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<Food> Foods { get; set; }
         public virtual ICollection<Recipe> Recipes { get; set; }
         public virtual ICollection<UserActivity> UserActivities { get; set; }
-        public virtual ICollection<MealTypes> MealTypes { get; set; }
+        public virtual ICollection<MealTypes> MealTypes { get; set; }*/
     }
 }

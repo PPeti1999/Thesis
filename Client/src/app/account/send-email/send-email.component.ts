@@ -63,7 +63,7 @@ export class SendEmailComponent implements OnInit {
             }
           }
         })
-      } /*else if (this.mode.includes('forgot-username-or-password')) {
+      } else if (this.mode.includes('forgot-username-or-password')) {
         this.accountService.forgotUsernameOrPassword(this.emailForm.get('email')?.value).subscribe({
           next: (response: any) => {
             this.sharedService.showNotification(true, response.value.title, response.value.message);
@@ -76,7 +76,7 @@ export class SendEmailComponent implements OnInit {
             }
           }
         })
-      }*/
+      }
     }
   }
 

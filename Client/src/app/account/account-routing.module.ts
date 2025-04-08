@@ -5,6 +5,7 @@ import { RegisterComponent } from './register/register.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { SendEmailComponent } from './send-email/send-email.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 
 const routes:Routes=[
@@ -15,6 +16,8 @@ const routes:Routes=[
 { path: 'confirm-email', component: ConfirmEmailComponent, //canActivate: [AuthGuard]
 },
 { path: 'send-email/:mode', component: SendEmailComponent, //canActivate: [AuthGuard]
+},
+{ path: 'reset-password', component: ResetPasswordComponent, //canActivate: [AuthGuard]
 },
 ]
 @NgModule({

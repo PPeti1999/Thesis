@@ -48,7 +48,7 @@ export class ConfirmEmailComponent implements OnInit  {
   }
 
   resendEmailConfirmationLink() {
-    //this.router.navigateByUrl('/account/send-email/resend-email-confirmation-link');
+    this.router.navigateByUrl('/account/send-email/resend-email-confirmation-link');
   }
     
 }

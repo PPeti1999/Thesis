@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Login } from '../shared/models/account/login';
 import { environment } from '../../environments/environment.development';
 import { Register } from '../shared/models/account/register';
+import { ConfirmEmail } from '../shared/models/account/confirmEmail';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,18 @@ export class AccountService {
     register(model: Register) {
       return this.http.post(`${environment.appUrl}/api/account/register`, model);//jo
     }
+    confirmEmail(model: ConfirmEmail) {
+      return this.http.put(`${environment.appUrl}/api/account/confirm-email`, model);
+    }
+
+
+
+
+
+
+
+
+
     getJWT() {// belepet tokent ementi szoval ha frissitek akk belepve marad
 
       const key = localStorage.getItem(environment.userKey);

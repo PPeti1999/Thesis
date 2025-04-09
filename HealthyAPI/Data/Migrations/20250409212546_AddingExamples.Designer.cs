@@ -4,6 +4,7 @@ using HealthyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyAPI.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250409212546_AddingExamples")]
+    partial class AddingExamples
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace HealthyAPI.Data.Migrations
                         {
                             ActivityCatalogID = "act1",
                             Calories = 300,
-                            CreatedAt = new DateTime(2024, 4, 9, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 9, 23, 25, 46, 161, DateTimeKind.Local).AddTicks(8362),
                             Minute = 30,
                             Name = "Futás"
                         });
@@ -108,7 +111,7 @@ namespace HealthyAPI.Data.Migrations
                             ActualSumCarb = 0f,
                             ActualSumFat = 0f,
                             ActualSumProtein = 0f,
-                            CreatedAt = new DateTime(2024, 4, 9, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 9, 23, 25, 46, 159, DateTimeKind.Local).AddTicks(3820),
                             DailyTargetCalorie = 2300,
                             DailyTargetCarb = 300f,
                             DailyTargetFat = 70f,
@@ -555,7 +558,7 @@ namespace HealthyAPI.Data.Migrations
                             Age = 25,
                             BodyFat = 20,
                             ConcurrencyStamp = "b515be15-e82b-4a09-bc47-b4e7da1e0bb8",
-                            CreatedAt = new DateTime(2024, 4, 9, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 4, 9, 21, 25, 46, 163, DateTimeKind.Utc).AddTicks(2114),
                             Email = "pasztoripeti@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "pásztori",

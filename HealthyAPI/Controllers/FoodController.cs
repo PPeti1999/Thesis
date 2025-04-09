@@ -50,7 +50,7 @@ namespace HealthyAPI.Controllers
             [HttpPost]
             [Authorize]
             public async Task<ActionResult<Food>> AddFood([FromBody] Food food)
-        {
+            {
                 if(food.Photo == null) return BadRequest();
                 if (food == null) return BadRequest();
 
@@ -65,34 +65,33 @@ namespace HealthyAPI.Controllers
              }
 
             // PUT: api/Food
-            [HttpPut]
+            [HttpPut("{id}")]
             [Authorize]
-            public async Task<ActionResult<Food>> UpdateFood([FromBody] Food food)
+            public async Task<IActionResult> UpdateFood(string id, Food food)
             {
                 if (food == null)
                     return BadRequest();
 
-                var updatedFood = await _foodService.UpdateFood(food);
+                var updatedFood = await _foodService.UpdateFood(id, food);
                 return Ok(updatedFood);
             }
-
             // DELETE: api/Food/{id}
             [HttpDelete("{id}")]
-            [Authorize]
-            public async Task<ActionResult> DeleteFood(string id)
-                {
-                var food = await _foodService.GetFood(id);
+                [Authorize]
+                public async Task<ActionResult> DeleteFood(string id)
+                    {
+                    var food = await _foodService.GetFood(id);
 
-                if (food == null)
-                {
-                    return NotFound();
-                }
-                var success = await _foodService.DeleteFood(id);
-                if (!success)
+                    if (food == null)
+                    {
                         return NotFound();
-                await photoService.DeletePhoto(food.PhotoID);// gyakorlathoztartozó kép törlése
-                return NoContent();
-            }
+                    }
+                    var success = await _foodService.DeleteFood(id);
+                    if (!success)
+                            return NotFound();
+                    await photoService.DeletePhoto(food.PhotoID);// gyakorlathoztartozó kép törlése
+                    return NoContent();
+                }
         }
     
 }

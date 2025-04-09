@@ -10,7 +10,7 @@ namespace HealthyAPI.Services
         Task<IEnumerable<Food>> ListFoods();
         Task<Food> GetFood(string id);
         Task<Food> AddFood(Food food);
-        Task<Food> UpdateFood(Food food);
+        Task<Food> UpdateFood(string id, Food food);
         Task<bool> DeleteFood(string id);
     }
 

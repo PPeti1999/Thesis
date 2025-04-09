@@ -18,6 +18,9 @@ namespace HealthyAPI.Models
         public int Weight { get; set; }
         public int GoalWeight { get; set; }
         public int TargetCalorie { get; set; }
+        public float TargeProtein { get; set; }
+        public float TargetCarb { get; set; }
+        public float TargetFat { get; set; }
         // FK to Photo (profilfotó)
         public string PhotoID { get; set; }
         [ForeignKey("PhotoID")]
@@ -27,7 +30,7 @@ namespace HealthyAPI.Models
         //így a kapcsolódó Photo entitás csak akkor töltődik be, amikor ténylegesen elérjük a Photo tulajdonságot.
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         // Navigáció: Egy felhasználónak több DailyNote-ja lehet.
-        public virtual ICollection<DailyNote> DailyNotes { get; set; }
+      /*  public virtual ICollection<DailyNote> DailyNotes { get; set; }*/
         //Ez egy kényelmi megoldás: a kódolás során nem kell külön lekérdezést írni a kapcsolódó naplók összegyűjtésére, mert az EF Core automatikusan betölti őket (lazy loading vagy eager loading alapján),
         //ha a navigációs tulajdonság szerepel az entitásban.
     }

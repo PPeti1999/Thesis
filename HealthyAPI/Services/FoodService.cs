@@ -37,13 +37,14 @@ namespace HealthyAPI.Services
             return food;
         }
 
-        public async Task<Food> UpdateFood(Food food)
+        public async Task<Food> UpdateFood(string id, Food food)
         {
-            if (food == null) return null;
+            var existing = await _context.Food.FindAsync(id);
+            if (existing == null) return null;
 
-            _context.Food.Update(food);
+            _context.Food.Update(existing);
             await _context.SaveChangesAsync();
-            return food;
+            return existing;
         }
 
         public async Task<bool> DeleteFood(string id)

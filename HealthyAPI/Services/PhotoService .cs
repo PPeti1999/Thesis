@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthyAPI.Repositories
+namespace HealthyAPI.Services
 {
-    public class PhotoRepository : IPhotoRepository
+    public class PhotoService : IPhotoService
     {
         private readonly Context _context;
 
-        public PhotoRepository(Context context)
+        public PhotoService(Context context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

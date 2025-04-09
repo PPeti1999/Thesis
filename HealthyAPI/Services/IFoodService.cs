@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HealthyAPI.Repositories
+namespace HealthyAPI.Services
 {
-    public interface IFoodRepository
+
+    public interface IFoodService
     {
         Task<IEnumerable<Food>> ListFoods();
         Task<Food> GetFood(string id);
@@ -12,4 +13,5 @@ namespace HealthyAPI.Repositories
         Task<Food> UpdateFood(Food food);
         Task<bool> DeleteFood(string id);
     }
+
 }

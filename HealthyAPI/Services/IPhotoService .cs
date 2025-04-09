@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HealthyAPI.Repositories
+namespace HealthyAPI.Services
 {
-    public interface IPhotoRepository
+    public interface IPhotoService
     {
         Task<Photo> GetPhoto(string id);
         Task<Photo> UploadPhoto(Photo photo);

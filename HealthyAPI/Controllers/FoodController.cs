@@ -1,5 +1,4 @@
 ﻿using HealthyAPI.Models;
-using HealthyAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using HealthyAPI.Services;
 
 namespace HealthyAPI.Controllers
 {
@@ -15,16 +15,16 @@ namespace HealthyAPI.Controllers
         [ApiController]
         public class FoodController : Controller
         {
-            private readonly IFoodRepository _foodRepository;
-            private readonly IPhotoRepository photoRepository;
+            private readonly IFoodService _foodService;
+        private readonly IPhotoService photoService;
             private readonly ILogger<FoodController> _logger;
 
-            public FoodController(IPhotoRepository photoRepository, IFoodRepository foodRepository, ILogger<FoodController> logger)
+            public FoodController(IPhotoService photoService, IFoodService foodService, ILogger<FoodController> logger)
             {
                 this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-                this._foodRepository = foodRepository ?? throw new ArgumentNullException(nameof(foodRepository));
-                this.photoRepository = photoRepository ?? throw new ArgumentNullException(nameof(photoRepository));
+            _foodService = foodService ?? throw new ArgumentNullException(nameof(foodService));
+            this.photoService = photoService ?? throw new ArgumentNullException(nameof(photoService));
 
             }
 
@@ -32,7 +32,7 @@ namespace HealthyAPI.Controllers
             [HttpGet]
             public async Task<ActionResult<IEnumerable<Food>>> GetAllFoods()
             {
-                var foods = await _foodRepository.ListFoods();
+                var foods = await _foodService.ListFoods();
                 return Ok(foods);
             }
 
@@ -40,7 +40,7 @@ namespace HealthyAPI.Controllers
             [HttpGet("{id}")]
             public async Task<ActionResult<Food>> GetFood(string id)
             {
-                var food = await _foodRepository.GetFood(id);
+                var food = await _foodService.GetFood(id);
                 if (food == null)
                     return NotFound();
                 return Ok(food);
@@ -56,11 +56,11 @@ namespace HealthyAPI.Controllers
 
                 if (food.Photo != null)
                 {
-                    var uploadedPhoto = await photoRepository.UploadPhoto(food.Photo);
+                    var uploadedPhoto = await photoService.UploadPhoto(food.Photo);
                     food.PhotoID = uploadedPhoto.PhotoID; // vagy uploadedPhoto.Id, attól függően, hogyan van elnevezve
                 }
 
-                var createdFood = await _foodRepository.AddFood(food);
+                var createdFood = await _foodService.AddFood(food);
                 return Ok(createdFood);
              }
 
@@ -72,7 +72,7 @@ namespace HealthyAPI.Controllers
                 if (food == null)
                     return BadRequest();
 
-                var updatedFood = await _foodRepository.UpdateFood(food);
+                var updatedFood = await _foodService.UpdateFood(food);
                 return Ok(updatedFood);
             }
 
@@ -81,16 +81,16 @@ namespace HealthyAPI.Controllers
             [Authorize]
             public async Task<ActionResult> DeleteFood(string id)
                 {
-                var food = await _foodRepository.GetFood(id);
+                var food = await _foodService.GetFood(id);
 
                 if (food == null)
                 {
                     return NotFound();
                 }
-                var success = await _foodRepository.DeleteFood(id);
+                var success = await _foodService.DeleteFood(id);
                 if (!success)
                         return NotFound();
-                await photoRepository.DeletePhoto(food.FoodID);// gyakorlathoztartozó kép törlése
+                await photoService.DeletePhoto(food.PhotoID);// gyakorlathoztartozó kép törlése
                 return NoContent();
             }
         }

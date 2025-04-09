@@ -1,6 +1,5 @@
 using HealthyAPI.Data;
 using HealthyAPI.Models;
-using HealthyAPI.Repositories;
 using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -68,8 +67,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddScoped<IFoodRepository, FoodRepository>();
-builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
+builder.Services.AddScoped<IFoodService, FoodService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddCors();// ez jó    
 builder.Services.Configure<ApiBehaviorOptions>(options =>// error kuldes ui ra
 {

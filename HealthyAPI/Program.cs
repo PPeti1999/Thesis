@@ -71,6 +71,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IFoodService, FoodService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IMealFoodsService, MealFoodsService>();
+builder.Services.AddScoped<IMealRecipesService, MealRecipesService>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 builder.Services.AddCors();// ez jó    
 builder.Services.Configure<ApiBehaviorOptions>(options =>// error kuldes ui ra
 {

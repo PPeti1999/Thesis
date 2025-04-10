@@ -51,6 +51,10 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<MealFoods>> Create(MealFoods mealFood)
         {
             var created = await _mealFoodsService.CreateMealFoods(mealFood);
+
+            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
+            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
+
             return CreatedAtAction(nameof(GetById), new { id = created.MealFoodID }, created);
         }
 
@@ -60,15 +64,26 @@ namespace HealthyAPI.Controllers
         {
             var result = await _mealFoodsService.UpdateMealFoods(id, mealFood);
             if (result == null) return NotFound();
-            return Ok(result); // visszaadjuk a frissített objektumot
+
+            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
+            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
+            var mealFood = await _mealFoodsService.GetByIdMealFoods(id);
+            if (mealFood == null) return NotFound();
+
             var result = await _mealFoodsService.DeleteMealFoods(id);
             if (!result) return NotFound();
+
+            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
+            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
+
             return NoContent();
         }
     }

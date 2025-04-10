@@ -12,5 +12,6 @@ namespace HealthyAPI.Services
         Task<MealFoods> CreateMealFoods(MealFoods mealFood);
         Task<MealFoods> UpdateMealFoods(string id, MealFoods mealFood);
         Task<bool> DeleteMealFoods(string id);
+        Task RecalculateMealEntryNutrition(string mealEntryId);
     }
 }

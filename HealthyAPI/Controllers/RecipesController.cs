@@ -24,7 +24,7 @@ namespace HealthyAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> GetAll()
         {
             var recipes = await _context.Recipe.Include(r => r.Photo).ToListAsync();
@@ -41,7 +41,7 @@ namespace HealthyAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<RecipeResponseDto>> GetById(string id)
         {
             var r = await _context.Recipe.Include(r => r.Photo).FirstOrDefaultAsync(r => r.RecipeID == id);
@@ -57,6 +57,8 @@ namespace HealthyAPI.Controllers
             var recipe = new Recipe
             {
                 RecipeID = Guid.NewGuid().ToString(),
+                Title = dto.Title,
+                Description = dto.Description,
                 PhotoID = dto.PhotoID,
                 CreatedAt = new DateTime(2024, 4, 9)
             };
@@ -64,7 +66,6 @@ namespace HealthyAPI.Controllers
             _context.Recipe.Add(recipe);
             await _context.SaveChangesAsync();
 
-            // Hozzávalók mentése
             foreach (var item in dto.Ingredients)
             {
                 _context.RecipeFoods.Add(new RecipeFoods
@@ -89,6 +90,8 @@ namespace HealthyAPI.Controllers
             var recipe = await _context.Recipe.FindAsync(id);
             if (recipe == null) return NotFound();
 
+            recipe.Title = dto.Title;
+            recipe.Description = dto.Description;
             recipe.PhotoID = dto.PhotoID;
 
             var existingIngredients = _context.RecipeFoods.Where(rf => rf.RecipeID == id);
@@ -145,16 +148,29 @@ namespace HealthyAPI.Controllers
         private async Task<RecipeResponseDto> MapToDto(Recipe recipe)
         {
             var photo = await _context.Photo.FindAsync(recipe.PhotoID);
+            var ingredients = await _context.RecipeFoods
+                .Include(rf => rf.Food)
+                .Where(rf => rf.RecipeID == recipe.RecipeID)
+                .Select(rf => new RecipeIngredientDetailDto
+                {
+                    FoodID = rf.FoodID,
+                    FoodName = rf.Food.Title,
+                    Quantity = rf.Quantity
+                }).ToListAsync();
+
             return new RecipeResponseDto
             {
                 RecipeID = recipe.RecipeID,
+                Title = recipe.Title,
+                Description = recipe.Description,
                 SumProtein = recipe.SumProtein,
                 SumCarb = recipe.SumCarb,
                 SumFat = recipe.SumFat,
                 SumCalorie = recipe.SumCalorie,
                 PhotoID = recipe.PhotoID,
                 PhotoData = photo?.PhotoData,
-                CreatedAt = recipe.CreatedAt
+                CreatedAt = recipe.CreatedAt,
+                Ingredients = ingredients
             };
         }
     }

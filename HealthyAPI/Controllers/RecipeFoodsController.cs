@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HealthyAPI.Controllers
@@ -18,6 +20,21 @@ namespace HealthyAPI.Controllers
         public RecipeFoodsController(Context context)
         {
             _context = context;
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<RecipeFoodResponseDto>>> GetAll()
+        {
+            var items = await _context.RecipeFoods.Include(rf => rf.Food).ToListAsync();
+            var result = items.Select(entity => new RecipeFoodResponseDto
+            {
+                RecipeFoodID = entity.RecipeFoodID,
+                RecipeID = entity.RecipeID,
+                FoodID = entity.FoodID,
+                FoodName = entity.Food?.Title,
+                Quantity = entity.Quantity
+            });
+            return Ok(result);
         }
 
         [HttpPost]

@@ -10,10 +10,13 @@ namespace HealthyAPI.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
         public string RecipeID { get; set; }
+        public string Title { get; set; }            // ✅ új mező
+        public string Description { get; set; }
         public float SumProtein { get; set; }
         public float SumCarb { get; set; }
         public float SumFat { get; set; }
         public float SumCalorie { get; set; }
+
 
         public string PhotoID { get; set; }
         [ForeignKey("PhotoID")]

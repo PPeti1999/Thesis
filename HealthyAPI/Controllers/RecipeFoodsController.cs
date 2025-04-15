@@ -1,6 +1,7 @@
 ﻿using HealthyAPI.Data;
 using HealthyAPI.DTOs.RecipeFood;
 using HealthyAPI.Models;
+using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,26 +16,43 @@ namespace HealthyAPI.Controllers
     [ApiController]
     public class RecipeFoodsController : ControllerBase
     {
-        private readonly Context _context;
+        private readonly IRecipeFoodService _service;
 
-        public RecipeFoodsController(Context context)
+        public RecipeFoodsController(IRecipeFoodService service)
         {
-            _context = context;
+            _service = service;
         }
+
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<RecipeFoodResponseDto>>> GetAll()
         {
-            var items = await _context.RecipeFoods.Include(rf => rf.Food).ToListAsync();
-            var result = items.Select(entity => new RecipeFoodResponseDto
+            var items = await _service.GetAll();
+            return Ok(items.Select(rf => new RecipeFoodResponseDto
             {
-                RecipeFoodID = entity.RecipeFoodID,
-                RecipeID = entity.RecipeID,
-                FoodID = entity.FoodID,
-                FoodName = entity.Food?.Title,
-                Quantity = entity.Quantity
+                RecipeFoodID = rf.RecipeFoodID,
+                RecipeID = rf.RecipeID,
+                FoodID = rf.FoodID,
+                FoodName = rf.Food?.Title,
+                Quantity = rf.Quantity
+            }));
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<ActionResult<RecipeFoodResponseDto>> GetById(string id)
+        {
+            var rf = await _service.GetById(id);
+            if (rf == null) return NotFound();
+
+            return Ok(new RecipeFoodResponseDto
+            {
+                RecipeFoodID = rf.RecipeFoodID,
+                RecipeID = rf.RecipeID,
+                FoodID = rf.FoodID,
+                FoodName = rf.Food?.Title,
+                Quantity = rf.Quantity
             });
-            return Ok(result);
         }
 
         [HttpPost]
@@ -48,35 +66,14 @@ namespace HealthyAPI.Controllers
                 Quantity = dto.Quantity
             };
 
-            _context.RecipeFoods.Add(entity);
-            await _context.SaveChangesAsync();
-
-            var food = await _context.Food.FindAsync(dto.FoodID);
-
-            return CreatedAtAction(nameof(GetById), new { id = entity.RecipeFoodID }, new RecipeFoodResponseDto
+            var created = await _service.Create(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.RecipeFoodID }, new RecipeFoodResponseDto
             {
-                RecipeFoodID = entity.RecipeFoodID,
-                RecipeID = entity.RecipeID,
-                FoodID = entity.FoodID,
-                FoodName = food?.Title,
-                Quantity = entity.Quantity
-            });
-        }
-
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<RecipeFoodResponseDto>> GetById(string id)
-        {
-            var entity = await _context.RecipeFoods.Include(rf => rf.Food).FirstOrDefaultAsync(rf => rf.RecipeFoodID == id);
-            if (entity == null) return NotFound();
-
-            return Ok(new RecipeFoodResponseDto
-            {
-                RecipeFoodID = entity.RecipeFoodID,
-                RecipeID = entity.RecipeID,
-                FoodID = entity.FoodID,
-                FoodName = entity.Food?.Title,
-                Quantity = entity.Quantity
+                RecipeFoodID = created.RecipeFoodID,
+                RecipeID = created.RecipeID,
+                FoodID = created.FoodID,
+                FoodName = created.Food?.Title,
+                Quantity = created.Quantity
             });
         }
 
@@ -84,22 +81,23 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<RecipeFoodResponseDto>> Update(string id, RecipeFoodCreateDto dto)
         {
-            var entity = await _context.RecipeFoods.Include(rf => rf.Food).FirstOrDefaultAsync(rf => rf.RecipeFoodID == id);
-            if (entity == null) return NotFound();
+            var updated = new RecipeFoods
+            {
+                RecipeID = dto.RecipeID,
+                FoodID = dto.FoodID,
+                Quantity = dto.Quantity
+            };
 
-            entity.RecipeID = dto.RecipeID;
-            entity.FoodID = dto.FoodID;
-            entity.Quantity = dto.Quantity;
-
-            await _context.SaveChangesAsync();
+            var result = await _service.Update(id, updated);
+            if (result == null) return NotFound();
 
             return Ok(new RecipeFoodResponseDto
             {
-                RecipeFoodID = entity.RecipeFoodID,
-                RecipeID = entity.RecipeID,
-                FoodID = entity.FoodID,
-                FoodName = entity.Food?.Title,
-                Quantity = entity.Quantity
+                RecipeFoodID = result.RecipeFoodID,
+                RecipeID = result.RecipeID,
+                FoodID = result.FoodID,
+                FoodName = result.Food?.Title,
+                Quantity = result.Quantity
             });
         }
 
@@ -107,12 +105,8 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            var entity = await _context.RecipeFoods.FindAsync(id);
-            if (entity == null) return NotFound();
-
-            _context.RecipeFoods.Remove(entity);
-            await _context.SaveChangesAsync();
-
+            var success = await _service.Delete(id);
+            if (!success) return NotFound();
             return NoContent();
         }
     }

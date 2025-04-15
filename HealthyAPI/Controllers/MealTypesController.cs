@@ -1,10 +1,12 @@
 ﻿using HealthyAPI.Data;
 using HealthyAPI.DTOs.MealType;
 using HealthyAPI.Models;
+using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,20 +17,21 @@ namespace HealthyAPI.Controllers
     [ApiController]
     public class MealTypesController : ControllerBase
     {
-        private readonly Context _context;
+        private readonly IMealTypeService _service;
+        private readonly IPhotoService _photoService;
 
-        public MealTypesController(Context context)
+        public MealTypesController(IMealTypeService service, IPhotoService photoService)
         {
-            _context = context;
+            _service = service;
+            _photoService = photoService;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<MealTypeResponseDto>>> GetAll()
         {
-            var list = await _context.MealTypes.Include(mt => mt.Photo).ToListAsync();
-
-            return Ok(list.Select(mt => new MealTypeResponseDto
+            var items = await _service.GetAll();
+            return Ok(items.Select(mt => new MealTypeResponseDto
             {
                 MealTypeID = mt.MealTypeID,
                 Name = mt.Name,
@@ -41,7 +44,7 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<MealTypeResponseDto>> GetById(string id)
         {
-            var mt = await _context.MealTypes.Include(m => m.Photo).FirstOrDefaultAsync(m => m.MealTypeID == id);
+            var mt = await _service.GetById(id);
             if (mt == null) return NotFound();
 
             return Ok(new MealTypeResponseDto
@@ -63,17 +66,15 @@ namespace HealthyAPI.Controllers
                 PhotoID = dto.PhotoID
             };
 
-            _context.MealTypes.Add(entity);
-            await _context.SaveChangesAsync();
+            var created = await _service.Create(entity);
+            var photo = await _photoService.GetPhoto(created.PhotoID);
 
-            var created = await _context.MealTypes.Include(mt => mt.Photo).FirstOrDefaultAsync(m => m.MealTypeID == entity.MealTypeID);
-
-            return CreatedAtAction(nameof(GetById), new { id = entity.MealTypeID }, new MealTypeResponseDto
+            return CreatedAtAction(nameof(GetById), new { id = created.MealTypeID }, new MealTypeResponseDto
             {
                 MealTypeID = created.MealTypeID,
                 Name = created.Name,
                 PhotoID = created.PhotoID,
-                PhotoData = created.Photo?.PhotoData
+                PhotoData = photo?.PhotoData
             });
         }
 
@@ -81,19 +82,21 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<MealTypeResponseDto>> Update(string id, MealTypeCreateDto dto)
         {
-            var entity = await _context.MealTypes.Include(m => m.Photo).FirstOrDefaultAsync(m => m.MealTypeID == id);
-            if (entity == null) return NotFound();
+            var updated = new MealTypes
+            {
+                Name = dto.Name,
+                PhotoID = dto.PhotoID
+            };
 
-            entity.Name = dto.Name;
-            entity.PhotoID = dto.PhotoID;
-            await _context.SaveChangesAsync();
+            var result = await _service.Update(id, updated);
+            if (result == null) return NotFound();
 
             return Ok(new MealTypeResponseDto
             {
-                MealTypeID = entity.MealTypeID,
-                Name = entity.Name,
-                PhotoID = entity.PhotoID,
-                PhotoData = entity.Photo?.PhotoData
+                MealTypeID = result.MealTypeID,
+                Name = result.Name,
+                PhotoID = result.PhotoID,
+                PhotoData = result.Photo?.PhotoData
             });
         }
 
@@ -101,13 +104,16 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            var entity = await _context.MealTypes.FindAsync(id);
-            if (entity == null) return NotFound();
-
-            _context.MealTypes.Remove(entity);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            try
+            {
+                var success = await _service.Delete(id);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

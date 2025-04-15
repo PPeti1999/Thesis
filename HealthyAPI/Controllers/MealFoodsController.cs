@@ -1,8 +1,10 @@
-﻿using HealthyAPI.Models;
+﻿using HealthyAPI.DTOs.MealFoods;
+using HealthyAPI.Models;
 using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,77 +15,98 @@ namespace HealthyAPI.Controllers
     [ApiController]
     public class MealFoodsController : ControllerBase
     {
-        private readonly IMealFoodsService _mealFoodsService;
+        private readonly IMealFoodsService _service;
 
-        public MealFoodsController(IMealFoodsService mealFoodsService)
+        public MealFoodsController(IMealFoodsService service)
         {
-            _mealFoodsService = mealFoodsService;
+            _service = service;
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<MealFoods>>> GetAll()
+        public async Task<ActionResult<IEnumerable<MealFoodResponseDto>>> GetAll()
         {
-            var list = await _mealFoodsService.GetAllMealFoods();
-            return Ok(list);
+            var items = await _service.GetAllMealFoods();
+            return Ok(items.Select(mf => new MealFoodResponseDto
+            {
+                MealFoodID = mf.MealFoodID,
+                MealEntryID = mf.MealEntryID,
+                FoodID = mf.FoodID,
+                FoodName = mf.Food?.Title,
+                Quantity = mf.Quantity
+            }));
         }
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<MealFoods>> GetById(string id)
+        public async Task<ActionResult<MealFoodResponseDto>> GetById(string id)
         {
-            var item = await _mealFoodsService.GetByIdMealFoods(id);
-            if (item == null) return NotFound();
-            return Ok(item);
-        }
+            var mf = await _service.GetByIdMealFoods(id);
+            if (mf == null) return NotFound();
 
-        [HttpGet("byMealEntry/{mealEntryId}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<MealFoods>>> GetByMealEntryId(string mealEntryId)
-        {
-            var items = await _mealFoodsService.GetMealFoodsByMealEntryId(mealEntryId);
-            if (items == null || !items.Any()) return NotFound();
-            return Ok(items);
+            return Ok(new MealFoodResponseDto
+            {
+                MealFoodID = mf.MealFoodID,
+                MealEntryID = mf.MealEntryID,
+                FoodID = mf.FoodID,
+                FoodName = mf.Food?.Title,
+                Quantity = mf.Quantity
+            });
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<MealFoods>> Create(MealFoods mealFood)
+        public async Task<ActionResult<MealFoodResponseDto>> Create(MealFoodCreateDto dto)
         {
-            var created = await _mealFoodsService.CreateMealFoods(mealFood);
+            var entity = new MealFoods
+            {
+                MealFoodID = Guid.NewGuid().ToString(),
+                MealEntryID = dto.MealEntryID,
+                FoodID = dto.FoodID,
+                Quantity = dto.Quantity
+            };
 
-            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
-            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
-
-            return CreatedAtAction(nameof(GetById), new { id = created.MealFoodID }, created);
+            var created = await _service.CreateMealFoods(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.MealFoodID }, new MealFoodResponseDto
+            {
+                MealFoodID = created.MealFoodID,
+                MealEntryID = created.MealEntryID,
+                FoodID = created.FoodID,
+                FoodName = created.Food?.Title,
+                Quantity = created.Quantity
+            });
         }
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> Update(string id, MealFoods mealFood)
+        public async Task<ActionResult<MealFoodResponseDto>> Update(string id, MealFoodCreateDto dto)
         {
-            var result = await _mealFoodsService.UpdateMealFoods(id, mealFood);
+            var updated = new MealFoods
+            {
+                MealEntryID = dto.MealEntryID,
+                FoodID = dto.FoodID,
+                Quantity = dto.Quantity
+            };
+
+            var result = await _service.UpdateMealFoods(id, updated);
             if (result == null) return NotFound();
 
-            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
-            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
-
-            return Ok(result);
+            return Ok(new MealFoodResponseDto
+            {
+                MealFoodID = result.MealFoodID,
+                MealEntryID = result.MealEntryID,
+                FoodID = result.FoodID,
+                FoodName = result.Food?.Title,
+                Quantity = result.Quantity
+            });
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            var mealFood = await _mealFoodsService.GetByIdMealFoods(id);
-            if (mealFood == null) return NotFound();
-
-            var result = await _mealFoodsService.DeleteMealFoods(id);
-            if (!result) return NotFound();
-
-            // ✨ Frissítjük az étkezéshez tartozó tápértékeket
-            await _mealFoodsService.RecalculateMealEntryNutrition(mealFood.MealEntryID);
-
+            var success = await _service.DeleteMealFoods(id);
+            if (!success) return NotFound();
             return NoContent();
         }
     }

@@ -6,9 +6,10 @@ namespace HealthyAPI.Services
 {
     public interface IPhotoService
     {
-        Task<Photo> GetPhoto(string id);
+        Task<IEnumerable<Photo>> GetAllPhotos();
+        Task<Photo?> GetPhoto(string id);
         Task<Photo> UploadPhoto(Photo photo);
-        Task<Photo> UpdatePhoto(Photo photo);
+        Task<Photo?> UpdatePhoto(string id, string photoData);
         Task<bool> DeletePhoto(string id);
     }
 }

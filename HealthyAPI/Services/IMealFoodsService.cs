@@ -8,9 +8,9 @@ namespace HealthyAPI.Services
     {
         Task<IEnumerable<MealFoods>> GetAllMealFoods();
         Task<MealFoods?> GetByIdMealFoods(string id);
-        Task<IEnumerable<MealFoods>> GetMealFoodsByMealEntryId(string mealEntryId); // új
+        Task<IEnumerable<MealFoods>> GetMealFoodsByMealEntryId(string mealEntryId);
         Task<MealFoods> CreateMealFoods(MealFoods mealFood);
-        Task<MealFoods> UpdateMealFoods(string id, MealFoods mealFood);
+        Task<MealFoods?> UpdateMealFoods(string id, MealFoods updated);
         Task<bool> DeleteMealFoods(string id);
         Task RecalculateMealEntryNutrition(string mealEntryId);
     }

@@ -21,8 +21,8 @@ namespace HealthyAPI.Models
         public float SumCarb { get; set; }
         public float SumFat { get; set; }
         public float SumCalorie { get; set; }
-        /* // Navigáció: Egy étkezéshez több étel (MealFood) és recept (MealRecipe) tartozhat.
+         // Navigáció: Egy étkezéshez több étel (MealFood) és recept (MealRecipe) tartozhat.
          public virtual ICollection<MealFoods> MealFoods { get; set; }
-         public virtual ICollection<MealRecipes> MealRecipes { get; set; }*/
+         public virtual ICollection<MealRecipes> MealRecipes { get; set; }
     }
 }

@@ -21,6 +21,9 @@ namespace HealthyAPI.Models
         public float TargeProtein { get; set; }
         public float TargetCarb { get; set; }
         public float TargetFat { get; set; }
+        public float ActivityMultiplier { get; set; } // pl. 1.2 vagy 1.55
+        public int GoalType { get; set; } // 0 = megtartás, 1 = tömegnövelés, 2 = fogyás
+        public bool IsFemale { get; set; }
         // FK to Photo (profilfotó)
         public string PhotoID { get; set; }
         [ForeignKey("PhotoID")]

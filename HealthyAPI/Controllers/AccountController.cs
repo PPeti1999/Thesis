@@ -1,5 +1,6 @@
 ﻿using HealthyAPI.Data;
 using HealthyAPI.DTOs.Account;
+using HealthyAPI.DTOs.Profile;
 using HealthyAPI.Models;
 using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -25,12 +26,14 @@ namespace HealthyAPI.Controllers
         private readonly UserManager<User> _userManager;
         private readonly EmailService _emailService;
         private readonly IConfiguration _config;
+        private readonly IUserProfileService _userProfileService;
 
         public AccountController(JWTservice jWTService, 
             SignInManager<User> signInManager, 
             UserManager<User> userManager, 
             EmailService emailService,
-            IConfiguration config)
+            IConfiguration config,
+            IUserProfileService userProfileService)
         {
            
             this._jWTService = jWTService;
@@ -38,7 +41,40 @@ namespace HealthyAPI.Controllers
             this._userManager = userManager;
             _config = config;
             _emailService = emailService;
+            _userProfileService = userProfileService;
         }
+
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<ActionResult<UserProfileResponseDto>> GetProfile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var profile = await _userProfileService.GetCurrentUserProfile(userId);
+            if (profile == null) return NotFound();
+            return Ok(profile);
+        }
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<ActionResult<UserProfileResponseDto>> UpdateProfile([FromBody] UpdateUserProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var updated = await _userProfileService.UpdateProfile(userId, dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         [Authorize]
         [HttpGet("refresh-user-token")]
         public async Task<ActionResult<UserDto>> RefreshUserToken()

@@ -4,6 +4,7 @@ using HealthyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyAPI.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250423181747_AddingggggUserToDatabase")]
+    partial class AddingggggUserToDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -481,9 +484,6 @@ namespace HealthyAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GoalType")
-                        .HasColumnType("int");
-
                     b.Property<int>("GoalWeight")
                         .HasColumnType("int");
 
@@ -575,7 +575,6 @@ namespace HealthyAPI.Data.Migrations
                             Email = "pasztoripeti@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "pásztori",
-                            GoalType = 0,
                             GoalWeight = 90,
                             Height = 92,
                             IsFemale = false,

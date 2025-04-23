@@ -136,6 +136,8 @@ namespace HealthyAPI.Data
                TargeProtein = 180,
                TargetCarb = 300,
                TargetFat  =70,
+               ActivityMultiplier=1,
+               IsFemale = false,
                PhotoID = "photo1",
                CreatedAt = new DateTime(2024, 04, 09, 8, 0, 0),
                UserName = "pasztoripeti@gmail.com",

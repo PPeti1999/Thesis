@@ -1,6 +1,7 @@
 using HealthyAPI.Data;
 using HealthyAPI.Models;
 using HealthyAPI.Services;
+using HealthyAPI.Services.HealthyAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -78,6 +79,8 @@ builder.Services.AddScoped<IMealRecipesService, MealRecipesService>();
 builder.Services.AddScoped<IMealEntriesService, MealEntriesService>();
 builder.Services.AddScoped<IActivityCatalogService, ActivityCatalogService>();
 builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IDailyNoteService, DailyNoteService>();
 
 
 

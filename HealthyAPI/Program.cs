@@ -75,8 +75,9 @@ builder.Services.AddScoped<IMealTypeService, MealTypeService>();
 builder.Services.AddScoped<IRecipeFoodService, RecipeFoodService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<IMealRecipesService, MealRecipesService>();
-
 builder.Services.AddScoped<IMealEntriesService, MealEntriesService>();
+builder.Services.AddScoped<IActivityCatalogService, ActivityCatalogService>();
+builder.Services.AddScoped<IUserActivityService, UserActivityService>();
 
 
 

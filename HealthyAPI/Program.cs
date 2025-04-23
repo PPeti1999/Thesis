@@ -73,7 +73,10 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IMealFoodsService, MealFoodsService>();
 builder.Services.AddScoped<IMealTypeService, MealTypeService>();
 builder.Services.AddScoped<IRecipeFoodService, RecipeFoodService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<IMealRecipesService, MealRecipesService>();
 
+builder.Services.AddScoped<IMealEntriesService, MealEntriesService>();
 
 
 

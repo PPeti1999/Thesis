@@ -1,4 +1,6 @@
-﻿using HealthyAPI.Models;
+﻿using HealthyAPI.DTOs.Food;
+using HealthyAPI.DTOs.MealEntries;
+using HealthyAPI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +8,10 @@ namespace HealthyAPI.Services
 {
     public interface IMealEntriesService
     {
-        Task<IEnumerable<MealEntries>> GetAllMealEntries();
-        Task<MealEntries?> GetById(string id);
-        Task<MealEntries> Create(MealEntries mealEntry);
-        Task<MealEntries?> Update(string id, MealEntries updated);
+        Task<IEnumerable<MealEntryResponseDto>> GetAll();
+        Task<MealEntryResponseDto?> GetById(string id);
+        Task<MealEntryResponseDto> Create(MealEntryCreateDto dto);
+        Task<MealEntryResponseDto?> Update(string id, MealEntryCreateDto dto);
         Task<bool> Delete(string id);
     }
 }

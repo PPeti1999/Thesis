@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
+using HealthyAPI.DTOs.Food;
+using HealthyAPI.DTOs.MealEntries;
+using System.Linq;
 
 namespace HealthyAPI.Services
 {
@@ -13,53 +16,119 @@ namespace HealthyAPI.Services
 
         public MealEntriesService(Context context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
 
-        public async Task<IEnumerable<MealEntries>> GetAllMealEntries()
+        public async Task<IEnumerable<MealEntryResponseDto>> GetAll()
         {
-            return await _context.MealEntries
-                .Include(me => me.MealType)
-                .Include(me => me.DailyNote)
-                .ToListAsync();
+            var entries = await _context.MealEntries.Include(me => me.MealType).ToListAsync();
+            return entries.Select(e => new MealEntryResponseDto
+            {
+                MealEntryID = e.MealEntryID,
+                DailyNoteID = e.DailyNoteID,
+                MealTypeID = e.MealTypeID,
+                MealTypeName = e.MealType?.Name,
+                SumProtein = e.SumProtein,
+                SumCarb = e.SumCarb,
+                SumFat = e.SumFat,
+                SumCalorie = e.SumCalorie
+            });
         }
 
-        public async Task<MealEntries?> GetById(string id)
+        public async Task<MealEntryResponseDto?> GetById(string id)
         {
-            return await _context.MealEntries
-                .Include(me => me.MealType)
-                .Include(me => me.DailyNote)
+            var entry = await _context.MealEntries.Include(me => me.MealType)
                 .FirstOrDefaultAsync(me => me.MealEntryID == id);
+            if (entry == null) return null;
+
+            return new MealEntryResponseDto
+            {
+                MealEntryID = entry.MealEntryID,
+                DailyNoteID = entry.DailyNoteID,
+                MealTypeID = entry.MealTypeID,
+                MealTypeName = entry.MealType?.Name,
+                SumProtein = entry.SumProtein,
+                SumCarb = entry.SumCarb,
+                SumFat = entry.SumFat,
+                SumCalorie = entry.SumCalorie
+            };
         }
 
-        public async Task<MealEntries> Create(MealEntries mealEntry)
+        public async Task<MealEntryResponseDto> Create(MealEntryCreateDto dto)
         {
-            _context.MealEntries.Add(mealEntry);
+            var entity = new MealEntries
+            {
+                MealEntryID = Guid.NewGuid().ToString(),
+                DailyNoteID = dto.DailyNoteID,
+                MealTypeID = dto.MealTypeID
+            };
+
+            _context.MealEntries.Add(entity);
             await _context.SaveChangesAsync();
-            return await GetById(mealEntry.MealEntryID); // visszatöltve include-olt adatokkal
+            await RecalculateNutrition(entity.MealEntryID);
+
+            return await GetById(entity.MealEntryID) ?? throw new Exception("Created entry not found");
         }
 
-        public async Task<MealEntries?> Update(string id, MealEntries updated)
+        public async Task<MealEntryResponseDto?> Update(string id, MealEntryCreateDto dto)
         {
-            var existing = await _context.MealEntries.FindAsync(id);
-            if (existing == null) return null;
+            var entity = await _context.MealEntries.FindAsync(id);
+            if (entity == null) return null;
 
-            existing.DailyNoteID = updated.DailyNoteID;
-            existing.MealTypeID = updated.MealTypeID;
+            entity.DailyNoteID = dto.DailyNoteID;
+            entity.MealTypeID = dto.MealTypeID;
 
-            _context.MealEntries.Update(existing);
             await _context.SaveChangesAsync();
+            await RecalculateNutrition(id);
+
             return await GetById(id);
         }
 
         public async Task<bool> Delete(string id)
         {
-            var entry = await _context.MealEntries.FindAsync(id);
-            if (entry == null) return false;
+            var entity = await _context.MealEntries.FindAsync(id);
+            if (entity == null) return false;
 
-            _context.MealEntries.Remove(entry);
+            _context.MealEntries.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private async Task RecalculateNutrition(string mealEntryId)
+        {
+            var mealFoods = await _context.MealFoods.Include(mf => mf.Food)
+                .Where(mf => mf.MealEntryID == mealEntryId).ToListAsync();
+
+            var mealRecipes = await _context.MealRecipes.Include(mr => mr.Recipe)
+                .Where(mr => mr.MealEntryID == mealEntryId).ToListAsync();
+
+            float protein = 0, carb = 0, fat = 0, cal = 0;
+
+            foreach (var mf in mealFoods)
+            {
+                protein += mf.Quantity / 100f * mf.Food.Protein;
+                carb += mf.Quantity / 100f * mf.Food.Carb;
+                fat += mf.Quantity / 100f * mf.Food.Fat;
+                cal += mf.Quantity / 100f * mf.Food.Calorie;
+            }
+
+            foreach (var mr in mealRecipes)
+            {
+                protein += mr.Quantity * mr.Recipe.SumProtein;
+                carb += mr.Quantity * mr.Recipe.SumCarb;
+                fat += mr.Quantity * mr.Recipe.SumFat;
+                cal += mr.Quantity * mr.Recipe.SumCalorie;
+            }
+
+            var entry = await _context.MealEntries.FindAsync(mealEntryId);
+            if (entry != null)
+            {
+                entry.SumProtein = protein;
+                entry.SumCarb = carb;
+                entry.SumFat = fat;
+                entry.SumCalorie = cal;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -11,10 +11,12 @@ namespace HealthyAPI.Services
     public class MealFoodsService : IMealFoodsService
     {
         private readonly Context _context;
+        private readonly IDailyNoteService _dailyNoteService;
 
-        public MealFoodsService(Context context)
+        public MealFoodsService(Context context, IDailyNoteService dailyNoteService)
         {
             _context = context;
+            _dailyNoteService = dailyNoteService;
         }
 
         public async Task<IEnumerable<MealFoods>> GetAllMealFoods()
@@ -82,6 +84,7 @@ namespace HealthyAPI.Services
 
             _context.MealEntries.Update(entry);
             await _context.SaveChangesAsync();
+            await _dailyNoteService.UpdateMealNutritionAsync(entry.DailyNoteID);
         }
     }
 

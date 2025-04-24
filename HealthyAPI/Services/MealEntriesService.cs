@@ -14,9 +14,12 @@ namespace HealthyAPI.Services
     {
         private readonly Context _context;
 
-        public MealEntriesService(Context context)
+        private readonly IDailyNoteService _dailyNoteService;
+
+        public MealEntriesService(Context context, IDailyNoteService dailyNoteService)
         {
             _context = context;
+            _dailyNoteService = dailyNoteService;
         }
 
         public async Task<IEnumerable<MealEntryResponseDto>> GetAll()
@@ -66,7 +69,7 @@ namespace HealthyAPI.Services
             _context.MealEntries.Add(entity);
             await _context.SaveChangesAsync();
             await RecalculateNutrition(entity.MealEntryID);
-
+            await _dailyNoteService.UpdateMealNutritionAsync(entity.DailyNoteID); // vagy id alapján lekérve
             return await GetById(entity.MealEntryID) ?? throw new Exception("Created entry not found");
         }
 
@@ -80,7 +83,7 @@ namespace HealthyAPI.Services
 
             await _context.SaveChangesAsync();
             await RecalculateNutrition(id);
-
+            await _dailyNoteService.UpdateMealNutritionAsync(entity.DailyNoteID); // vagy id alapján lekérve
             return await GetById(id);
         }
 
@@ -88,9 +91,10 @@ namespace HealthyAPI.Services
         {
             var entity = await _context.MealEntries.FindAsync(id);
             if (entity == null) return false;
-
+            var dailyNoteId = entity.DailyNoteID;
             _context.MealEntries.Remove(entity);
             await _context.SaveChangesAsync();
+            await _dailyNoteService.UpdateMealNutritionAsync(dailyNoteId);
             return true;
         }
 

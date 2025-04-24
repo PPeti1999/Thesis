@@ -29,6 +29,14 @@ namespace HealthyAPI.Controllers
             {
                 result = await _service.CreateDailyNote(userId);
             }
+            else
+            {
+                // 🔥 Frissítjük a napi tápanyagokat, ha már van napló
+                var dailyNoteId = result.DailyNoteID;
+                await _service.UpdateMealNutritionAsync(dailyNoteId);
+                // újra lekérjük frissítve
+                result = await _service.GetTodayNote(userId);
+            }
             return Ok(result);
         }
 
@@ -52,13 +60,6 @@ namespace HealthyAPI.Controllers
             return Ok(refreshed);
         }
 
-        [HttpPut("{id}/recalculate")]
-        [Authorize]
-        public async Task<IActionResult> RecalculateNutrition(string id)
-        {
-            await _service.UpdateMealNutritionAsync(id);
-            return NoContent();
-        }
         
     }
 }

@@ -12,10 +12,12 @@ namespace HealthyAPI.Services
     public class MealRecipesService : IMealRecipesService
     {
         private readonly Context _context;
+        private readonly IDailyNoteService _dailyNoteService;
 
-        public MealRecipesService(Context context)
+        public MealRecipesService(Context context, IDailyNoteService dailyNoteService)
         {
             _context = context;
+            _dailyNoteService = dailyNoteService;
         }
 
         public async Task<IEnumerable<MealRecipeResponseDto>> GetAll()
@@ -70,11 +72,30 @@ namespace HealthyAPI.Services
             var existing = await _context.MealRecipes.FindAsync(id);
             if (existing == null) return null;
 
+            // Ellenőrizzük, hogy az új MealEntryID létezik-e
+            var entryExists = await _context.MealEntries.AnyAsync(e => e.MealEntryID == dto.MealEntryID);
+            if (!entryExists)
+            {
+                throw new ArgumentException("A megadott MealEntryID nem létezik.");
+            }
+
+            // Mentjük a korábbi MealEntryID-t, mert ha változott, mindkettőt újra kell számolni
+            var oldMealEntryId = existing.MealEntryID;
+
+            // Frissítjük a recept kapcsolatot és mennyiséget
             existing.MealEntryID = dto.MealEntryID;
             existing.RecipeID = dto.RecipeID;
             existing.Quantity = dto.Quantity;
 
             await _context.SaveChangesAsync();
+
+            // Ha változott az étkezés, akkor a régi MealEntry-t is újraszámoljuk
+            if (oldMealEntryId != dto.MealEntryID)
+            {
+                await RecalculateMealEntryNutrition(oldMealEntryId);
+            }
+
+            // Az új vagy frissített MealEntry tápanyagait is újraszámoljuk
             await RecalculateMealEntryNutrition(dto.MealEntryID);
 
             return await GetById(id);
@@ -108,6 +129,8 @@ namespace HealthyAPI.Services
 
             _context.MealEntries.Update(entry);
             await _context.SaveChangesAsync();
+
+            await _dailyNoteService.UpdateMealNutritionAsync(entry.DailyNoteID);
         }
     }
 }

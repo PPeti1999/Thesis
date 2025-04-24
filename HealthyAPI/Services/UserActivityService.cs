@@ -125,8 +125,16 @@ namespace HealthyAPI.Services
             var entity = await _context.UserActivity.FindAsync(id);
             if (entity == null) return false;
 
+            // 🔥 Kalória levonása a kapcsolódó DailyNote-ból
+            var dailyNote = await _context.DailyNote.FindAsync(entity.DailyNoteID);
+            if (dailyNote != null)
+            {
+                dailyNote.DailyTargetCalorie -= entity.Calories;
+            }
+
             _context.UserActivity.Remove(entity);
             await _context.SaveChangesAsync();
+
             return true;
         }
     }

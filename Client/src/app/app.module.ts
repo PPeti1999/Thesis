@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { API_BASE_URL } from './shared/models/Nswag generated/NswagGenerated';
 import { environment } from '../environments/environment.development';
 import { FoodComponent } from './pages/food/food.component';
+import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { FoodComponent } from './pages/food/food.component';
     FooterComponent,
     HomeComponent,
     PlayComponent,
-    FoodComponent
+    FoodComponent,
+    ActivityCatalogComponent
   ],
   imports: [
     FormsModule,

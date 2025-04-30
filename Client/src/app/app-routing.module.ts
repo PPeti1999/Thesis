@@ -5,11 +5,14 @@ import { NotFoundComponent } from './shared/components/errors/not-found/not-foun
 import { PlayComponent } from './play/play.component';
 import { AuthorizationGuard } from './shared/guards/authorization.guard';
 import { FoodComponent } from './pages/food/food.component';
+import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, //canActivate: [AuthGuard]
 },
 { path: 'food', component: FoodComponent, //canActivate: [AuthGuard]
+}, 
+{ path: 'activitycatalog', component: ActivityCatalogComponent, //canActivate: [AuthGuard]
 }, 
 { path: '', 
 runGuardsAndResolvers:'always',

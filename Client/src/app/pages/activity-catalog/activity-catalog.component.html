@@ -1,0 +1,12 @@
+<h2>Elérhető aktivitások</h2>
+
+<ul *ngIf="activities.length > 0; else noData">
+  <li *ngFor="let activity of activities">
+    <strong>{{ activity.name }}</strong> –
+    {{ activity.calories }} kcal / {{ activity.minute }} perc
+  </li>
+</ul>
+
+<ng-template #noData>
+  <p>Jelenleg nincs elérhető aktivitás.</p>
+</ng-template>

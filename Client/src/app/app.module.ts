@@ -18,6 +18,7 @@ import { API_BASE_URL } from './shared/models/Nswag generated/NswagGenerated';
 import { environment } from '../environments/environment.development';
 import { FoodComponent } from './pages/food/food.component';
 import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
+import { RecipesComponent } from './pages/recipes/recipes.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ActivityCatalogComponent } from './pages/activity-catalog/activity-cata
     HomeComponent,
     PlayComponent,
     FoodComponent,
-    ActivityCatalogComponent
+    ActivityCatalogComponent,
+    RecipesComponent
   ],
   imports: [
     FormsModule,

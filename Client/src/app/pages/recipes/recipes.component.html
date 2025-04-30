@@ -1,0 +1,11 @@
+<h2>Receptek</h2>
+
+<ul *ngIf="recipes.length > 0; else noRecipes">
+  <li *ngFor="let recipe of recipes">
+    <strong>{{ recipe.title }}</strong> – {{ recipe.sumCalorie }} kcal ({{ recipe.sumProtein }} g fehérje)
+  </li>
+</ul>
+
+<ng-template #noRecipes>
+  <p>Jelenleg nincs elérhető recept.</p>
+</ng-template>

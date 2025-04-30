@@ -6,6 +6,7 @@ import { PlayComponent } from './play/play.component';
 import { AuthorizationGuard } from './shared/guards/authorization.guard';
 import { FoodComponent } from './pages/food/food.component';
 import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
+import { RecipesComponent } from './pages/recipes/recipes.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, //canActivate: [AuthGuard]
@@ -13,6 +14,8 @@ const routes: Routes = [
 { path: 'food', component: FoodComponent, //canActivate: [AuthGuard]
 }, 
 { path: 'activitycatalog', component: ActivityCatalogComponent, //canActivate: [AuthGuard]
+}, 
+{ path: 'recipes', component: RecipesComponent, //canActivate: [AuthGuard]
 }, 
 { path: '', 
 runGuardsAndResolvers:'always',

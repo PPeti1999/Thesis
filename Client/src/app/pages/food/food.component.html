@@ -1,0 +1,15 @@
+<h2>Ételek listája</h2>
+
+<ul *ngIf="foods.length > 0; else noFood">
+  <li *ngFor="let food of foods">
+    <strong>{{ food.title }}</strong> – {{ food.calorie }} kcal
+  </li>
+</ul>
+
+<ng-template #noFood>
+  <p>Nincs rögzített étel.</p>
+</ng-template>
+
+<hr>
+
+

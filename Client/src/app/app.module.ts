@@ -14,6 +14,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { JwtInterceptor } from './shared/interceptors/jwt.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { API_BASE_URL } from './shared/models/Nswag generated/NswagGenerated';
+import { environment } from '../environments/environment.development';
+import { FoodComponent } from './pages/food/food.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NavbarComponent,
     FooterComponent,
     HomeComponent,
-    PlayComponent
+    PlayComponent,
+    FoodComponent
   ],
   imports: [
     FormsModule,
@@ -33,8 +37,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     SharedModule
   ],
-  providers: [ {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor,multi:true} 
+  providers: [ {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor,multi:true},
+    { provide: API_BASE_URL, useValue: environment.appUrl } 
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+ 

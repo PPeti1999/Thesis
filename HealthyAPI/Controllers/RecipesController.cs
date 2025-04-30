@@ -25,7 +25,6 @@ namespace HealthyAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> GetAll()
         {
             var list = await _service.GetAll();
@@ -33,7 +32,6 @@ namespace HealthyAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<ActionResult<RecipeResponseDto>> GetById(string id)
         {
             var recipe = await _service.GetById(id);

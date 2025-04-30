@@ -4,11 +4,13 @@ import { HomeComponent } from './home/home.component';
 import { NotFoundComponent } from './shared/components/errors/not-found/not-found.component';
 import { PlayComponent } from './play/play.component';
 import { AuthorizationGuard } from './shared/guards/authorization.guard';
+import { FoodComponent } from './pages/food/food.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, //canActivate: [AuthGuard]
 },
-
+{ path: 'food', component: FoodComponent, //canActivate: [AuthGuard]
+}, 
 { path: '', 
 runGuardsAndResolvers:'always',
 canActivate:[AuthorizationGuard],

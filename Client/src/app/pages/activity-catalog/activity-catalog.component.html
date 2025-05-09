@@ -1,12 +1,26 @@
-<h2>Elérhető aktivitások</h2>
+<h2>Acitivitycatalog</h2>
 
-<ul *ngIf="activities.length > 0; else noData">
-  <li *ngFor="let activity of activities">
-    <strong>{{ activity.name }}</strong> –
-    {{ activity.calories }} kcal / {{ activity.minute }} perc
-  </li>
-</ul>
+<div class="row" *ngIf="activities.length > 0; else noData">
+  <div class="col-md-4 mb-4" *ngFor="let activity of activities">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ activity.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ activity.calories }} kcal / {{ activity.minute }} minutes
+        </h6>
+
+        <!-- Gombok csak bejelentkezve -->
+        <div *ngIf="(accountService.user$ | async) as user">
+          <button class="btn btn-sm btn-primary me-2" (click)="onEdit(activity)">
+            Edit
+          </button>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <ng-template #noData>
-  <p>Jelenleg nincs elérhető aktivitás.</p>
+  <p>Empty.</p>
 </ng-template>

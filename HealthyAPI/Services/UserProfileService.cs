@@ -63,8 +63,8 @@ namespace HealthyAPI.Services
             double tdee = bmr * dto.ActivityMultiplier;
 
             // 🎯 Cél alapján módosítás (tömegelés, fogyás, megtartás)
-            if (dto.GoalType == 1) tdee += 300;      // tömegelés
-            else if (dto.GoalType == 2) tdee -= 300; // diéta
+            if (dto.GoalType == 1) tdee += 500;      // tömegelés
+            else if (dto.GoalType == 2) tdee -= 500; // diéta
 
             user.TargetCalorie = (int)tdee;
             user.TargeProtein = user.Weight * 2f;

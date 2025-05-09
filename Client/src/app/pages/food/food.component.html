@@ -1,15 +1,31 @@
-<h2>Ételek listája</h2>
+<h2>Food List</h2>
 
-<ul *ngIf="foods.length > 0; else noFood">
-  <li *ngFor="let food of foods">
-    <strong>{{ food.title }}</strong> – {{ food.calorie }} kcal
-  </li>
-</ul>
+<div class="row" *ngIf="foods.length > 0; else noFood">
+  <div class="col-md-4 mb-4" *ngFor="let food of foods">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ food.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ food.calorie }} kcal / {{ food.gram }} g
+        </h6>
+        <p class="card-text">
+          <strong>Protein:</strong> {{ food.protein }} g<br>
+          <strong>Fat:</strong> {{ food.fat }} g<br>
+          <strong>Carb:</strong> {{ food.carb }} g
+        </p>
+
+        <!-- Gombok csak ha be van jelentkezve -->
+        <div *ngIf="(_accountService.user$ | async) as user">
+          <button class="btn btn-sm btn-primary me-2" (click)="onEdit(food)">
+            Edit
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <ng-template #noFood>
-  <p>Nincs rögzített étel.</p>
+  <p>Empty.</p>
 </ng-template>
-
-<hr>
-
-

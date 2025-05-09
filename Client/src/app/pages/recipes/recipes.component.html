@@ -1,11 +1,34 @@
-<h2>Receptek</h2>
+<h2>Recipes</h2>
 
-<ul *ngIf="recipes.length > 0; else noRecipes">
-  <li *ngFor="let recipe of recipes">
-    <strong>{{ recipe.title }}</strong> – {{ recipe.sumCalorie }} kcal ({{ recipe.sumProtein }} g fehérje)
-  </li>
-</ul>
+<div class="row" *ngIf="recipes.length > 0; else noRecipes">
+  <div class="col-md-4 mb-4" *ngFor="let recipe of recipes">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ recipe.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ recipe.sumCalorie }} kcal – {{ recipe.sumProtein }} g protein
+        </h6>
+        <p class="card-text">Describe: {{ recipe.description }}</p>
+
+        <p><strong>Ingrements:</strong></p>
+        <ul class="list-unstyled ms-2">
+          <li *ngFor="let ing of recipe.ingredients">
+            - {{ ing.foodName }} ({{ ing.quantity }} g)
+          </li>
+        </ul>
+
+        <!-- Csak bejelentkezve -->
+        <div *ngIf="(accountService.user$ | async) as user">
+          <button class="btn btn-sm btn-primary me-2" (click)="onEdit(recipe)">
+            Edit
+          </button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <ng-template #noRecipes>
-  <p>Jelenleg nincs elérhető recept.</p>
+  <p>Empty.</p>
 </ng-template>

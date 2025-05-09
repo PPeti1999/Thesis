@@ -29,7 +29,8 @@ import { RecipesComponent } from './pages/recipes/recipes.component';
     PlayComponent,
     FoodComponent,
     ActivityCatalogComponent,
-    RecipesComponent
+    RecipesComponent,
+    
   ],
   imports: [
     FormsModule,

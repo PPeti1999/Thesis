@@ -7,6 +7,9 @@ import { AuthorizationGuard } from './shared/guards/authorization.guard';
 import { FoodComponent } from './pages/food/food.component';
 import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
+import { CreateFoodComponent } from './pages/create-food/create-food.component';
+import { CreateActivityCatalogComponent } from './pages/create-activity-catalog/create-activity-catalog.component';
+import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, //canActivate: [AuthGuard]
@@ -21,16 +24,12 @@ const routes: Routes = [
 runGuardsAndResolvers:'always',
 canActivate:[AuthorizationGuard],
 children:[// ide kell tenni azokat az elereseket amiket csak belepes utan szabad latni 
-/*{path: 'bodydiary',component: HomeBodydiaryComponent
-},
-{path: 'create',component: CreateExerciseComponent
-},
-{path: 'exercise/:id/edit',component: CreateExerciseComponent
-},
-{path:'createbodydiary',component:CreateBodydiaryComponent},
-{path:'createbodydiaryweekly',component:CreateBodydiaryweeklyComponent},
-{path:'createworkoutplan',component:CreateWorkoutplanComponent},
-*/
+{ path: 'activitycatalog/create', component: CreateActivityCatalogComponent },
+{ path: 'activitycatalog/edit/:id', component: CreateActivityCatalogComponent },
+{ path: 'food/create', component: CreateFoodComponent },
+{ path: 'food/edit/:id', component: CreateFoodComponent },
+{ path: 'recipes/create', component: CreateRecipesComponent },
+{ path: 'recipes/edit/:id', component: CreateRecipesComponent },
 {path: 'play',component: PlayComponent
 },
 ],

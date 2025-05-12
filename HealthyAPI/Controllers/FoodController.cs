@@ -39,8 +39,8 @@ namespace HealthyAPI.Controllers
                 Carb = f.Carb,
                 Calorie = f.Calorie,
                 Gram = f.Gram,
-                PhotoID = f.PhotoID,
-                PhotoData = f.Photo?.PhotoData,
+               /* PhotoID = f.PhotoID,
+                PhotoData = f.Photo?.PhotoData,*/
                 CreatedAt = f.CreatedAt
             }));
         }
@@ -60,8 +60,8 @@ namespace HealthyAPI.Controllers
                 Carb = food.Carb,
                 Calorie = food.Calorie,
                 Gram = food.Gram,
-                PhotoID = food.PhotoID,
-                PhotoData = food.Photo?.PhotoData,
+              /*  PhotoID = food.PhotoID,
+                PhotoData = food.Photo?.PhotoData,*/
                 CreatedAt = food.CreatedAt
             });
         }
@@ -70,9 +70,9 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<FoodResponseDto>> AddFood([FromBody] FoodCreateDto dto)
         {
-            if (dto == null || string.IsNullOrEmpty(dto.PhotoData)) return BadRequest();
+           /* if (dto == null || string.IsNullOrEmpty(dto.PhotoData)) return BadRequest();
 
-            var uploadedPhoto = await _photoService.UploadPhoto(new Photo { PhotoData = dto.PhotoData });
+            var uploadedPhoto = await _photoService.UploadPhoto(new Photo { PhotoData = dto.PhotoData });*/
 
             var food = new Food
             {
@@ -83,7 +83,7 @@ namespace HealthyAPI.Controllers
                 Carb = dto.Carb,
                 Calorie = dto.Calorie,
                 Gram = dto.Gram,
-                PhotoID = uploadedPhoto.PhotoID,
+              /*  PhotoID = uploadedPhoto.PhotoID,*/
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -98,8 +98,8 @@ namespace HealthyAPI.Controllers
                 Carb = created.Carb,
                 Calorie = created.Calorie,
                 Gram = created.Gram,
-                PhotoID = created.PhotoID,
-                PhotoData = uploadedPhoto.PhotoData,
+               /* PhotoID = created.PhotoID,*/
+                /*PhotoData = uploadedPhoto.PhotoData,*/
                 CreatedAt = created.CreatedAt
             });
         }
@@ -118,11 +118,11 @@ namespace HealthyAPI.Controllers
             food.Calorie = dto.Calorie;
             food.Gram = dto.Gram;
 
-            if (!string.IsNullOrEmpty(dto.PhotoData))
+           /* if (!string.IsNullOrEmpty(dto.PhotoData))
             {
                 var uploadedPhoto = await _photoService.UploadPhoto(new Photo { PhotoData = dto.PhotoData });
                 food.PhotoID = uploadedPhoto.PhotoID;
-            }
+            }*/
 
             var updated = await _foodService.UpdateFood(id, food);
 
@@ -135,8 +135,8 @@ namespace HealthyAPI.Controllers
                 Carb = updated.Carb,
                 Calorie = updated.Calorie,
                 Gram = updated.Gram,
-                PhotoID = updated.PhotoID,
-                PhotoData = updated.Photo?.PhotoData,
+               /* PhotoID = updated.PhotoID,
+                PhotoData = updated.Photo?.PhotoData,*/
                 CreatedAt = updated.CreatedAt
             });
         }
@@ -145,15 +145,17 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteFood(string id)
         {
-            var food = await _foodService.GetFood(id);
-            if (food == null) return NotFound();
 
-            await _photoService.DeletePhoto(food.PhotoID);
-            var success = await _foodService.DeleteFood(id);
-
-            if (!success) return NotFound();
-
-            return NoContent();
+            try
+            {
+                var success = await _foodService.DeleteFood(id);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

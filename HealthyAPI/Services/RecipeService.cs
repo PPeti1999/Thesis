@@ -20,7 +20,9 @@ namespace HealthyAPI.Services
 
         public async Task<IEnumerable<RecipeResponseDto>> GetAll()
         {
-            var recipes = await _context.Recipe.Include(r => r.Photo).ToListAsync();
+            var recipes = await _context.Recipe.ToListAsync();
+            //var recipes = await _context.Recipe.Include(r => r.Photo).ToListAsync();
+
             var result = new List<RecipeResponseDto>();
 
             foreach (var r in recipes)
@@ -33,7 +35,9 @@ namespace HealthyAPI.Services
 
         public async Task<RecipeResponseDto?> GetById(string id)
         {
-            var recipe = await _context.Recipe.Include(r => r.Photo).FirstOrDefaultAsync(r => r.RecipeID == id);
+            var recipe = await _context.Recipe.FirstOrDefaultAsync(r => r.RecipeID == id);
+          //  var recipe = await _context.Recipe.Include(r => r.Photo).FirstOrDefaultAsync(r => r.RecipeID == id);
+
             if (recipe == null) return null;
             await RecalculateNutrition(recipe);
             return await MapToDto(recipe);
@@ -46,7 +50,7 @@ namespace HealthyAPI.Services
                 RecipeID = Guid.NewGuid().ToString(),
                 Title = dto.Title,
                 Description = dto.Description,
-                PhotoID = dto.PhotoID,
+               // PhotoID = dto.PhotoID,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -76,7 +80,7 @@ namespace HealthyAPI.Services
 
             recipe.Title = dto.Title;
             recipe.Description = dto.Description;
-            recipe.PhotoID = dto.PhotoID;
+            //recipe.PhotoID = dto.PhotoID;
 
             _context.RecipeFoods.RemoveRange(_context.RecipeFoods.Where(rf => rf.RecipeID == id));
             foreach (var item in dto.Ingredients)
@@ -103,8 +107,14 @@ namespace HealthyAPI.Services
             var recipe = await _context.Recipe.FindAsync(id);
             if (recipe == null) return false;
 
+            // ✅ Extra: ha használatban van például MealRecipes-ben
+            bool isInUse = await _context.MealRecipes.AnyAsync(mr => mr.RecipeID == id);
+            if (isInUse)
+                throw new InvalidOperationException("A recept használatban van (pl. étkezésnél), nem törölhető.");
+
             _context.RecipeFoods.RemoveRange(_context.RecipeFoods.Where(rf => rf.RecipeID == id));
             _context.Recipe.Remove(recipe);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -122,7 +132,7 @@ namespace HealthyAPI.Services
 
         private async Task<RecipeResponseDto> MapToDto(Recipe recipe)
         {
-            var photo = await _context.Photo.FindAsync(recipe.PhotoID);
+            //var photo = await _context.Photo.FindAsync(recipe.PhotoID);
             var ingredients = await _context.RecipeFoods
                 .Include(rf => rf.Food)
                 .Where(rf => rf.RecipeID == recipe.RecipeID)
@@ -142,8 +152,8 @@ namespace HealthyAPI.Services
                 SumCarb = recipe.SumCarb,
                 SumFat = recipe.SumFat,
                 SumCalorie = recipe.SumCalorie,
-                PhotoID = recipe.PhotoID,
-                PhotoData = photo?.PhotoData,
+             //   PhotoID = recipe.PhotoID,
+               // PhotoData = photo?.PhotoData,
                 CreatedAt = recipe.CreatedAt,
                 Ingredients = ingredients
             };

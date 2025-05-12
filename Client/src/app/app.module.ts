@@ -19,6 +19,9 @@ import { environment } from '../environments/environment.development';
 import { FoodComponent } from './pages/food/food.component';
 import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
+import { CreateFoodComponent } from './pages/create-food/create-food.component';
+import { CreateActivityCatalogComponent } from './pages/create-activity-catalog/create-activity-catalog.component';
+import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,9 @@ import { RecipesComponent } from './pages/recipes/recipes.component';
     FoodComponent,
     ActivityCatalogComponent,
     RecipesComponent,
-    
+    CreateFoodComponent,
+    CreateActivityCatalogComponent,
+    CreateRecipesComponent
   ],
   imports: [
     FormsModule,

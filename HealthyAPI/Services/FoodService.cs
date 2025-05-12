@@ -19,14 +19,14 @@ namespace HealthyAPI.Services
         public async Task<IEnumerable<Food>> ListFoods()
         {
             return await _context.Food
-                .Include(f => f.Photo)
+                /*.Include(f => f.Photo)*/
                 .ToListAsync();
         }
 
         public async Task<Food> GetFood(string id)
         {
             return await _context.Food
-                .Include(f => f.Photo)
+                /*.Include(f => f.Photo)*/
                 .FirstOrDefaultAsync(f => f.FoodID == id);
         }
 
@@ -49,11 +49,16 @@ namespace HealthyAPI.Services
 
         public async Task<bool> DeleteFood(string id)
         {
-            var food = await _context.Food.FindAsync(id);
-            if (food == null)
-                return false;
 
-            _context.Food.Remove(food);
+            // Ellenőrzés: van-e kapcsolódó bejegyzés
+            bool hasDependencies = await _context.MealFoods.AnyAsync(dn => dn.FoodID == id);
+            if (hasDependencies)
+                throw new InvalidOperationException("Az aktivitás már használatban van, nem törölhető.");
+
+            var entity = await _context.Food.FindAsync(id);
+            if (entity == null) return false;
+
+            _context.Food.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
         }

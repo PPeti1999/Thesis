@@ -1,0 +1,60 @@
+<div class="container">
+    <h2 class="d-flex justify-content-between align-items-center">
+      {{ editing ? 'Edit Recipe' : 'Create Recipe' }}
+      <small class="text-muted">
+        {{ sumCalorie.toFixed(2) }} kcal, {{ sumProtein.toFixed(2) }}g protein, {{ sumFat.toFixed(2) }}g fat, {{ sumCarb.toFixed(2) }}g carb
+      </small>
+    </h2>
+  
+    <form (ngSubmit)="createOrUpdate()" autocomplete="off">
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" [(ngModel)]="recipe.title" name="title" required />
+      </div>
+  
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" [(ngModel)]="recipe.description" name="description"></textarea>
+      </div>
+  
+      <hr />
+  
+      <h5>Add Ingredient</h5>
+      <div class="row g-2 align-items-center mb-3">
+        <div class="col-md-6">
+          <select class="form-select" [(ngModel)]="foodIDInput" name="food">
+            <option [ngValue]="undefined">-- Select food --</option>
+            <option *ngFor="let food of foodOptions" [ngValue]="food.foodID">{{ food.title }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <input type="number" class="form-control" [(ngModel)]="quantityInput" name="quantity" placeholder="Quantity" min="1" />
+            <span class="input-group-text">g</span>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-success w-100" type="button" (click)="addOrUpdateIngredient()">
+            {{ editingIngredientIndex !== null ? 'Update' : 'Add' }}
+          </button>
+        </div>
+      </div>
+  
+      <h5>Ingredients</h5>
+      <ul class="list-group mb-3">
+        <li *ngFor="let ing of ingredients; let i = index" class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="me-2">{{ getFoodTitleById(ing.foodID) }}</span>
+          <span class="text-muted">{{ ing.quantity }} g</span>
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-1" type="button" (click)="loadIngredientForEdit(i)">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" type="button" (click)="removeIngredient(i)">Remove</button>
+          </div>
+        </li>
+      </ul>
+  
+      <button class="btn btn-primary" type="submit">
+        {{ editing ? 'Save Changes' : 'Create Recipe' }}
+      </button>
+    </form>
+  </div>
+  

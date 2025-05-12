@@ -8,6 +8,6 @@
         public int Carb { get; set; }
         public int Calorie { get; set; }
         public int Gram { get; set; }
-        public string PhotoData { get; set; } // base64
+      /*  public string PhotoData { get; set; } // base64*/
     }
 }

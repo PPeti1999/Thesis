@@ -17,10 +17,10 @@ namespace HealthyAPI.Models
         public int Calorie { get; set; }
         public int Gram { get; set; }
 
-        public string PhotoID { get; set; }
+      /*  public string PhotoID { get; set; }
         [ForeignKey("PhotoID")]
         public virtual Photo Photo { get; set; }
-
+      */
         public DateTime CreatedAt { get; set; }
 
         //     public virtual ICollection<MealFoods> MealFoods { get; set; }

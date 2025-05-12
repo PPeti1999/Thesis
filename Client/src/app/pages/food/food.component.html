@@ -1,5 +1,11 @@
-<h2>Food List</h2>
-
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="m-0">Food List</h2>
+  <div *ngIf="(_accountService.user$ | async) as user">
+    <a class="btn btn-success" routerLink="/food/create">
+      + New Food
+    </a>
+  </div>
+</div>
 <div class="row" *ngIf="foods.length > 0; else noFood">
   <div class="col-md-4 mb-4" *ngFor="let food of foods">
     <div class="card h-100 shadow-sm">
@@ -18,6 +24,9 @@
         <div *ngIf="(_accountService.user$ | async) as user">
           <button class="btn btn-sm btn-primary me-2" (click)="onEdit(food)">
             Edit
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="onDelete(food)">
+            Delete
           </button>
         </div>
 

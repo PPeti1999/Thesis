@@ -4170,8 +4170,6 @@ export class FoodResponseDto implements IFoodResponseDto {
     carb?: number;
     calorie?: number;
     gram?: number;
-    photoID?: string | undefined;
-    photoData?: string | undefined;
     createdAt?: Date;
 
     constructor(data?: IFoodResponseDto) {
@@ -4192,8 +4190,6 @@ export class FoodResponseDto implements IFoodResponseDto {
             this.carb = _data["carb"];
             this.calorie = _data["calorie"];
             this.gram = _data["gram"];
-            this.photoID = _data["photoID"];
-            this.photoData = _data["photoData"];
             this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
         }
     }
@@ -4214,8 +4210,6 @@ export class FoodResponseDto implements IFoodResponseDto {
         data["carb"] = this.carb;
         data["calorie"] = this.calorie;
         data["gram"] = this.gram;
-        data["photoID"] = this.photoID;
-        data["photoData"] = this.photoData;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         return data;
     }
@@ -4229,8 +4223,6 @@ export interface IFoodResponseDto {
     carb?: number;
     calorie?: number;
     gram?: number;
-    photoID?: string | undefined;
-    photoData?: string | undefined;
     createdAt?: Date;
 }
 
@@ -4241,7 +4233,6 @@ export class FoodCreateDto implements IFoodCreateDto {
     carb?: number;
     calorie?: number;
     gram?: number;
-    photoData?: string | undefined;
 
     constructor(data?: IFoodCreateDto) {
         if (data) {
@@ -4260,7 +4251,6 @@ export class FoodCreateDto implements IFoodCreateDto {
             this.carb = _data["carb"];
             this.calorie = _data["calorie"];
             this.gram = _data["gram"];
-            this.photoData = _data["photoData"];
         }
     }
 
@@ -4279,7 +4269,6 @@ export class FoodCreateDto implements IFoodCreateDto {
         data["carb"] = this.carb;
         data["calorie"] = this.calorie;
         data["gram"] = this.gram;
-        data["photoData"] = this.photoData;
         return data;
     }
 }
@@ -4291,7 +4280,6 @@ export interface IFoodCreateDto {
     carb?: number;
     calorie?: number;
     gram?: number;
-    photoData?: string | undefined;
 }
 
 export class FoodUpdateDto extends FoodCreateDto implements IFoodUpdateDto {
@@ -4885,8 +4873,6 @@ export class RecipeResponseDto implements IRecipeResponseDto {
     sumCarb?: number;
     sumFat?: number;
     sumCalorie?: number;
-    photoID?: string | undefined;
-    photoData?: string | undefined;
     createdAt?: Date;
     ingredients?: RecipeIngredientDetailDto[] | undefined;
 
@@ -4908,8 +4894,6 @@ export class RecipeResponseDto implements IRecipeResponseDto {
             this.sumCarb = _data["sumCarb"];
             this.sumFat = _data["sumFat"];
             this.sumCalorie = _data["sumCalorie"];
-            this.photoID = _data["photoID"];
-            this.photoData = _data["photoData"];
             this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
             if (Array.isArray(_data["ingredients"])) {
                 this.ingredients = [] as any;
@@ -4935,8 +4919,6 @@ export class RecipeResponseDto implements IRecipeResponseDto {
         data["sumCarb"] = this.sumCarb;
         data["sumFat"] = this.sumFat;
         data["sumCalorie"] = this.sumCalorie;
-        data["photoID"] = this.photoID;
-        data["photoData"] = this.photoData;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         if (Array.isArray(this.ingredients)) {
             data["ingredients"] = [];
@@ -4955,8 +4937,6 @@ export interface IRecipeResponseDto {
     sumCarb?: number;
     sumFat?: number;
     sumCalorie?: number;
-    photoID?: string | undefined;
-    photoData?: string | undefined;
     createdAt?: Date;
     ingredients?: RecipeIngredientDetailDto[] | undefined;
 }
@@ -5008,7 +4988,6 @@ export interface IRecipeIngredientDetailDto {
 export class RecipeCreateDto implements IRecipeCreateDto {
     title?: string | undefined;
     description?: string | undefined;
-    photoID?: string | undefined;
     ingredients?: RecipeFoodItemDto[] | undefined;
 
     constructor(data?: IRecipeCreateDto) {
@@ -5024,7 +5003,6 @@ export class RecipeCreateDto implements IRecipeCreateDto {
         if (_data) {
             this.title = _data["title"];
             this.description = _data["description"];
-            this.photoID = _data["photoID"];
             if (Array.isArray(_data["ingredients"])) {
                 this.ingredients = [] as any;
                 for (let item of _data["ingredients"])
@@ -5044,7 +5022,6 @@ export class RecipeCreateDto implements IRecipeCreateDto {
         data = typeof data === 'object' ? data : {};
         data["title"] = this.title;
         data["description"] = this.description;
-        data["photoID"] = this.photoID;
         if (Array.isArray(this.ingredients)) {
             data["ingredients"] = [];
             for (let item of this.ingredients)
@@ -5057,7 +5034,6 @@ export class RecipeCreateDto implements IRecipeCreateDto {
 export interface IRecipeCreateDto {
     title?: string | undefined;
     description?: string | undefined;
-    photoID?: string | undefined;
     ingredients?: RecipeFoodItemDto[] | undefined;
 }
 
@@ -5104,7 +5080,6 @@ export interface IRecipeFoodItemDto {
 export class RecipeUpdateDto implements IRecipeUpdateDto {
     title?: string | undefined;
     description?: string | undefined;
-    photoID?: string | undefined;
     ingredients?: RecipeFoodItemDto[] | undefined;
 
     constructor(data?: IRecipeUpdateDto) {
@@ -5120,7 +5095,6 @@ export class RecipeUpdateDto implements IRecipeUpdateDto {
         if (_data) {
             this.title = _data["title"];
             this.description = _data["description"];
-            this.photoID = _data["photoID"];
             if (Array.isArray(_data["ingredients"])) {
                 this.ingredients = [] as any;
                 for (let item of _data["ingredients"])
@@ -5140,7 +5114,6 @@ export class RecipeUpdateDto implements IRecipeUpdateDto {
         data = typeof data === 'object' ? data : {};
         data["title"] = this.title;
         data["description"] = this.description;
-        data["photoID"] = this.photoID;
         if (Array.isArray(this.ingredients)) {
             data["ingredients"] = [];
             for (let item of this.ingredients)
@@ -5153,7 +5126,6 @@ export class RecipeUpdateDto implements IRecipeUpdateDto {
 export interface IRecipeUpdateDto {
     title?: string | undefined;
     description?: string | undefined;
-    photoID?: string | undefined;
     ingredients?: RecipeFoodItemDto[] | undefined;
 }
 

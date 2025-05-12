@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-md-6 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="display-6">{{ editing ? 'Edit Activity' : 'Create Activity' }}</h2>
+        </div>
+        <div class="card-body">
+          <form #activityForm="ngForm" (ngSubmit)="activityForm.form.valid && createOrUpdate()" novalidate autocomplete="off">
+            
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="activity.name"
+                name="name"
+                required
+              />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Minutes</label>
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="activity.minute"
+                name="minute"
+                required
+                min="1"
+              />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Calories</label>
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="activity.calories"
+                name="calories"
+                required
+                min="1"
+              />
+            </div>
+  
+            <button class="btn btn-primary" type="submit">
+              {{ editing ? 'Save' : 'Create' }}
+            </button>
+  
+            <div *ngIf="showAlert" class="alert alert-success mt-3">
+              {{ editing ? 'Activity updated!' : 'Activity created!' }}
+              <button class="btn btn-link" [routerLink]="['/activitycatalog']">Back to list</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

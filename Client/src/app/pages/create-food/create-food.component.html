@@ -1,1 +1,53 @@
-<p>create-food works!</p>
+<div class="row">
+    <div class="col-md-6 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="display-6">{{ editing ? 'Food Edit' : 'Create Food' }}</h2>
+        </div>
+        <div class="card-body">
+          <form #foodForm="ngForm" (ngSubmit)="foodForm.form.valid && createOrUpdate()" novalidate autocomplete="off">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" [(ngModel)]="food.title" name="title" required />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Protein (g)</label>
+              <input type="number" class="form-control" [(ngModel)]="food.protein" name="protein" required />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Fat (g)</label>
+              <input type="number" class="form-control" [(ngModel)]="food.fat" name="fat" required />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Carb (g)</label>
+              <input type="number" class="form-control" [(ngModel)]="food.carb" name="carb" required />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Calorie</label>
+              <input type="number" class="form-control" [(ngModel)]="food.calorie" name="calorie" required />
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Gram</label>
+              <input type="number" class="form-control" [(ngModel)]="food.gram" name="gram" required />
+            </div>
+  
+  
+            <button class="btn btn-primary" type="submit">
+              {{ editing ? 'Save' : 'Create' }}
+            </button>
+  
+            <div *ngIf="showAlert" class="alert alert-success mt-3">
+              {{ editing ? 'Food updated!' : 'Food created!' }}
+              <button class="btn btn-link" [routerLink]="['/food']">Back to food list.</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

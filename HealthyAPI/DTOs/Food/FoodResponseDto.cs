@@ -11,8 +11,8 @@ namespace HealthyAPI.DTOs.Food
         public int Carb { get; set; }
         public int Calorie { get; set; }
         public int Gram { get; set; }
-        public string? PhotoID { get; set; }
-        public string? PhotoData { get; set; }
+      /*  public string? PhotoID { get; set; }
+        public string? PhotoData { get; set; }*/
         public DateTime CreatedAt { get; set; }
     }
 }

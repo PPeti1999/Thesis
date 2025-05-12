@@ -18,9 +18,9 @@ namespace HealthyAPI.Models
         public float SumCalorie { get; set; }
 
 
-        public string PhotoID { get; set; }
+     /*   public string PhotoID { get; set; }
         [ForeignKey("PhotoID")]
-        public virtual Photo Photo { get; set; }
+        public virtual Photo Photo { get; set; }*/
 
         public DateTime CreatedAt { get; set; }
 

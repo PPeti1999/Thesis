@@ -58,13 +58,17 @@ namespace HealthyAPI.Data
 
             // Food
             modelBuilder.Entity<Food>().HasData(
-                new Food { FoodID = "food1", Title = "Csirkemell", Protein = 31, Fat = 3, Carb = 0, Calorie = 165, Gram = 100, PhotoID = "photo1" },
-                new Food { FoodID = "food2", Title = "Rizs", Protein = 2, Fat = 0, Carb = 28, Calorie = 130, Gram = 100, PhotoID = "photo2" }
+               /*  new Food { FoodID = "food1", Title = "Csirkemell", Protein = 31, Fat = 3, Carb = 0, Calorie = 165, Gram = 100, PhotoID = "photo1" },
+                 new Food { FoodID = "food2", Title = "Rizs", Protein = 2, Fat = 0, Carb = 28, Calorie = 130, Gram = 100, PhotoID = "photo2" }*/
+               new Food { FoodID = "food1", Title = "Csirkemell", Protein = 31, Fat = 3, Carb = 0, Calorie = 165, Gram = 100},
+                new Food { FoodID = "food2", Title = "Rizs", Protein = 2, Fat = 0, Carb = 28, Calorie = 130, Gram = 100 }
             );
 
             // Recipe
             modelBuilder.Entity<Recipe>().HasData(
-                new Recipe { RecipeID = "rec1", SumProtein = 33, SumCarb = 28, SumFat = 3, SumCalorie = 295, PhotoID = "photo1" }
+                new Recipe { RecipeID = "rec1", SumProtein = 33, SumCarb = 28, SumFat = 3, SumCalorie = 295 }
+           
+           // new Recipe { RecipeID = "rec1", SumProtein = 33, SumCarb = 28, SumFat = 3, SumCalorie = 295, PhotoID = "photo1" }
             );
 
             // RecipeFoods

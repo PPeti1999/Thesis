@@ -44,7 +44,7 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<RecipeResponseDto>> Create([FromBody] RecipeCreateDto dto)
         {
             var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.RecipeID }, created);
+            return Ok(created);
         }
 
         [HttpPut("{id}")]
@@ -60,9 +60,20 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            var success = await _service.Delete(id);
-            if (!success) return NotFound();
-            return NoContent();
+            try
+            {
+                var success = await _service.Delete(id);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Szerverhiba történt: " + ex.Message });
+            }
         }
     }
 }

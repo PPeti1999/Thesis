@@ -21,15 +21,16 @@
                         <a class="nav-item nav-link" routerLink="/activitycatalog" routerLinkActive="active" 
                         [routerLinkActiveOptions]="{exact:true}">Activitycatalog</a>
                     </li>
+                    
+
                     <li class="nav-item">
                         <a class="nav-item nav-link" routerLink="/recipes" routerLinkActive="active" 
                         [routerLinkActiveOptions]="{exact:true}">Recipes</a>
                     </li>
-
+                    
                     <li class ="nav-item"  >
                         <a class="nav-item nav-link" routerLink="/play" routerLinkActive="active" >Play</a>
                     </li>
-
                 </ul>
 
                 <ul class="navbar-nav" *ngIf="(_accountService.user$ | async) === null">

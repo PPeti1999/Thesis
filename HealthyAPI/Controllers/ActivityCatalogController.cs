@@ -10,10 +10,10 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using HealthyAPI.Services;
+using HealthyAPI.DTOs.Food;
 
 namespace HealthyAPI.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class ActivityCatalogController : ControllerBase
@@ -28,41 +28,99 @@ namespace HealthyAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActivityCatalogResponseDto>>> GetAll()
         {
-            return Ok(await _service.GetAll());
+            var activityCatalogs = await _service.GetAll();
+            return Ok(activityCatalogs.Select(f => new ActivityCatalogResponseDto
+            {
+                ActivityCatalogID = f.ActivityCatalogID,
+                Name = f.Name,
+                Minute = f.Minute,
+                Calories = f.Calories,
+                CreatedAt = f.CreatedAt
+            }));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ActivityCatalogResponseDto>> GetById(string id)
         {
-            var activity = await _service.GetById(id);
-            if (activity == null) return NotFound();
-            return Ok(activity);
+            var activityCatalogs = await _service.GetById(id);
+            if (activityCatalogs == null) return NotFound();
+            return Ok(new ActivityCatalogResponseDto
+            {
+                ActivityCatalogID = activityCatalogs.ActivityCatalogID,
+                Name = activityCatalogs.Name,
+                Minute = activityCatalogs.Minute,
+                Calories = activityCatalogs.Calories,
+                CreatedAt = activityCatalogs.CreatedAt
+            });
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<ActivityCatalogResponseDto>> Create(ActivityCatalogCreateDto dto)
+        public async Task<ActionResult<ActivityCatalogResponseDto>> Create([FromBody] ActivityCatalogCreateDto dto)
         {
-            var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.ActivityCatalogID }, created);
+
+
+            var activityCatalog = new ActivityCatalog
+            {
+                ActivityCatalogID = Guid.NewGuid().ToString(),
+                Name = dto.Name,
+                Minute = dto.Minute,
+                Calories = dto.Calories,
+                CreatedAt = DateTime.UtcNow
+            };
+
+
+            var activityCatalogs = await _service.Create(activityCatalog);
+            
+            return Ok(new ActivityCatalogResponseDto
+            {
+                ActivityCatalogID = activityCatalogs.ActivityCatalogID,
+                Name = activityCatalogs.Name,
+                Minute = activityCatalogs.Minute,
+                Calories = activityCatalogs.Calories,
+                CreatedAt = activityCatalogs.CreatedAt
+            });
         }
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult<ActivityCatalogResponseDto>> Update(string id, ActivityCatalogCreateDto dto)
+        public async Task<ActionResult<ActivityCatalogResponseDto>> Update(string id, [FromBody] ActivityCatalogCreateDto dto)
         {
-            var updated = await _service.Update(id, dto);
-            if (updated == null) return NotFound();
-            return Ok(updated);
+            var activityCatalogs = await _service.GetById(id);
+            if (activityCatalogs == null) return NotFound();
+            activityCatalogs.Name = dto.Name;
+            activityCatalogs.Minute = dto.Minute;
+            activityCatalogs.Calories = dto.Calories;
+                
+         
+
+
+            var activityCatalog = await _service.Update(id, activityCatalogs);
+
+            return Ok(new ActivityCatalogResponseDto
+            {
+                ActivityCatalogID = activityCatalog.ActivityCatalogID,
+                Name = activityCatalog.Name,
+                Minute = activityCatalog.Minute,
+                Calories = activityCatalog.Calories,
+                CreatedAt = activityCatalog.CreatedAt
+            });
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            var success = await _service.Delete(id);
-            if (!success) return NotFound();
-            return NoContent();
+            try
+            {
+                var success = await _service.Delete(id);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

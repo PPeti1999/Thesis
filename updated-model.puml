@@ -1,0 +1,139 @@
+@startuml
+!define primaryKey(x) <b>x</b>
+!define FK(x) <i>x</i>
+
+// Entities
+
+entity "User" as U {
+  primaryKey(Id : string)
+  FirstName : string
+  LastName : string
+  Age : int
+  Height : int
+  BodyFat : int
+  Weight : int
+  GoalWeight : int
+  TargetCalorie : int
+  TargeProtein : float
+  TargetCarb : float
+  TargetFat : float
+  ActivityMultiplier : float
+  GoalType : int
+  IsFemale : bool
+  FK(PhotoID : string)
+  CreatedAt : datetime
+}
+
+entity "Photo" as PH {
+  primaryKey(PhotoID : string)
+  PhotoData : string
+}
+
+entity "DailyNote" as DN {
+  primaryKey(DailyNoteID : string)
+  FK(UserID : string)
+  DailyWeight : int
+  DailyTargetCalorie : int
+  ActualCalorie : int
+  DailyTargetProtein : float
+  ActualSumProtein : float
+  DailyTargetCarb : float
+  ActualSumCarb : float
+  DailyTargetFat : float
+  ActualSumFat : float
+  CreatedAt : datetime
+}
+
+entity "MealEntries" as ME {
+  primaryKey(MealEntryID : string)
+  FK(DailyNoteID : string)
+  FK(MealTypeID : string)
+  SumProtein : float
+  SumCarb : float
+  SumFat : float
+  SumCalorie : float
+}
+
+entity "MealTypes" as MT {
+  primaryKey(MealTypeID : string)
+  Name : string
+  FK(PhotoID : string)
+}
+
+entity "Food" as F {
+  primaryKey(FoodID : string)
+  Title : string
+  Protein : int
+  Fat : int
+  Carb : int
+  Calorie : int
+  Gram : int
+  CreatedAt : datetime
+}
+
+entity "MealFoods" as MF {
+  primaryKey(MealFoodID : string)
+  FK(MealEntryID : string)
+  FK(FoodID : string)
+  Quantity : int
+}
+
+entity "Recipe" as R {
+  primaryKey(RecipeID : string)
+  Title : string
+  Description : string
+  SumProtein : float
+  SumCarb : float
+  SumFat : float
+  SumCalorie : float
+  CreatedAt : datetime
+}
+
+entity "MealRecipes" as MR {
+  primaryKey(MealRecipeID : string)
+  FK(MealEntryID : string)
+  FK(RecipeID : string)
+  Quantity : float
+}
+
+entity "RecipeFoods" as RF {
+  primaryKey(RecipeFoodID : string)
+  FK(RecipeID : string)
+  FK(FoodID : string)
+  Quantity : float
+}
+
+entity "ActivityCatalog" as AC {
+  primaryKey(ActivityCatalogID : string)
+  Name : string
+  Minute : int
+  Calories : int
+  CreatedAt : datetime
+}
+
+entity "UserActivity" as UA {
+  primaryKey(UserActivityID : string)
+  FK(DailyNoteID : string)
+  FK(ActivityCatalogID : string)
+  FK(PhotoID : string)
+  Duration : int
+  Calories : int
+}
+
+// Relations
+U ||--o{ DN : "has notes"
+DN ||--o{ ME : "has meals"
+ME ||--o{ MF : "has foods"
+ME ||--o{ MR : "has recipes"
+DN ||--o{ UA : "has activities"
+F ||--o{ MF
+R ||--o{ MR
+R ||--o{ RF
+F ||--o{ RF
+AC ||--o{ UA
+PH ||--o{ U
+PH ||--o{ MT
+PH ||--o{ UA
+MT ||--o{ ME
+
+@enduml

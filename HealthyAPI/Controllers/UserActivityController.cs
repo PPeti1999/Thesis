@@ -45,7 +45,7 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<UserActivityResponseDto>> Create(UserActivityCreateDto dto)
         {
             var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.UserActivityID }, created);
+            return Ok(created);
         }
 
         [HttpPut("{id}")]

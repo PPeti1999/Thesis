@@ -31,6 +31,10 @@
                     <li class ="nav-item"  >
                         <a class="nav-item nav-link" routerLink="/play" routerLinkActive="active" >Play</a>
                     </li>
+                    <li class="d-flex align-items-center" *ngIf="(_accountService.user$ | async) as user">
+                        <a class="nav-item nav-link" routerLink="/dailynote" routerLinkActive="active" 
+                        [routerLinkActiveOptions]="{exact:true}">Daily Note</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav" *ngIf="(_accountService.user$ | async) === null">
@@ -46,11 +50,15 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center" *ngIf="(_accountService.user$ | async) as user">
-                    <a class="text-white" style="text-decoration: none; cursor: pointer;">
-                        Hi <span class="h3 text-warning">{{user.firstName | titlecase}}</span>
+                    <a class="nav-link text-white me-2" [routerLink]="'/create-profile'" style="font-size: 1.5rem;" title="Profile">
+                        <i class="bi bi-person-circle"></i>
                     </a>
-                    <a class="btn btn-secondary ms-2" (click)="logout()">Logout</a>
+                    <span class="text-white me-2">
+                        Hi <span class="h5 text-warning">{{user.firstName | titlecase}}</span>
+                    </span>
+                    <a class="btn btn-secondary" (click)="logout()">Logout</a>
                 </div>
+                
 
             </div>
         </div>

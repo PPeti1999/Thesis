@@ -22,6 +22,8 @@ import { RecipesComponent } from './pages/recipes/recipes.component';
 import { CreateFoodComponent } from './pages/create-food/create-food.component';
 import { CreateActivityCatalogComponent } from './pages/create-activity-catalog/create-activity-catalog.component';
 import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.component';
+import { CreateProfileComponent } from './pages/create-profile/create-profile.component';
+import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.co
     RecipesComponent,
     CreateFoodComponent,
     CreateActivityCatalogComponent,
-    CreateRecipesComponent
+    CreateRecipesComponent,
+    CreateProfileComponent,
+    DailyNoteComponent
   ],
   imports: [
     FormsModule,

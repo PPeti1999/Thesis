@@ -1,0 +1,89 @@
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="display-6">Edit Your Profile</h2>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="profileForm" (ngSubmit)="submit()" autocomplete="off" novalidate>
+
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-control" formControlName="age" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Height (cm)</label>
+            <input type="number" class="form-control" formControlName="height" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" class="form-control" formControlName="weight" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Goal Weight (kg)</label>
+            <input type="number" class="form-control" formControlName="goalWeight" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Body Fat (%)</label>
+            <input type="number" class="form-control" formControlName="bodyFat" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="isFemale">
+              <option [value]="false">Male</option>
+              <option [value]="true">Female</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Activity Level</label>
+            <select class="form-select" formControlName="activityMultiplier">
+              <option [value]="1.2">Sedentary (little to no exercise)</option>
+              <option [value]="1.375">Lightly active (1–3 days/week)</option>
+              <option [value]="1.55">Moderately active (3–5 days/week)</option>
+              <option [value]="1.725">Very active (6–7 days/week)</option>
+              <option [value]="1.9">Extremely active (daily intense exercise or physical job)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Goal (auto-detected)</label>
+            <input
+              type="text"
+              class="form-control bg-light border border-secondary"
+              [value]="
+                profileForm.get('goalType')?.value === 1
+                  ? 'Gain weight (Bulking)'
+                  : profileForm.get('goalType')?.value === 2
+                  ? 'Lose weight (Cutting)'
+                  : 'Maintain weight'
+              "
+              readonly
+              disabled
+            />
+            <input type="hidden" formControlName="goalType" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
+            Save Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

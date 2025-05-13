@@ -40,6 +40,13 @@ namespace HealthyAPI.Controllers
             if (result == null) return NotFound();
             return Ok(result);
         }
+        [HttpGet("daily-note/{dailyNoteId}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<MealEntryResponseDto>>> GetByDailyNote(string dailyNoteId)
+        {
+            var results = await _service.GetByDailyNoteId(dailyNoteId);
+            return Ok(results);
+        }
 
         [HttpPost]
         [Authorize]

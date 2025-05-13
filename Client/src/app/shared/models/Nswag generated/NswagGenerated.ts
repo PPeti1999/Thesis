@@ -1516,6 +1516,64 @@ export class MealEntriesClient {
         }
         return _observableOf(null as any);
     }
+
+    getByDailyNote(dailyNoteId: string): Observable<MealEntryResponseDto[]> {
+        let url_ = this.baseUrl + "/api/MealEntries/daily-note/{dailyNoteId}";
+        if (dailyNoteId === undefined || dailyNoteId === null)
+            throw new Error("The parameter 'dailyNoteId' must be defined.");
+        url_ = url_.replace("{dailyNoteId}", encodeURIComponent("" + dailyNoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetByDailyNote(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetByDailyNote(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MealEntryResponseDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MealEntryResponseDto[]>;
+        }));
+    }
+
+    protected processGetByDailyNote(response: HttpResponseBase): Observable<MealEntryResponseDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(MealEntryResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -3576,6 +3634,7 @@ export class UserProfileResponseDto implements IUserProfileResponseDto {
     photoData?: string | undefined;
     isFemale?: boolean;
     goalType?: number;
+    activityMultiplier?: number;
 
     constructor(data?: IUserProfileResponseDto) {
         if (data) {
@@ -3605,6 +3664,7 @@ export class UserProfileResponseDto implements IUserProfileResponseDto {
             this.photoData = _data["photoData"];
             this.isFemale = _data["isFemale"];
             this.goalType = _data["goalType"];
+            this.activityMultiplier = _data["activityMultiplier"];
         }
     }
 
@@ -3634,6 +3694,7 @@ export class UserProfileResponseDto implements IUserProfileResponseDto {
         data["photoData"] = this.photoData;
         data["isFemale"] = this.isFemale;
         data["goalType"] = this.goalType;
+        data["activityMultiplier"] = this.activityMultiplier;
         return data;
     }
 }
@@ -3656,6 +3717,7 @@ export interface IUserProfileResponseDto {
     photoData?: string | undefined;
     isFemale?: boolean;
     goalType?: number;
+    activityMultiplier?: number;
 }
 
 export class UpdateUserProfileDto implements IUpdateUserProfileDto {

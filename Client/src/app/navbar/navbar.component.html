@@ -51,7 +51,7 @@
                 </ul>
                 <div class="d-flex align-items-center" *ngIf="(_accountService.user$ | async) as user">
                     <a class="nav-link text-white me-2" [routerLink]="'/create-profile'" style="font-size: 1.5rem;" title="Profile">
-                        <i class="bi bi-person-circle"></i>
+                        <i class="bi bi-person-circle fs-4 text-white"></i>
                     </a>
                     <span class="text-white me-2">
                         Hi <span class="h5 text-warning">{{user.firstName | titlecase}}</span>

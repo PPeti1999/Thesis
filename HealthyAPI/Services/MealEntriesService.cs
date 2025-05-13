@@ -37,6 +37,25 @@ namespace HealthyAPI.Services
                 SumCalorie = e.SumCalorie
             });
         }
+        public async Task<IEnumerable<MealEntryResponseDto>> GetByDailyNoteId(string dailyNoteId)
+        {
+            var entries = await _context.MealEntries
+                .Where(e => e.DailyNoteID == dailyNoteId)
+                .Include(e => e.MealType)
+                .ToListAsync();
+
+            return entries.Select(e => new MealEntryResponseDto
+            {
+                MealEntryID = e.MealEntryID,
+                DailyNoteID = e.DailyNoteID,
+                MealTypeID = e.MealTypeID,
+                MealTypeName = e.MealType?.Name,
+                SumProtein = e.SumProtein,
+                SumCarb = e.SumCarb,
+                SumFat = e.SumFat,
+                SumCalorie = e.SumCalorie
+            });
+        }
 
         public async Task<MealEntryResponseDto?> GetById(string id)
         {

@@ -19,6 +19,8 @@
         public string? PhotoData { get; set; }
         public bool IsFemale { get; set; } // true = nő, false = férfi
         public int GoalType { get; set; } // 0 = megtartás, 1 = tömegnövelés, 2 = fogyás
+        public float ActivityMultiplier { get; set; } // ÚJ mező
+
 
     }
 }

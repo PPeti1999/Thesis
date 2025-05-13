@@ -1,1 +1,75 @@
-<p>daily-note works!</p>
+<div class="container py-4" *ngIf="dailyNote as note">
+  <!-- Summary Cards -->
+  <div class="row text-center mb-4">
+    <div class="col bg-light rounded shadow-sm py-3 mx-1">
+      <div class="text-muted small">Consumed</div>
+      <div class="h5 text-primary">{{ note.actualCalorie }} kcal</div>
+    </div>
+    <div class="col bg-light rounded shadow-sm py-3 mx-1">
+      <div class="text-muted small">Remaining</div>
+      <div class="h5 text-success">
+        {{ (note.dailyTargetCalorie ?? 0) - (note.actualCalorie ?? 0) }} kcal
+      </div>
+    </div>
+    <div class="col bg-light rounded shadow-sm py-3 mx-1">
+      <div class="text-muted small">Burned</div>
+      <div class="h5 text-warning">{{ burnedCalories }} kcal</div>
+    </div>
+  </div>
+
+  <!-- Macronutrients Progress -->
+  <div class="mb-4">
+    <div *ngFor="let nutrient of macroNutrients" class="mb-3">
+      <div class="d-flex justify-content-between small text-muted">
+        <span>{{ nutrient.label }}</span>
+        <span>{{ nutrient.actual }} / {{ nutrient.target }} g</span>
+      </div>
+      <div class="progress" style="height: 10px">
+        <div
+          class="progress-bar bg-info"
+          role="progressbar"
+          [style.width.%]="getPercentage(nutrient.actual, nutrient.target)"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meal Entries Section -->
+  <div class="mb-4">
+    <h5 class="mb-3">Meals</h5>
+    <div *ngFor="let meal of mealEntries" class="card mb-2 shadow-sm">
+      <div class="card-body">
+        <h6 class="card-title">{{ meal.mealTypeName }}</h6>
+        <p class="card-text small mb-0">Calories: {{ meal.sumCalorie }} kcal</p>
+        <p class="card-text small mb-0">Protein: {{ meal.sumProtein }} g</p>
+        <p class="card-text small mb-0">Carbs: {{ meal.sumCarb }} g</p>
+        <p class="card-text small mb-0">Fat: {{ meal.sumFat }} g</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activities Placeholder -->
+  <div class="mb-4">
+    <h5 class="mb-3">Activities</h5>
+    <!-- activity blocks will be rendered here later -->
+  </div>
+
+  <!-- Daily Weight Input -->
+  <div class="card shadow-sm p-3">
+    <h5 class="card-title">Daily Weight</h5>
+    <div class="form-group">
+      <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="updatedWeight"
+        placeholder="Weight (kg)"
+      />
+    </div>
+    <button
+      class="btn btn-primary btn-block mt-2"
+      (click)="updateWeight()"
+    >
+      Save
+    </button>
+  </div>
+</div>

@@ -1,4 +1,5 @@
-﻿using HealthyAPI.Models;
+﻿using HealthyAPI.DTOs.Food;
+using HealthyAPI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@ namespace HealthyAPI.Services
         Task<Food> AddFood(Food food);
         Task<Food> UpdateFood(string id, Food food);
         Task<bool> DeleteFood(string id);
+        Task<IEnumerable<FoodResponseDto>> SearchAsync(string query);
+
     }
 
 }

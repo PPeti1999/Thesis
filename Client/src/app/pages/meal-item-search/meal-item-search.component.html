@@ -1,0 +1,19 @@
+<input type="text" class="form-control mb-2" placeholder="Search foods or recipes..." [(ngModel)]="query" (input)="onInputChange(query)" />
+
+<div *ngIf="foodResults.length">
+  <h6>Foods</h6>
+  <ul class="list-group mb-2">
+    <li class="list-group-item" *ngFor="let food of foodResults" (click)="selectItem(food)" style="cursor: pointer;">
+      {{ food.title }} 
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="recipeResults.length">
+  <h6>Recipes</h6>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let recipe of recipeResults" (click)="selectItem(recipe)" style="cursor: pointer;">
+      {{ recipe.title }} 
+    </li>
+  </ul>
+</div>

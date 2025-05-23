@@ -19,6 +19,22 @@ namespace HealthyAPI.Services
             _context = context;
             _dailyNoteService = dailyNoteService;
         }
+        public async Task<IEnumerable<MealRecipeResponseDto>> GetByMealEntryIdAsync(string mealEntryId)
+        {
+            var entities = await _context.MealRecipes
+                .Where(mr => mr.MealEntryID == mealEntryId)
+                .Include(mr => mr.Recipe)
+                .ToListAsync();
+
+            return entities.Select(mr => new MealRecipeResponseDto
+            {
+                MealRecipeID = mr.MealRecipeID,
+                MealEntryID = mr.MealEntryID,
+                RecipeID = mr.RecipeID,
+                RecipeTitle = mr.Recipe?.Title,
+                Quantity = mr.Quantity
+            });
+        }
 
         public async Task<IEnumerable<MealRecipeResponseDto>> GetAll()
         {

@@ -5,6 +5,7 @@ using System;
 using HealthyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using HealthyAPI.DTOs.MealFoods;
 
 namespace HealthyAPI.Services
 {
@@ -17,6 +18,21 @@ namespace HealthyAPI.Services
         {
             _context = context;
             _dailyNoteService = dailyNoteService;
+        }
+        public async Task<IEnumerable<MealFoodResponseDto>> GetByMealEntryIdAsync(string mealEntryId)
+        {
+            var entities = await _context.MealFoods
+                .Where(mf => mf.MealEntryID == mealEntryId)
+                .Include(mf => mf.Food)
+                .ToListAsync();
+
+            return entities.Select(mf => new MealFoodResponseDto
+            {
+                MealFoodID = mf.MealFoodID,
+                MealEntryID = mf.MealEntryID,
+                FoodID = mf.FoodID,
+                Quantity = mf.Quantity
+            });
         }
 
         public async Task<IEnumerable<MealFoods>> GetAllMealFoods()

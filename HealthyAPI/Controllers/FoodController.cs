@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using HealthyAPI.Services;
 using System.Linq;
 using HealthyAPI.DTOs.Food;
+using HealthyAPI.DTOs.Recipe;
 
 namespace HealthyAPI.Controllers
 {
@@ -25,7 +26,15 @@ namespace HealthyAPI.Controllers
             _foodService = foodService;
             _photoService = photoService;
         }
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> Search([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("Query is required");
 
+            var results = await _foodService.SearchAsync(query);
+            return Ok(results);
+        }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FoodResponseDto>>> GetAllFoods()
         {

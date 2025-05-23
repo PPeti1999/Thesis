@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
+using HealthyAPI.DTOs.Food;
+using System.Linq;
 
 namespace HealthyAPI.Services
 {
@@ -15,7 +17,38 @@ namespace HealthyAPI.Services
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-
+        public async Task<IEnumerable<FoodResponseDto>> SearchAsync(string query)
+        {
+            return await _context.Food
+                .Where(f => f.Title.ToLower().Contains(query.ToLower()))
+                .Select(f => new FoodResponseDto
+                {
+                    FoodID = f.FoodID,
+                    Title = f.Title,
+                    Protein = f.Protein,
+                    Carb = f.Carb,
+                    Fat = f.Fat,
+                    Calorie = f.Calorie,
+                    Gram = f.Gram,
+                    CreatedAt = f.CreatedAt
+                }).ToListAsync();
+        }
+        public async Task<FoodResponseDto?> GetByIdAsync(string id)
+        {
+            var food = await _context.Food.FindAsync(id);
+            if (food == null) return null;
+            return new FoodResponseDto
+            {
+                FoodID = food.FoodID,
+                Title = food.Title,
+                Protein = food.Protein,
+                Carb = food.Carb,
+                Fat = food.Fat,
+                Calorie = food.Calorie,
+                Gram = food.Gram,
+                CreatedAt = food.CreatedAt
+            };
+        }
         public async Task<IEnumerable<Food>> ListFoods()
         {
             return await _context.Food

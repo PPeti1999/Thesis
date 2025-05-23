@@ -24,6 +24,7 @@ import { CreateActivityCatalogComponent } from './pages/create-activity-catalog/
 import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.component';
 import { CreateProfileComponent } from './pages/create-profile/create-profile.component';
 import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
+import { MealItemSearchComponent } from './pages/meal-item-search/meal-item-search.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
     CreateActivityCatalogComponent,
     CreateRecipesComponent,
     CreateProfileComponent,
-    DailyNoteComponent
+    DailyNoteComponent,
+    MealItemSearchComponent
   ],
   imports: [
     FormsModule,
@@ -49,7 +51,8 @@ import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
     HttpClientModule,
     ModalModule.forRoot(),
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    FormsModule,
   ],
   providers: [ {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor,multi:true},
     { provide: API_BASE_URL, useValue: environment.appUrl } 

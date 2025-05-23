@@ -967,6 +967,63 @@ export class FoodClient {
         this.baseUrl = baseUrl ?? "http://localhost:5059";
     }
 
+    search(query: string | null | undefined): Observable<RecipeResponseDto[]> {
+        let url_ = this.baseUrl + "/api/Food/search?";
+        if (query !== undefined && query !== null)
+            url_ += "query=" + encodeURIComponent("" + query) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<RecipeResponseDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<RecipeResponseDto[]>;
+        }));
+    }
+
+    protected processSearch(response: HttpResponseBase): Observable<RecipeResponseDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RecipeResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     getAllFoods(): Observable<FoodResponseDto[]> {
         let url_ = this.baseUrl + "/api/Food";
         url_ = url_.replace(/[?&]$/, "");
@@ -1589,6 +1646,64 @@ export class MealFoodsClient {
         this.baseUrl = baseUrl ?? "http://localhost:5059";
     }
 
+    getByMealEntry(mealEntryId: string): Observable<MealFoodResponseDto[]> {
+        let url_ = this.baseUrl + "/api/MealFoods/by-meal-entry/{mealEntryId}";
+        if (mealEntryId === undefined || mealEntryId === null)
+            throw new Error("The parameter 'mealEntryId' must be defined.");
+        url_ = url_.replace("{mealEntryId}", encodeURIComponent("" + mealEntryId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetByMealEntry(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetByMealEntry(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MealFoodResponseDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MealFoodResponseDto[]>;
+        }));
+    }
+
+    protected processGetByMealEntry(response: HttpResponseBase): Observable<MealFoodResponseDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(MealFoodResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     getAll(): Observable<MealFoodResponseDto[]> {
         let url_ = this.baseUrl + "/api/MealFoods";
         url_ = url_.replace(/[?&]$/, "");
@@ -1869,6 +1984,64 @@ export class MealRecipesClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ?? "http://localhost:5059";
+    }
+
+    getByMealEntry(mealEntryId: string): Observable<MealRecipeResponseDto[]> {
+        let url_ = this.baseUrl + "/api/MealRecipes/by-meal-entry/{mealEntryId}";
+        if (mealEntryId === undefined || mealEntryId === null)
+            throw new Error("The parameter 'mealEntryId' must be defined.");
+        url_ = url_.replace("{mealEntryId}", encodeURIComponent("" + mealEntryId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetByMealEntry(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetByMealEntry(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MealRecipeResponseDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MealRecipeResponseDto[]>;
+        }));
+    }
+
+    protected processGetByMealEntry(response: HttpResponseBase): Observable<MealRecipeResponseDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(MealRecipeResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
     }
 
     getAll(): Observable<MealRecipeResponseDto[]> {
@@ -3065,6 +3238,63 @@ export class RecipesClient {
         this.baseUrl = baseUrl ?? "http://localhost:5059";
     }
 
+    search(query: string | null | undefined): Observable<RecipeResponseDto[]> {
+        let url_ = this.baseUrl + "/api/Recipes/search?";
+        if (query !== undefined && query !== null)
+            url_ += "query=" + encodeURIComponent("" + query) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<RecipeResponseDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<RecipeResponseDto[]>;
+        }));
+    }
+
+    protected processSearch(response: HttpResponseBase): Observable<RecipeResponseDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RecipeResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     getAll(): Observable<RecipeResponseDto[]> {
         let url_ = this.baseUrl + "/api/Recipes";
         url_ = url_.replace(/[?&]$/, "");
@@ -4224,6 +4454,126 @@ export interface IWeightUpdateDto {
     weight?: number;
 }
 
+export class RecipeResponseDto implements IRecipeResponseDto {
+    recipeID?: string | undefined;
+    title?: string | undefined;
+    description?: string | undefined;
+    sumProtein?: number;
+    sumCarb?: number;
+    sumFat?: number;
+    sumCalorie?: number;
+    createdAt?: Date;
+    ingredients?: RecipeIngredientDetailDto[] | undefined;
+
+    constructor(data?: IRecipeResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.recipeID = _data["recipeID"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.sumProtein = _data["sumProtein"];
+            this.sumCarb = _data["sumCarb"];
+            this.sumFat = _data["sumFat"];
+            this.sumCalorie = _data["sumCalorie"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            if (Array.isArray(_data["ingredients"])) {
+                this.ingredients = [] as any;
+                for (let item of _data["ingredients"])
+                    this.ingredients!.push(RecipeIngredientDetailDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): RecipeResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RecipeResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["recipeID"] = this.recipeID;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["sumProtein"] = this.sumProtein;
+        data["sumCarb"] = this.sumCarb;
+        data["sumFat"] = this.sumFat;
+        data["sumCalorie"] = this.sumCalorie;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        if (Array.isArray(this.ingredients)) {
+            data["ingredients"] = [];
+            for (let item of this.ingredients)
+                data["ingredients"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IRecipeResponseDto {
+    recipeID?: string | undefined;
+    title?: string | undefined;
+    description?: string | undefined;
+    sumProtein?: number;
+    sumCarb?: number;
+    sumFat?: number;
+    sumCalorie?: number;
+    createdAt?: Date;
+    ingredients?: RecipeIngredientDetailDto[] | undefined;
+}
+
+export class RecipeIngredientDetailDto implements IRecipeIngredientDetailDto {
+    foodID?: string | undefined;
+    foodName?: string | undefined;
+    quantity?: number;
+
+    constructor(data?: IRecipeIngredientDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.foodID = _data["foodID"];
+            this.foodName = _data["foodName"];
+            this.quantity = _data["quantity"];
+        }
+    }
+
+    static fromJS(data: any): RecipeIngredientDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RecipeIngredientDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["foodID"] = this.foodID;
+        data["foodName"] = this.foodName;
+        data["quantity"] = this.quantity;
+        return data;
+    }
+}
+
+export interface IRecipeIngredientDetailDto {
+    foodID?: string | undefined;
+    foodName?: string | undefined;
+    quantity?: number;
+}
+
 export class FoodResponseDto implements IFoodResponseDto {
     foodID?: string | undefined;
     title?: string | undefined;
@@ -4924,126 +5274,6 @@ export class RecipeFoodCreateDto implements IRecipeFoodCreateDto {
 export interface IRecipeFoodCreateDto {
     recipeID?: string | undefined;
     foodID?: string | undefined;
-    quantity?: number;
-}
-
-export class RecipeResponseDto implements IRecipeResponseDto {
-    recipeID?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    sumProtein?: number;
-    sumCarb?: number;
-    sumFat?: number;
-    sumCalorie?: number;
-    createdAt?: Date;
-    ingredients?: RecipeIngredientDetailDto[] | undefined;
-
-    constructor(data?: IRecipeResponseDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.recipeID = _data["recipeID"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.sumProtein = _data["sumProtein"];
-            this.sumCarb = _data["sumCarb"];
-            this.sumFat = _data["sumFat"];
-            this.sumCalorie = _data["sumCalorie"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
-            if (Array.isArray(_data["ingredients"])) {
-                this.ingredients = [] as any;
-                for (let item of _data["ingredients"])
-                    this.ingredients!.push(RecipeIngredientDetailDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): RecipeResponseDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new RecipeResponseDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["recipeID"] = this.recipeID;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["sumProtein"] = this.sumProtein;
-        data["sumCarb"] = this.sumCarb;
-        data["sumFat"] = this.sumFat;
-        data["sumCalorie"] = this.sumCalorie;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
-        if (Array.isArray(this.ingredients)) {
-            data["ingredients"] = [];
-            for (let item of this.ingredients)
-                data["ingredients"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IRecipeResponseDto {
-    recipeID?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    sumProtein?: number;
-    sumCarb?: number;
-    sumFat?: number;
-    sumCalorie?: number;
-    createdAt?: Date;
-    ingredients?: RecipeIngredientDetailDto[] | undefined;
-}
-
-export class RecipeIngredientDetailDto implements IRecipeIngredientDetailDto {
-    foodID?: string | undefined;
-    foodName?: string | undefined;
-    quantity?: number;
-
-    constructor(data?: IRecipeIngredientDetailDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.foodID = _data["foodID"];
-            this.foodName = _data["foodName"];
-            this.quantity = _data["quantity"];
-        }
-    }
-
-    static fromJS(data: any): RecipeIngredientDetailDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new RecipeIngredientDetailDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["foodID"] = this.foodID;
-        data["foodName"] = this.foodName;
-        data["quantity"] = this.quantity;
-        return data;
-    }
-}
-
-export interface IRecipeIngredientDetailDto {
-    foodID?: string | undefined;
-    foodName?: string | undefined;
     quantity?: number;
 }
 

@@ -21,6 +21,13 @@ namespace HealthyAPI.Controllers
         {
             _service = service;
         }
+        [HttpGet("by-meal-entry/{mealEntryId}")]
+        public async Task<ActionResult<IEnumerable<MealFoodResponseDto>>> GetByMealEntry(string mealEntryId)
+        {
+            var result = await _service.GetByMealEntryIdAsync(mealEntryId);
+            return Ok(result);
+        }
+
 
         [HttpGet]
         [Authorize]

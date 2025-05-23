@@ -23,6 +23,15 @@ namespace HealthyAPI.Controllers
         {
             _service = service;
         }
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> Search([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest("Query is required");
+
+            var results = await _service.SearchAsync(query);
+            return Ok(results);
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> GetAll()

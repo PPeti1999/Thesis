@@ -37,7 +37,8 @@
   <!-- Meal Entries Section -->
   <div class="mb-4">
     <h5 class="mb-3">Meals</h5>
-    <div *ngFor="let meal of mealEntries" class="card mb-2 shadow-sm">
+    <div *ngFor="let meal of mealEntries" class="card mb-2 shadow-sm" (click)="openMealDetails(meal)" style="cursor: pointer;">
+
       <div class="card-body">
         <h6 class="card-title">{{ meal.mealTypeName }}</h6>
         <p class="card-text small mb-0">Calories: {{ meal.sumCalorie }} kcal</p>
@@ -128,6 +129,69 @@
         <button type="button" class="btn btn-primary" (click)="saveActivity()">
           {{ selectedActivityId && isEditMode ? 'Update Activity' : 'Add Activity' }}
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="mealDetailsModal" tabindex="-1" aria-labelledby="mealDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="selectedMeal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mealDetailsModalLabel">{{ selectedMeal?.mealTypeName ?? 'Meal' }} Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedMeal">
+          <div class="mb-3">
+            <strong>Calories:</strong> {{ selectedMeal.sumCalorie }} kcal<br>
+            <strong>Protein:</strong> {{ selectedMeal.sumProtein }} g<br>
+            <strong>Carbs:</strong> {{ selectedMeal.sumCarb }} g<br>
+            <strong>Fat:</strong> {{ selectedMeal.sumFat }} g
+          </div>
+
+          <h6>Foods</h6>
+          <ul class="list-group mb-3">
+            <li *ngFor="let food of mealFoods" class="list-group-item d-flex justify-content-between align-items-center">
+              {{ food.foodID && foodLookup[food.foodID]?.title ?? food.foodID }}
+
+              <div>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="editMealFood(food)">Edit</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteMealFood(food.mealFoodID)">Delete</button>
+              </div>
+            </li>
+          </ul>
+
+          <h6>Recipes</h6>
+          <ul class="list-group mb-3">
+            <li *ngFor="let recipe of mealRecipes" class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ recipe.recipeTitle }} ({{ recipe.quantity }} portion)</span>
+              <div>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="editMealRecipe(recipe)">Edit</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteMealRecipe(recipe.mealRecipeID)">Delete</button>
+              </div>
+            </li>
+          </ul>
+
+          <button class="btn btn-outline-success w-100" (click)="openAddMealItemModal()">+ Add Food or Recipe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Meal Item Search Modal -->
+<div class="modal fade" id="mealItemSearchModal" tabindex="-1" aria-labelledby="mealItemSearchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mealItemSearchModalLabel">Add Food or Recipe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModals()"></button>
+      </div>
+      <div class="modal-body">
+        <app-meal-item-search
+          #searchComponent
+          (itemSelected)="handleMealItemSelected($event)">
+        </app-meal-item-search>
       </div>
     </div>
   </div>

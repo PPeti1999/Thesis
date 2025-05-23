@@ -11,5 +11,7 @@ namespace HealthyAPI.Services
         Task<RecipeResponseDto> Create(RecipeCreateDto dto);
         Task<RecipeResponseDto?> Update(string id, RecipeUpdateDto dto);
         Task<bool> Delete(string id);
+        Task<IEnumerable<RecipeResponseDto>> SearchAsync(string query);
+
     }
 }

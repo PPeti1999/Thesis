@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, DailyNoteClient, DailyNoteResponseDto, MealEntriesClient, MealEntryResponseDto, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, DailyNoteClient, DailyNoteResponseDto, FoodClient, FoodResponseDto, MealEntriesClient, MealEntryResponseDto, MealFoodResponseDto, MealFoodsClient, MealRecipeResponseDto, MealRecipesClient, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
-
+import { FormsModule } from '@angular/forms';
+import { MealItemSearchComponent } from '../meal-item-search/meal-item-search.component';
 
 @Component({
   selector: 'app-daily-note',
@@ -23,7 +24,10 @@ isEditMode: boolean = false;
   selectedActivityId: string = '';
   selectedDuration: number = 0;
   durationModal!: bootstrap.Modal;
-
+  @ViewChild(MealItemSearchComponent) searchComponent?: MealItemSearchComponent;
+  selectedMeal!: MealEntryResponseDto;
+  mealFoods: MealFoodResponseDto[] = [];
+  mealRecipes: MealRecipeResponseDto[] = [];
   macroNutrients: {
     label: string;
     actual: number;
@@ -37,7 +41,10 @@ isEditMode: boolean = false;
     private dailyNoteClient: DailyNoteClient,
     private mealEntriesClient: MealEntriesClient,
     private userActivityClient: UserActivityClient,
-    private activityCatalogClient: ActivityCatalogClient
+    private activityCatalogClient: ActivityCatalogClient,
+    private mealFoodsClient: MealFoodsClient,
+    private mealRecipesClient: MealRecipesClient,
+    private foodClient: FoodClient // 💡 EZ HIÁNYZOTT
   ) {}
 
   ngOnInit(): void {
@@ -68,11 +75,90 @@ isEditMode: boolean = false;
   loadMealEntries(): void {
     if (!this.dailyNote?.dailyNoteID) return;
     this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID).subscribe({
-      next: entries => {
-        this.mealEntries = entries;
-      },
+      next: entries => this.mealEntries = entries,
       error: err => console.error('Error loading meal entries:', err)
     });
+  }
+
+  openMealDetails(meal: MealEntryResponseDto): void {
+    this.selectedMeal = meal;
+    if (meal.mealEntryID) {
+      this.loadMealFoods(meal.mealEntryID);
+      this.loadMealRecipes(meal.mealEntryID);
+    }
+    
+
+    const modalElement = document.getElementById('mealDetailsModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  foodLookup: { [key: string]: FoodResponseDto } = {};
+
+  loadMealFoods(mealEntryId: string): void {
+    this.mealFoodsClient.getByMealEntry(mealEntryId).subscribe({
+      next: foods => {
+        this.mealFoods = foods;
+  
+        for (const food of foods) {
+          if (food.foodID && !this.foodLookup[food.foodID]){
+            this.foodClient.getFood(food.foodID).subscribe(result => {
+              this.foodLookup[food.foodID!] = result; // biztosan string itt
+            });
+          }
+        }
+      },
+      error: err => console.error('Error loading meal foods:', err)
+    });
+  }
+  
+
+  loadMealRecipes(mealEntryId: string): void {
+    this.mealRecipesClient.getByMealEntry(mealEntryId).subscribe({
+      next: recipes => this.mealRecipes = recipes,
+      error: err => console.error('Error loading meal recipes:', err)
+    });
+  }
+
+  editMealFood(food: MealFoodResponseDto): void {
+    // TODO: implement modal editor
+  }
+
+  deleteMealFood(id?: string): void {
+    if (!id) return;
+    this.mealFoodsClient.delete(id).subscribe({
+      next: () => this.openMealDetails(this.selectedMeal),
+      error: err => console.error('Error deleting meal food:', err)
+    });
+  }
+
+  editMealRecipe(recipe: MealRecipeResponseDto): void {
+    // TODO: implement modal editor
+  }
+
+  deleteMealRecipe(id?: string): void {
+    if (!id) return;
+    this.mealRecipesClient.delete(id).subscribe({
+      next: () => this.openMealDetails(this.selectedMeal),
+      error: err => console.error('Error deleting meal recipe:', err)
+    });
+  }
+
+
+  openAddMealItemModal(): void {
+    bootstrap.Modal.getInstance(document.getElementById('mealDetailsModal')!)?.hide();
+    const modalElement = document.getElementById('mealItemSearchModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+  handleMealItemSelected(item: any): void {
+    console.log('Selected item:', item);
+    // Itt jöhet egy új modal pl. mennyiség megadására
+    this.closeModals();
   }
 
   loadUserActivities(): void {
@@ -176,8 +262,25 @@ isEditMode: boolean = false;
   }
   
   closeModals(): void {
+    const searchModalEl = document.getElementById('mealItemSearchModal');
+    const wasSearchOpen = searchModalEl?.classList.contains('show');
+  
+    // bezárunk minden modált
+    bootstrap.Modal.getInstance(searchModalEl!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('activityCatalogModal')!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('durationModal')!)?.hide();
+  
+    // kereső mező és találatok törlése
+    this.searchComponent?.clear();
+  
+    // újranyitjuk a mealDetailsModal-t ha a keresőből jöttünk
+    if (wasSearchOpen && this.selectedMeal) {
+      const detailsEl = document.getElementById('mealDetailsModal');
+      if (detailsEl) {
+        const modal = new bootstrap.Modal(detailsEl);
+        modal.show();
+      }
+    }
   }
   
   deleteActivity(id?: string): void {

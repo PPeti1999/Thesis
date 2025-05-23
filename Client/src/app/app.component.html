@@ -1,7 +1,9 @@
-<body>
+<body style="margin:0; min-height: 100vh; display: flex; flex-direction: column;">
   <app-navbar></app-navbar>
-  <div class ="container mt-5" style="min-height: 500px;">
-  <router-outlet></router-outlet>
+  
+  <div class="container" style="flex: 1;">
+    <router-outlet></router-outlet>
   </div>
+
   <app-footer></app-footer>
 </body>

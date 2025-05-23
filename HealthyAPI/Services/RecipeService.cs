@@ -17,6 +17,24 @@ namespace HealthyAPI.Services
         {
             _context = context;
         }
+        public async Task<IEnumerable<RecipeResponseDto>> SearchAsync(string query)
+        {
+            return await _context.Recipe
+                .Where(r => r.Title.ToLower().Contains(query.ToLower()))
+                .Select(r => new RecipeResponseDto
+                {
+                    RecipeID = r.RecipeID,
+                    Title = r.Title,
+                    Description = r.Description,
+                    SumProtein = r.SumProtein,
+                    SumCarb = r.SumCarb,
+                    SumFat = r.SumFat,
+                    SumCalorie = r.SumCalorie,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToListAsync();
+        }
+
 
         public async Task<IEnumerable<RecipeResponseDto>> GetAll()
         {
@@ -67,9 +85,10 @@ namespace HealthyAPI.Services
                     Quantity = item.Quantity
                 });
             }
-
-            await _context.SaveChangesAsync();
             await RecalculateNutrition(recipe);
+            _context.Recipe.Update(recipe); // EZ FONTOS!
+            await _context.SaveChangesAsync(); // mentés
+
             return await MapToDto(recipe);
         }
 

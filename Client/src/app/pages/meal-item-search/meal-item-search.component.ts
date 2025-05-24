@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FoodClient, FoodResponseDto, RecipeResponseDto, RecipesClient } from '../../shared/models/Nswag generated/NswagGenerated';
 import { debounceTime, Subject } from 'rxjs';
+import { OnChanges, SimpleChanges } from '@angular/core';
 @Component({
   selector: 'app-meal-item-search',
   standalone: false,
@@ -21,7 +22,8 @@ clear(): void {
 }
   private searchSubject = new Subject<string>();
 
-  @Output() itemSelected = new EventEmitter<FoodResponseDto | RecipeResponseDto>();
+  @Output() itemSelected = new EventEmitter<{ type: 'food' | 'recipe', item: FoodResponseDto | RecipeResponseDto }>();
+
 
   constructor(private foodClient: FoodClient, private recipeClient: RecipesClient) {
     this.searchSubject.pipe(debounceTime(300)).subscribe(q => this.search(q));
@@ -42,11 +44,18 @@ clear(): void {
       return;
     }
 
-    this.foodClient.search(query).subscribe(res => this.foodResults = res);
-    this.recipeClient.search(query).subscribe(res => this.recipeResults = res);
+    this.foodClient.search(query).subscribe(res => {
+      this.foodResults = res;
+      console.log('FOOD RESULTS:', res); // 👈 itt listázzuk az étel találatokat
+    });
+  
+    this.recipeClient.search(query).subscribe(res => {
+      this.recipeResults = res;
+      console.log('RECIPE RESULTS:', res); // 👈 itt a recept találatok
+    });
   }
 
-  selectItem(item: FoodResponseDto | RecipeResponseDto) {
+ /* selectItem(item: FoodResponseDto | RecipeResponseDto) {
     this.itemSelected.emit(item);
-  }
+  }*/
 }

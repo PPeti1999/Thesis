@@ -27,7 +27,7 @@ namespace HealthyAPI.Controllers
             _photoService = photoService;
         }
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<RecipeResponseDto>>> Search([FromQuery] string query)
+        public async Task<ActionResult<IEnumerable<FoodResponseDto>>> Search([FromQuery] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("Query is required");

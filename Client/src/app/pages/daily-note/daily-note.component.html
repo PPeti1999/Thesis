@@ -196,3 +196,17 @@
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="foodQuantityModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <app-food-quantity-modal
+        [food]="selectedFood"
+        [mealEntryId]="selectedMeal?.mealEntryID"
+        (added)="onFoodAdded($event)">
+      </app-food-quantity-modal>
+    </div>
+  </div>
+</div>
+

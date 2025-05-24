@@ -52,7 +52,7 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<MealRecipeResponseDto>> Create(MealRecipeCreateDto dto)
         {
             var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.MealRecipeID }, created);
+            return Ok(created);
         }
 
         [HttpPut("{id}")]

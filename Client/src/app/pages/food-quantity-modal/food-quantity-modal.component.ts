@@ -114,21 +114,20 @@ console.log('protein: ', this.protein,
     this.quantity = 100;
   }
   
+
   private closeModal(): void {
     const modalEl = document.getElementById('foodQuantityModal');
     if (modalEl) {
-      const modalInstance = bootstrap.Modal.getInstance(modalEl);
-      modalInstance?.hide();
-  
-      // 💣 biztos ami biztos: töröljük a háttér overlay-t
-      setTimeout(() => {
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('padding-right'); // ha volt scrollbar
-      }, 300); // Bootstrap animáció után
+      const instance = bootstrap.Modal.getInstance(modalEl);
+      bootstrap.Modal.getInstance(modalEl)?.hide();
+      instance?.hide();
+      // 💡 Biztonsági törlés: backdrop eltávolítása
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
     }
   }
-  
   
   
 

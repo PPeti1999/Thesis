@@ -36,7 +36,17 @@ clear(): void {
     this.query = value;
     this.searchSubject.next(value);
   }
+selectFood(food: FoodResponseDto): void {
+  console.log('[SELECT] Food:', food);
+  this.itemSelected.emit({ type: 'food', item: food });
+}
 
+selectRecipe(recipeId: string): void {
+  this.recipeClient.getById(recipeId).subscribe(fullRecipe => {
+    console.log('[SELECT] Recipe (full):', fullRecipe);
+    this.itemSelected.emit({ type: 'recipe', item: fullRecipe });
+  });
+}
   search(query: string) {
     if (!query.trim()) {
       this.foodResults = [];

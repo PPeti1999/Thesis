@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, DailyNoteClient, DailyNoteResponseDto, FoodClient, FoodResponseDto, MealEntriesClient, MealEntryResponseDto, MealFoodResponseDto, MealFoodsClient, MealRecipeResponseDto, MealRecipesClient, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
+import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, DailyNoteClient, DailyNoteResponseDto, FoodClient, FoodResponseDto, MealEntriesClient, MealEntryResponseDto, MealFoodResponseDto, MealFoodsClient, MealRecipeResponseDto, MealRecipesClient, RecipeResponseDto, RecipesClient, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { FormsModule } from '@angular/forms';
@@ -46,9 +46,94 @@ export class DailyNoteComponent implements OnInit{
     private activityCatalogClient: ActivityCatalogClient,
     private mealFoodsClient: MealFoodsClient,
     private mealRecipesClient: MealRecipesClient,
-    private foodClient: FoodClient // 💡 EZ HIÁNYZOTT
+    private foodClient: FoodClient, // 💡 EZ HIÁNYZOTT,
+    private recipeClient: RecipesClient
   ) {}
-
+  selectedRecipe?: RecipeResponseDto;
+  editingMealRecipeId?: string;
+  recipeInitialQuantity: number | undefined;
+  @Input() initialQuantity?: undefined;
+  editMealRecipe(recipe: MealRecipeResponseDto): void {
+    if (!recipe.recipeID) return;
+  
+    this.recipeClient.getById(recipe.recipeID).subscribe(fullRecipe => {
+      this.selectedRecipe = fullRecipe;
+      this.editingMealRecipeId = recipe.mealRecipeID;
+      this.recipeInitialQuantity = recipe.quantity; // 💡 << Ezt add hozzá
+  
+      const modalEl = document.getElementById('recipeQuantityModal');
+      if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      }
+    });
+  }
+  onRecipeAdded(recipe: MealRecipeResponseDto): void {
+    console.log('[ADDED] Recipe added/updated:', recipe);
+  
+    const mealId = this.selectedMeal.mealEntryID!;
+  
+    // 1️⃣ Frissítjük a receptlistát
+    this.loadMealRecipes(mealId);
+  
+    // 2️⃣ Újra lekérjük a recept teljes adatát
+    if (recipe.recipeID) {
+      this.recipeClient.getById(recipe.recipeID).subscribe(fullRecipe => {
+        console.log('[FULL RECIPE] Lekért recept:', fullRecipe);
+  
+        // 3️⃣ Kikeressük a frissített mealEntry-t
+        this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID!).subscribe({
+          next: entries => {
+            this.mealEntries = entries;
+            const updated = entries.find(e => e.mealEntryID === mealId);
+            if (updated) {
+              this.selectedMeal = updated;
+  
+              const modalEl = document.getElementById('mealDetailsModal');
+              if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+              }
+            }
+          }
+        });
+  
+        this.loadDailyNote(); // 🟢 Frissül a fő összesítő is
+      });
+    }
+  
+    this.editingMealRecipeId = undefined;
+  }
+  
+  
+  onFoodAdded(food: MealFoodResponseDto) {
+    console.log('[ADDED] Food added/updated:', food);
+  
+    const mealId = this.selectedMeal.mealEntryID!;
+    this.loadMealFoods(mealId);         // frissíti a foods listát
+    this.loadMealRecipes(mealId);       // ha esetleg recept is van
+    
+    // újra lekérjük a meal entry-t és beállítjuk
+    this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID!).subscribe({
+      next: entries => {
+        this.mealEntries = entries;
+        const updated = entries.find(e => e.mealEntryID === mealId);
+        if (updated) {
+          this.selectedMeal = updated;
+  
+          // 💡 Modal újratöltés: friss adatokkal
+          const modalEl = document.getElementById('mealDetailsModal');
+          if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+        }
+      }
+    });
+  
+    this.loadDailyNote(); // fő makró értékek is frissülnek (kártyák)
+    this.editingMealFoodId = undefined;
+  }
   ngOnInit(): void {
     this.userClient.getProfile().subscribe(profile => {
       const missingProfile = !profile.age || !profile.height || !profile.weight;
@@ -93,6 +178,20 @@ export class DailyNoteComponent implements OnInit{
     }
   
     // 🔁 Végén hívjuk meg a closeModals-t, hogy biztosan ne nyissa vissza a mealDetailsModal-t
+    if (event.type === 'recipe') {
+      this.selectedRecipe = undefined;
+    
+      setTimeout(() => {
+        this.selectedRecipe = event.item as RecipeResponseDto;
+    
+        const modalEl = document.getElementById('recipeQuantityModal');
+        if (modalEl) {
+          const modal = new bootstrap.Modal(modalEl);
+          modal.show();
+        }
+      }, 300);
+    }
+    
     this.closeModals();
   }
   
@@ -106,34 +205,7 @@ export class DailyNoteComponent implements OnInit{
   
   
   
-    onFoodAdded(food: MealFoodResponseDto) {
-      console.log('[ADDED] Food added/updated:', food);
-    
-      const mealId = this.selectedMeal.mealEntryID!;
-      this.loadMealFoods(mealId);         // frissíti a foods listát
-      this.loadMealRecipes(mealId);       // ha esetleg recept is van
-      
-      // újra lekérjük a meal entry-t és beállítjuk
-      this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID!).subscribe({
-        next: entries => {
-          this.mealEntries = entries;
-          const updated = entries.find(e => e.mealEntryID === mealId);
-          if (updated) {
-            this.selectedMeal = updated;
-    
-            // 💡 Modal újratöltés: friss adatokkal
-            const modalEl = document.getElementById('mealDetailsModal');
-            if (modalEl) {
-              const modal = new bootstrap.Modal(modalEl);
-              modal.show();
-            }
-          }
-        }
-      });
-    
-      this.loadDailyNote(); // fő makró értékek is frissülnek (kártyák)
-      this.editingMealFoodId = undefined;
-    }
+
     
     
     
@@ -215,19 +287,26 @@ this.selectedFood = patched;
   deleteMealFood(id?: string): void {
     if (!id) return;
     this.mealFoodsClient.delete(id).subscribe({
-      next: () => this.openMealDetails(this.selectedMeal),
+      next: () => {
+        this.loadMealFoods(this.selectedMeal.mealEntryID!);
+        this.loadDailyNote(); // 💡 frissíti az összesítőket is
+      },
       error: err => console.error('Error deleting meal food:', err)
     });
+    
   }
 
-  editMealRecipe(recipe: MealRecipeResponseDto): void {
-    // TODO: implement modal editor
-  }
+ 
+  
+  
 
   deleteMealRecipe(id?: string): void {
     if (!id) return;
     this.mealRecipesClient.delete(id).subscribe({
-      next: () => this.openMealDetails(this.selectedMeal),
+      next: () => {
+        this.loadMealRecipes(this.selectedMeal.mealEntryID!);
+        this.loadDailyNote(); // 💡 frissíti az összesítőket is
+      },
       error: err => console.error('Error deleting meal recipe:', err)
     });
   }
@@ -351,8 +430,8 @@ this.selectedFood = patched;
     bootstrap.Modal.getInstance(document.getElementById('durationModal')!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('mealDetailsModal')!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('foodQuantityModal')!)?.hide();
+
     bootstrap.Modal.getInstance(document.getElementById('recipeQuantityModal')!)?.hide();
-  
     this.searchComponent?.clear();
   
     // 💡 biztos ami biztos: töröljük az árnyékot is

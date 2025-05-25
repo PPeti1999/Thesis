@@ -211,3 +211,19 @@
     </div>
   </div>
 </div>
+<!-- Recipe Quantity Modal -->
+<div class="modal fade" id="recipeQuantityModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <app-recipe-quantity-modal
+      [recipe]="selectedRecipe"
+      [mealEntryId]="selectedMeal?.mealEntryID"
+      [editingMealRecipeId]="editingMealRecipeId"
+      [initialQuantity]="recipeInitialQuantity ?? 0"
+      (added)="onRecipeAdded($event)">
+    </app-recipe-quantity-modal>  
+    
+    </div>
+  </div>
+</div>
+

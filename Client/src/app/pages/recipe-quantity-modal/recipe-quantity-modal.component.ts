@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MealRecipeCreateDto, MealRecipeResponseDto, MealRecipesClient, RecipeResponseDto } from '../../shared/models/Nswag generated/NswagGenerated';
-import bootstrap from 'bootstrap';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { MealRecipeCreateDto, MealRecipeResponseDto, MealRecipesClient, RecipeIngredientDetailDto, RecipeResponseDto, RecipesClient } from '../../shared/models/Nswag generated/NswagGenerated';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-recipe-quantity-modal',
@@ -8,60 +8,103 @@ import bootstrap from 'bootstrap';
   templateUrl: './recipe-quantity-modal.component.html',
   styleUrl: './recipe-quantity-modal.component.css'
 })
-export class RecipeQuantityModalComponent implements OnInit {
+export class RecipeQuantityModalComponent implements OnInit,OnChanges {
   @Input() recipe?: RecipeResponseDto;
-  @Input() mealEntryId!: string;
+  @Input() mealEntryId!: string | undefined;
   @Input() editingMealRecipeId?: string;
   @Output() added = new EventEmitter<MealRecipeResponseDto>();
-
+  @Input() initialQuantity: number = 1; // 🍽️ alapértelmezett 1
   quantity: number = 1;
   protein = 0;
   carb = 0;
   fat = 0;
   calorie = 0;
 
-  constructor(private mealRecipesClient: MealRecipesClient, private cdr: ChangeDetectorRef) {}
+  ingredients: RecipeIngredientDetailDto[] = [];
+
+  constructor(private recipesClient: RecipesClient,
+              private mealRecipesClient: MealRecipesClient,
+              private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     if (!this.recipe) return;
-
-    this.quantity = 1;
+  
+    // ✅ Ha edit módban vagyunk, állítsuk be a meglévő adagot
+    if (this.editingMealRecipeId) {
+      this.quantity = this.initialQuantity ?? 1;
+    }
+  
     this.recalculateMacros();
-
+  
     const modalEl = document.getElementById('recipeQuantityModal');
     if (modalEl) {
       const modal = new bootstrap.Modal(modalEl);
       modal.show();
     }
   }
-
-  recalculateMacros(): void {
-    if (!this.recipe) return;
-
-    const f = this.quantity;
-    this.protein = +((this.recipe.sumProtein ?? 0) * f).toFixed(1);
-    this.carb    = +((this.recipe.sumCarb ?? 0) * f).toFixed(1);
-    this.fat     = +((this.recipe.sumFat ?? 0) * f).toFixed(1);
-    this.calorie = +((this.recipe.sumCalorie ?? 0) * f).toFixed(0);
-    this.cdr.detectChanges();
-  }
-
-  onQuantityChange(val: number): void {
-    if (val > 0) {
-      this.quantity = val;
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['recipe'] && this.recipe) {
+      if (this.editingMealRecipeId) {
+        this.quantity = this.initialQuantity ?? 1;  // << ez hiányzott
+      }
       this.recalculateMacros();
     }
   }
+  onQuantityChange(val: number): void {
+    if (val > 0) {
+      this.quantity = val;
+      this.recalculateMacros(); // 👈 ez itt a lényeg!
+    }
+  }
+  
+  recalculateMacros(): void {
+    if (!this.recipe) return;
+  
+    const f = this.quantity;
+    console.log('RECALCULATE FROM RECIPE:', this.recipe);
+    this.protein = +(((this.recipe.sumProtein ?? 0) * f).toFixed(1));
+    this.carb    = +(((this.recipe.sumCarb ?? 0) * f).toFixed(2));
+    this.fat     = +(((this.recipe.sumFat ?? 0) * f).toFixed(2));
+    this.calorie = +(((this.recipe.sumCalorie ?? 0) * f).toFixed(0));
+    console.log('protein: ', this.protein,
+      ',carb: ', this.carb,
+      ',fat: ', this.fat,
+      ',calorie: ', this.calorie
+    
+    );
+  }
+  /*
+  recalculateMacros(): void {
+    if (!this.recipe) return;
+    const recipe = this.recipe;
+    const f = this.quantity;
+    console.log('RECALCULATE FROM RECIPE:', recipe);
+    this.protein = +(this.recipe.sumProtein ?? 0* f).toFixed(1);
+    this.carb    = +(this.recipe.sumCarb ?? 0* f).toFixed(1);
+    this.fat     = +(this.recipe.sumFat?? 0 * f).toFixed(1);
+    this.calorie = +(this.recipe.sumCalorie?? 0 * f).toFixed(0);
+    this.cdr.detectChanges();
+    console.log('protein: ', this.protein,
+      ',carb: ', this.carb,
+      ',fat: ', this.fat,
+      ',calorie: ', this.calorie
+    
+    );
+
+  }*/
+ 
 
   save(): void {
     if (!this.recipe || !this.mealEntryId) return;
-
+  
     const dto = new MealRecipeCreateDto();
     dto.recipeID = this.recipe.recipeID!;
     dto.mealEntryID = this.mealEntryId;
     dto.quantity = this.quantity;
-
+  
     if (this.editingMealRecipeId) {
+      // UPDATE mód
       this.mealRecipesClient.update(this.editingMealRecipeId, dto).subscribe({
         next: res => {
           this.added.emit(res);
@@ -71,37 +114,49 @@ export class RecipeQuantityModalComponent implements OnInit {
         error: err => console.error(err)
       });
     } else {
+      // CREATE mód
       this.mealRecipesClient.create(dto).subscribe({
         next: res => {
           this.added.emit(res);
           this.reset();
           this.closeModal();
+          
         },
         error: err => console.error(err)
       });
     }
   }
-
-  cancel(): void {
-    this.reset();
-    this.closeModal();
-  }
-
   reset(): void {
     this.editingMealRecipeId = undefined;
     this.quantity = 1;
+  }
+  cancel() {
+    const modalEl = document.getElementById('recipeQuantityModal');
+    if (modalEl) {
+      bootstrap.Modal.getInstance(modalEl)?.hide();
+    }
+  }
+
+  private openModal(): void {
+    const modalEl = document.getElementById('recipeQuantityModal');
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    }
   }
 
   private closeModal(): void {
     const modalEl = document.getElementById('recipeQuantityModal');
     if (modalEl) {
+      const instance = bootstrap.Modal.getInstance(modalEl);
       bootstrap.Modal.getInstance(modalEl)?.hide();
-
-      setTimeout(() => {
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('padding-right');
-      }, 300);
+  
+      // 💡 Biztonsági törlés: backdrop eltávolítása
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
     }
   }
+  
 }

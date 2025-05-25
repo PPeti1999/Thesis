@@ -2,26 +2,35 @@
     <h5 class="modal-title">Add {{ recipe?.title }}</h5>
     <button type="button" class="btn-close" (click)="cancel()"></button>
   </div>
-  
   <div class="modal-body">
     <div class="mb-3">
       <label>Quantity (portion):</label>
-      <input type="number" class="form-control"
-             [ngModel]="quantity"
-             (ngModelChange)="onQuantityChange($event)" />
-    </div>
-    <ul class="list-unstyled">
-      <li>Protein: {{ protein }} g</li>
-      <li>Carbs:   {{ carb }} g</li>
-      <li>Fat:     {{ fat }} g</li>
-      <li>Calories: {{ calorie }} kcal</li>
+      <input
+  type="number"
+  class="form-control"
+  [(ngModel)]="quantity"
+  (ngModelChange)="onQuantityChange($event)" />
+  
+    <div class="mb-3">
+        <div>Protein: {{ protein }} g</div>
+        <div>Carbs: {{ carb }} g</div>
+        <div>Fat: {{ fat }} g</div>
+        <div>Calories: {{ calorie }} kcal</div>
+      </div>
+  
+    <h6>Ingredients:</h6>
+    <ul *ngIf="recipe?.ingredients?.length" class="list-group mb-3">
+      <li *ngFor="let item of recipe?.ingredients" class="list-group-item">
+        {{ item.foodName }} – {{ item.quantity }} g
+      </li>
     </ul>
+    
   </div>
   
   <div class="modal-footer">
     <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
     <button class="btn btn-primary" (click)="save()">
-      {{ editingMealRecipeId ? 'Update' : 'Add' }}
-    </button>
+        {{ editingMealRecipeId ? 'Update' : 'Add' }}
+      </button>
   </div>
   

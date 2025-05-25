@@ -16,5 +16,6 @@ namespace HealthyAPI.DTOs.Recipe
        public string? PhotoData { get; set; }*/
         public DateTime CreatedAt { get; set; }
         public List<RecipeIngredientDetailDto> Ingredients { get; set; }
+      
     }
 }

@@ -11,6 +11,7 @@ import * as bootstrap from 'bootstrap';
 export class FoodQuantityModalComponent implements OnInit, OnChanges  {
   @Input() food?: FoodResponseDto;
   @Input() mealEntryId!: string | undefined;
+  @Input() editingMealFoodId?: string;
   @Output() added = new EventEmitter<MealFoodResponseDto>();
   quantity: number = 100;
   protein = 0;
@@ -77,6 +78,8 @@ console.log('protein: ', this.protein,
   }
 
   save() {
+    console.log('[MODAL] editingMealFoodId:', this.editingMealFoodId); // 💥 EZT TEDD BE
+  
     if (!this.food || !this.mealEntryId) return;
   
     const dto = new MealFoodCreateDto();
@@ -84,18 +87,49 @@ console.log('protein: ', this.protein,
     dto.mealEntryID = this.mealEntryId;
     dto.quantity = this.quantity;
   
-    this.mealFoodsClient.create(dto).subscribe({
-      next: res => {
-        this.added.emit(res);
-  
-        const modalEl = document.getElementById('foodQuantityModal');
-        if (modalEl) {
-          bootstrap.Modal.getInstance(modalEl)?.hide();
-        }
-      },
-      error: err => console.error(err)
-    });
+    if (this.editingMealFoodId) {
+      console.log('[MODAL] Performing UPDATE');
+      this.mealFoodsClient.update(this.editingMealFoodId, dto).subscribe({
+        next: res => {
+          this.added.emit(res);
+          this.reset(); // 💡 Ez itt jó helyen van
+          this.closeModal();
+        },
+        error: err => console.error(err)
+      });
+    } else {
+      console.log('[MODAL] Performing CREATE');
+      this.mealFoodsClient.create(dto).subscribe({
+        next: res => {
+          this.added.emit(res);
+          this.reset();
+          this.closeModal();
+        },
+        error: err => console.error(err)
+      });
+    }
   }
+  reset(): void {
+    this.editingMealFoodId = undefined;
+    this.quantity = 100;
+  }
+  
+  private closeModal(): void {
+    const modalEl = document.getElementById('foodQuantityModal');
+    if (modalEl) {
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      modalInstance?.hide();
+  
+      // 💣 biztos ami biztos: töröljük a háttér overlay-t
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right'); // ha volt scrollbar
+      }, 300); // Bootstrap animáció után
+    }
+  }
+  
+  
   
 
   cancel() {

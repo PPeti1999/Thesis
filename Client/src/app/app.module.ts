@@ -26,6 +26,7 @@ import { CreateProfileComponent } from './pages/create-profile/create-profile.co
 import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
 import { MealItemSearchComponent } from './pages/meal-item-search/meal-item-search.component';
 import { FoodQuantityModalComponent } from './pages/food-quantity-modal/food-quantity-modal.component';
+import { RecipeQuantityModalComponent } from './pages/recipe-quantity-modal/recipe-quantity-modal.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { FoodQuantityModalComponent } from './pages/food-quantity-modal/food-qua
     CreateProfileComponent,
     DailyNoteComponent,
     MealItemSearchComponent,
-    FoodQuantityModalComponent
+    FoodQuantityModalComponent,
+    RecipeQuantityModalComponent
   ],
   imports: [
     FormsModule,

@@ -14,7 +14,7 @@ import { MealItemSearchComponent } from '../meal-item-search/meal-item-search.co
 export class DailyNoteComponent implements OnInit{
   @Input() mealEntryId!: string | undefined;
   editingActivityId: string | null = null;
-isEditMode: boolean = false;
+  isEditMode: boolean = false;
   dailyNote!: DailyNoteResponseDto;
   updatedWeight: number = 0;
   burnedCalories: number = 0;
@@ -74,6 +74,7 @@ isEditMode: boolean = false;
     });
   }
   selectedFood?: FoodResponseDto;
+  editingMealFoodId?: string; // ⬅️ Ezt add hozzá a DailyNoteComponent osztályhoz
   showFoodModal = false;
   
   handleMealItemSelected(event: { type: 'food' | 'recipe'; item: any }) {
@@ -105,11 +106,39 @@ isEditMode: boolean = false;
   
   
   
-  
-  onFoodAdded(food: MealFoodResponseDto) {
-    this.loadMealFoods(this.selectedMeal.mealEntryID!);
-    this.loadDailyNote(); // 💡 Ez frissíti a napi összesítő értékeket is
-  }
+    onFoodAdded(food: MealFoodResponseDto) {
+      console.log('[ADDED] Food added/updated:', food);
+    
+      const mealId = this.selectedMeal.mealEntryID!;
+      this.loadMealFoods(mealId);         // frissíti a foods listát
+      this.loadMealRecipes(mealId);       // ha esetleg recept is van
+      
+      // újra lekérjük a meal entry-t és beállítjuk
+      this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID!).subscribe({
+        next: entries => {
+          this.mealEntries = entries;
+          const updated = entries.find(e => e.mealEntryID === mealId);
+          if (updated) {
+            this.selectedMeal = updated;
+    
+            // 💡 Modal újratöltés: friss adatokkal
+            const modalEl = document.getElementById('mealDetailsModal');
+            if (modalEl) {
+              const modal = new bootstrap.Modal(modalEl);
+              modal.show();
+            }
+          }
+        }
+      });
+    
+      this.loadDailyNote(); // fő makró értékek is frissülnek (kártyák)
+      this.editingMealFoodId = undefined;
+    }
+    
+    
+    
+    
+    
   
   loadMealEntries(): void {
     if (!this.dailyNote?.dailyNoteID) return;
@@ -142,9 +171,9 @@ isEditMode: boolean = false;
         this.mealFoods = foods;
   
         for (const food of foods) {
-          if (food.foodID && !this.foodLookup[food.foodID]){
+          if (food.foodID){
             this.foodClient.getFood(food.foodID).subscribe(result => {
-              this.foodLookup[food.foodID!] = result; // biztosan string itt
+              this.foodLookup[food.foodID!] = result; // mindig frissítjük
             });
           }
         }
@@ -162,8 +191,26 @@ isEditMode: boolean = false;
   }
 
   editMealFood(food: MealFoodResponseDto): void {
-    // TODO: implement modal editor
+    if (!food.foodID) return;
+  
+    this.foodClient.getFood(food.foodID).subscribe(result => {
+      const patched = Object.assign(result, { gram: food.quantity });
+this.selectedFood = patched;
+
+      this.editingMealFoodId = food.mealFoodID;
+  
+      const modalEl = document.getElementById('foodQuantityModal');
+      if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      }
+    });
   }
+  
+  
+  
+  
+  
 
   deleteMealFood(id?: string): void {
     if (!id) return;
@@ -302,18 +349,28 @@ isEditMode: boolean = false;
     bootstrap.Modal.getInstance(searchModalEl!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('activityCatalogModal')!)?.hide();
     bootstrap.Modal.getInstance(document.getElementById('durationModal')!)?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('mealDetailsModal')!)?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('foodQuantityModal')!)?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('recipeQuantityModal')!)?.hide();
   
     this.searchComponent?.clear();
   
-    // 💡 Csak akkor nyisd újra, ha kérjük is
-  /*  if (wasSearchOpen && this.selectedMeal && keepMealDetailsOpen) {
+    // 💡 biztos ami biztos: töröljük az árnyékot is
+    const backdropEls = document.querySelectorAll('.modal-backdrop');
+    backdropEls.forEach(el => el.remove());
+  
+    // csak akkor nyisd vissza ha szükséges (opcionális)
+    /*
+    if (wasSearchOpen && this.selectedMeal && keepMealDetailsOpen) {
       const detailsEl = document.getElementById('mealDetailsModal');
       if (detailsEl) {
         const modal = new bootstrap.Modal(detailsEl);
         modal.show();
       }
-    }*/
+    }
+    */
   }
+  
   
   
   deleteActivity(id?: string): void {

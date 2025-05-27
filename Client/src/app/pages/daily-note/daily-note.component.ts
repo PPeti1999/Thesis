@@ -77,18 +77,7 @@ export class DailyNoteComponent implements OnInit{
     });
   }
   
-  hasNote(date: NgbDate): boolean {
-    return this.calendarSummary.some(item => {
-      if (!item.date) return false; // ⛔️ ha undefined
-  
-      const itemDate = new Date(item.date); // ✅ biztonságos konverzió string → Date
-  
-      return itemDate.getFullYear() === date.year &&
-             itemDate.getMonth() + 1 === date.month &&
-             itemDate.getDate() === date.day;
-    });
-  }
-  
+
   
   openCalendar(): void {
     const modalElement = document.getElementById('calendarModal');
@@ -97,44 +86,6 @@ export class DailyNoteComponent implements OnInit{
       modal.show();
     }
   }
- onDateSelected(date: any): void {
-  console.log("HE");
-  const userId = this.dailyNote?.userID;
-  if (!userId) return;
-
-  const selectedDate = new Date(date.year, date.month - 1, date.day);
-
-  this.dailyNoteClient.getByDate(userId, selectedDate).subscribe({
-    next: note => {
-      this.dailyNote = note;
-      this.updatedWeight = note.dailyWeight ?? 0;
-      this.setupMacroNutrients();
-      this.loadMealEntries();
-      this.loadUserActivities();
-      bootstrap.Modal.getInstance(document.getElementById('calendarModal')!)?.hide();
-    },
-    error: err => {
-      alert(err.error || 'No DailyNote available for this day.');
-    }
-  });
-}
-
-  loadCalendarSummary(): void {
-    const userId = this.dailyNote?.userID;
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-  
-    this.dailyNoteClient.getMonthlySummary(userId!, year, month).subscribe({
-      next: summary => this.calendarSummary = summary,
-      error: err => console.error('Failed to load calendar summary', err)
-    });
-  }
-  
-
-
-
-
 
 
 

@@ -243,3 +243,17 @@
 
 
 
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Select a day</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <ngb-datepicker [(ngModel)]="selectedDateStruct"></ngb-datepicker>
+        <button class="btn btn-primary mt-3 w-100" (click)="handleCalendarConfirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

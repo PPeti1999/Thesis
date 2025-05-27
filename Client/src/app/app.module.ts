@@ -49,6 +49,7 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
   ],
   imports: [
     FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,

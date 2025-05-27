@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System;
+using HealthyAPI.DTOs.CalendarSummary;
+using System.Threading.Tasks;
 
 namespace HealthyAPI.Models
 {
@@ -26,6 +28,8 @@ namespace HealthyAPI.Models
 
         public float DailyTargetFat { get; set; }
         public float ActualSumFat { get; set; }
+      
+
 
         public DateTime CreatedAt { get; set; }
 

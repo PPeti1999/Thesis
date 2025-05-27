@@ -27,7 +27,7 @@ import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
 import { MealItemSearchComponent } from './pages/meal-item-search/meal-item-search.component';
 import { FoodQuantityModalComponent } from './pages/food-quantity-modal/food-quantity-modal.component';
 import { RecipeQuantityModalComponent } from './pages/recipe-quantity-modal/recipe-quantity-modal.component';
-
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +57,8 @@ import { RecipeQuantityModalComponent } from './pages/recipe-quantity-modal/reci
     ReactiveFormsModule,
     SharedModule,
     FormsModule,
+    NgbDatepickerModule, // 👉 ezt add hozzá
+    
   ],
   providers: [ {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor,multi:true},
     { provide: API_BASE_URL, useValue: environment.appUrl } 

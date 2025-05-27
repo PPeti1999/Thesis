@@ -1,4 +1,7 @@
-﻿using HealthyAPI.DTOs.DailyNote;
+﻿using HealthyAPI.DTOs.CalendarSummary;
+using HealthyAPI.DTOs.DailyNote;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HealthyAPI.Services
@@ -10,5 +13,11 @@ namespace HealthyAPI.Services
         Task UpdateMealNutritionAsync(string dailyNoteId);
       
         Task<DailyNoteResponseDto?> UpdateWeight(string dailyNoteId, int weight);
+        Task<DailyNoteResponseDto?> GetPreviousNote(string userId, DateTime currentDate);
+        Task<DailyNoteResponseDto?> GetNextNote(string userId, DateTime currentDate);
+
+        Task<DailyNoteResponseDto?> GetNoteByDate(string userId, DateTime date); // 👈 új a naptárhoz
+        Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month);
+
     }
 }

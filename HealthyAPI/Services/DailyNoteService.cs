@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using HealthyAPI.DTOs.CalendarSummary;
+using System.Collections.Generic;
 
 namespace HealthyAPI.Services
 {
@@ -17,6 +19,54 @@ namespace HealthyAPI.Services
             public DailyNoteService(Context context)
             {
                 _context = context;
+            }
+            public async Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month)
+            {
+                var notes = await _context.DailyNote
+                    .Where(d => d.UserID == userId &&
+                                d.CreatedAt.Year == year &&
+                                d.CreatedAt.Month == month)
+                    .ToListAsync();
+
+                return notes.Select(d => new CalendarSummaryDto
+                {
+                    Date = d.CreatedAt.Date,
+                    RemainingKcal = (d.DailyTargetCalorie ) - (d.ActualCalorie)
+                }).ToList();
+            }
+
+            public async Task<DailyNoteResponseDto?> GetPreviousNote(string userId, DateTime currentDate)
+            {
+                var prev = await _context.DailyNote
+                    .Where(d => d.UserID == userId && d.CreatedAt < currentDate)
+                    .OrderByDescending(d => d.CreatedAt)
+                    .FirstOrDefaultAsync();
+
+                return prev != null ? MapToResponse(prev) : null;
+            }
+
+
+
+            public async Task<DailyNoteResponseDto?> GetNextNote(string userId, DateTime currentDate)
+            {
+                
+
+                var next = await _context.DailyNote
+                    .Where(d => d.UserID == userId && d.CreatedAt.Date > currentDate)
+                    .OrderBy(d => d.CreatedAt)
+                    .FirstOrDefaultAsync();
+
+                return next != null ? MapToResponse(next) : null;
+            }
+
+
+
+            public async Task<DailyNoteResponseDto?> GetNoteByDate(string userId, DateTime date)
+            {
+                var note = await _context.DailyNote
+                    .FirstOrDefaultAsync(d => d.UserID == userId && d.CreatedAt.Date == date.Date);
+
+                return note != null ? MapToResponse(note) : null;
             }
 
             public async Task<DailyNoteResponseDto?> GetTodayNote(string userId)

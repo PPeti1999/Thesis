@@ -1,9 +1,11 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, DailyNoteClient, DailyNoteResponseDto, FoodClient, FoodResponseDto, MealEntriesClient, MealEntryResponseDto, MealFoodResponseDto, MealFoodsClient, MealRecipeResponseDto, MealRecipesClient, RecipeResponseDto, RecipesClient, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
+import { AccountClient, ActivityCatalogClient, ActivityCatalogResponseDto, CalendarSummaryDto, DailyNoteClient, DailyNoteResponseDto, FoodClient, FoodResponseDto, MealEntriesClient, MealEntryResponseDto, MealFoodResponseDto, MealFoodsClient, MealRecipeResponseDto, MealRecipesClient, RecipeResponseDto, RecipesClient, UserActivityClient, UserActivityCreateDto, UserActivityResponseDto, WeightUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { FormsModule } from '@angular/forms';
 import { MealItemSearchComponent } from '../meal-item-search/meal-item-search.component';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-daily-note',
@@ -49,6 +51,179 @@ export class DailyNoteComponent implements OnInit{
     private foodClient: FoodClient, // 💡 EZ HIÁNYZOTT,
     private recipeClient: RecipesClient
   ) {}
+
+  openCalendar():void{}
+
+
+
+
+
+
+
+
+
+
+
+  setupMacroNutrients(): void {
+    this.macroNutrients = [
+      {
+        label: 'Protein',
+        actual: this.dailyNote.actualSumProtein ?? 0,
+        target: this.dailyNote.dailyTargetProtein ?? 0
+      },
+      {
+        label: 'Carbohydrates',
+        actual: this.dailyNote.actualSumCarb ?? 0,
+        target: this.dailyNote.dailyTargetCarb ?? 0
+      },
+      {
+        label: 'Fat',
+        actual: this.dailyNote.actualSumFat ?? 0,
+        target: this.dailyNote.dailyTargetFat ?? 0
+      }
+    ];
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  loadPreviousNote(): void {
+    if (!this.dailyNote?.createdAt || !this.dailyNote?.userID) return;
+  console.log("mai nap:",this.dailyNote)
+  const raw = new Date(this.dailyNote.createdAt);
+const cleanDate = new Date(raw.getFullYear(), raw.getMonth(), raw.getDate()); // 00:00 helyi idő
+console.log("mai nap cleandate:",cleanDate)
+    this.dailyNoteClient.getPrevious(this.dailyNote.userID, cleanDate).subscribe({
+      next: note => {
+        this.dailyNote = note;
+        this.updatedWeight = note.dailyWeight ?? 0;
+        this.setupMacroNutrients();
+        this.loadMealEntries();
+        this.loadUserActivities();
+      },
+      error: err => alert(err.error || 'There is no DailyNote for the previous day.')
+    });
+  }
+  loadNextNote(): void {
+    if (!this.dailyNote?.createdAt || !this.dailyNote?.userID) return;
+     console.log("mai nap:",this.dailyNote);
+     const raw = new Date(this.dailyNote.createdAt);
+     const cleanDate = new Date(raw.getFullYear(), raw.getMonth(), raw.getDate()); // 00:00 helyi idő
+     console.log("mai nap cleandate:",cleanDate)
+    this.dailyNoteClient.getNext(this.dailyNote.userID, cleanDate ).subscribe({
+      next: note => {
+        this.dailyNote = note;
+        this.updatedWeight = note.dailyWeight ?? 0;
+        this.setupMacroNutrients();
+        this.loadMealEntries();
+        this.loadUserActivities();
+        console.log("betöltött következő napi nap:",this.dailyNote)
+      },
+      error: err => alert(err.error || 'There is no DailyNote created for the next day.')
+    });
+  }
+  loadMealEntries(): void {
+    if (!this.dailyNote?.dailyNoteID) return;
+    this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID).subscribe({
+      next: entries => this.mealEntries = entries,
+      error: err => console.error('Error loading meal entries:', err)
+    });
+  }
+  ngOnInit(): void {
+    this.userClient.getProfile().subscribe(profile => {
+      const missingProfile = !profile.age || !profile.height || !profile.weight;
+      if (missingProfile) {
+        this.router.navigate(['/create-profile']);
+      } else {
+        this.loadDailyNote();
+      }
+    });
+  }
+
+  
+
+  
+  loadUserActivities(): void {
+    this.userActivityClient.getAll().subscribe({
+      next: all => {
+        this.userActivities = all.filter(a => a.dailyNoteID === this.dailyNote.dailyNoteID);
+        this.burnedCalories = this.userActivities.reduce((sum, a) => sum + (a.calories ?? 0), 0);
+      },
+      error: err => console.error('Error loading user activities:', err)
+    });
+  }
+
+
+
+  loadDailyNote(): void {
+    this.dailyNoteClient.getToday().subscribe({
+      next: note => {
+        this.dailyNote = note;
+        this.updatedWeight = note.dailyWeight ?? 0;
+        this.setupMacroNutrients();
+        this.loadMealEntries();
+        this.loadUserActivities();
+        this.loadActivityCatalog();
+      },
+      error: err => console.error('Error loading daily note:', err)
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   selectedRecipe?: RecipeResponseDto;
   editingMealRecipeId?: string;
   recipeInitialQuantity: number | undefined;
@@ -134,30 +309,8 @@ export class DailyNoteComponent implements OnInit{
     this.loadDailyNote(); // fő makró értékek is frissülnek (kártyák)
     this.editingMealFoodId = undefined;
   }
-  ngOnInit(): void {
-    this.userClient.getProfile().subscribe(profile => {
-      const missingProfile = !profile.age || !profile.height || !profile.weight;
-      if (missingProfile) {
-        this.router.navigate(['/create-profile']);
-      } else {
-        this.loadDailyNote();
-      }
-    });
-  }
 
-  loadDailyNote(): void {
-    this.dailyNoteClient.getToday().subscribe({
-      next: note => {
-        this.dailyNote = note;
-        this.updatedWeight = note.dailyWeight ?? 0;
-        this.setupMacroNutrients();
-        this.loadMealEntries();
-        this.loadUserActivities();
-        this.loadActivityCatalog();
-      },
-      error: err => console.error('Error loading daily note:', err)
-    });
-  }
+
   selectedFood?: FoodResponseDto;
   editingMealFoodId?: string; // ⬅️ Ezt add hozzá a DailyNoteComponent osztályhoz
   showFoodModal = false;
@@ -212,13 +365,7 @@ export class DailyNoteComponent implements OnInit{
     
     
   
-  loadMealEntries(): void {
-    if (!this.dailyNote?.dailyNoteID) return;
-    this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID).subscribe({
-      next: entries => this.mealEntries = entries,
-      error: err => console.error('Error loading meal entries:', err)
-    });
-  }
+  
 
   openMealDetails(meal: MealEntryResponseDto): void {
     this.selectedMeal = meal;
@@ -321,15 +468,6 @@ this.selectedFood = patched;
     }
   }
 
-  loadUserActivities(): void {
-    this.userActivityClient.getAll().subscribe({
-      next: all => {
-        this.userActivities = all.filter(a => a.dailyNoteID === this.dailyNote.dailyNoteID);
-        this.burnedCalories = this.userActivities.reduce((sum, a) => sum + (a.calories ?? 0), 0);
-      },
-      error: err => console.error('Error loading user activities:', err)
-    });
-  }
 
   loadActivityCatalog(): void {
     this.activityCatalogClient.getAll().subscribe({
@@ -338,25 +476,7 @@ this.selectedFood = patched;
     });
   }
 
-  setupMacroNutrients(): void {
-    this.macroNutrients = [
-      {
-        label: 'Protein',
-        actual: this.dailyNote.actualSumProtein ?? 0,
-        target: this.dailyNote.dailyTargetProtein ?? 0
-      },
-      {
-        label: 'Carbohydrates',
-        actual: this.dailyNote.actualSumCarb ?? 0,
-        target: this.dailyNote.dailyTargetCarb ?? 0
-      },
-      {
-        label: 'Fat',
-        actual: this.dailyNote.actualSumFat ?? 0,
-        target: this.dailyNote.dailyTargetFat ?? 0
-      }
-    ];
-  }
+ 
 
   getPercentage(actual: number, target: number): number {
     if (target === 0) return 0;
@@ -370,6 +490,7 @@ this.selectedFood = patched;
       next: updated => {
         this.dailyNote = updated;
         this.setupMacroNutrients();
+        alert('Weight updated.');
       },
       error: err => console.error('Error updating weight:', err)
     });
@@ -475,4 +596,9 @@ this.selectedFood = patched;
     }
   }
   
+}
+interface NgbDateStruct {
+  year: number;
+  month: number;
+  day: number;
 }

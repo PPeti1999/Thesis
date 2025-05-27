@@ -802,6 +802,70 @@ export class DailyNoteClient {
         this.baseUrl = baseUrl ?? "http://localhost:5059";
     }
 
+    getMonthlySummary(userId: string, year: number, month: number): Observable<CalendarSummaryDto[]> {
+        let url_ = this.baseUrl + "/api/DailyNote/summary/{userId}/{year}/{month}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        if (year === undefined || year === null)
+            throw new Error("The parameter 'year' must be defined.");
+        url_ = url_.replace("{year}", encodeURIComponent("" + year));
+        if (month === undefined || month === null)
+            throw new Error("The parameter 'month' must be defined.");
+        url_ = url_.replace("{month}", encodeURIComponent("" + month));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMonthlySummary(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMonthlySummary(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CalendarSummaryDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CalendarSummaryDto[]>;
+        }));
+    }
+
+    protected processGetMonthlySummary(response: HttpResponseBase): Observable<CalendarSummaryDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CalendarSummaryDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     getToday(): Observable<DailyNoteResponseDto> {
         let url_ = this.baseUrl + "/api/DailyNote/today";
         url_ = url_.replace(/[?&]$/, "");
@@ -829,6 +893,168 @@ export class DailyNoteClient {
     }
 
     protected processGetToday(response: HttpResponseBase): Observable<DailyNoteResponseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DailyNoteResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getNext(userId: string, currentDate: Date): Observable<DailyNoteResponseDto> {
+        let url_ = this.baseUrl + "/api/DailyNote/next/{userId}/{currentDate}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        if (currentDate === undefined || currentDate === null)
+            throw new Error("The parameter 'currentDate' must be defined.");
+        url_ = url_.replace("{currentDate}", encodeURIComponent(currentDate ? "" + currentDate.toISOString() : "null"));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNext(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNext(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DailyNoteResponseDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DailyNoteResponseDto>;
+        }));
+    }
+
+    protected processGetNext(response: HttpResponseBase): Observable<DailyNoteResponseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DailyNoteResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getPrevious(userId: string, currentDate: Date): Observable<DailyNoteResponseDto> {
+        let url_ = this.baseUrl + "/api/DailyNote/previous/{userId}/{currentDate}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        if (currentDate === undefined || currentDate === null)
+            throw new Error("The parameter 'currentDate' must be defined.");
+        url_ = url_.replace("{currentDate}", encodeURIComponent(currentDate ? "" + currentDate.toISOString() : "null"));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPrevious(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPrevious(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DailyNoteResponseDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DailyNoteResponseDto>;
+        }));
+    }
+
+    protected processGetPrevious(response: HttpResponseBase): Observable<DailyNoteResponseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DailyNoteResponseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getByDate(userId: string, date: Date): Observable<DailyNoteResponseDto> {
+        let url_ = this.baseUrl + "/api/DailyNote/by-date/{userId}/{date}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        if (date === undefined || date === null)
+            throw new Error("The parameter 'date' must be defined.");
+        url_ = url_.replace("{date}", encodeURIComponent(date ? "" + date.toISOString() : "null"));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetByDate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetByDate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DailyNoteResponseDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DailyNoteResponseDto>;
+        }));
+    }
+
+    protected processGetByDate(response: HttpResponseBase): Observable<DailyNoteResponseDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -4336,6 +4562,46 @@ export interface IActivityCatalogCreateDto {
     name?: string | undefined;
     minute?: number;
     calories?: number;
+}
+
+export class CalendarSummaryDto implements ICalendarSummaryDto {
+    date?: Date;
+    remainingKcal?: number;
+
+    constructor(data?: ICalendarSummaryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.remainingKcal = _data["remainingKcal"];
+        }
+    }
+
+    static fromJS(data: any): CalendarSummaryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CalendarSummaryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["remainingKcal"] = this.remainingKcal;
+        return data;
+    }
+}
+
+export interface ICalendarSummaryDto {
+    date?: Date;
+    remainingKcal?: number;
 }
 
 export class DailyNoteResponseDto implements IDailyNoteResponseDto {

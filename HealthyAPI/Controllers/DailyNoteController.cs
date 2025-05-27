@@ -1,8 +1,11 @@
-﻿using HealthyAPI.DTOs.DailyNote;
+﻿using HealthyAPI.DTOs.CalendarSummary;
+using HealthyAPI.DTOs.DailyNote;
 using HealthyAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,6 +21,30 @@ namespace HealthyAPI.Controllers
         {
             _service = service;
         }
+
+
+        [HttpGet("summary/{userId}/{year}/{month}")]
+        [Authorize]
+        public async Task<ActionResult<List<CalendarSummaryDto>>> GetMonthlySummary(string userId, int year, int month)
+        {
+            var result = await _service.GetMonthlySummaryAsync(userId, year, month);
+            return Ok(result);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [HttpGet("today")]
         [Authorize]
@@ -38,6 +65,38 @@ namespace HealthyAPI.Controllers
                 result = await _service.GetTodayNote(userId);
             }
             return Ok(result);
+        }
+
+        [HttpGet("next/{userId}/{currentDate}")]
+        public async Task<ActionResult<DailyNoteResponseDto>> GetNext(string userId, DateTime currentDate)
+        {
+            var dateOnly = DateTime.SpecifyKind(currentDate, DateTimeKind.Utc).ToLocalTime().Date;
+            var note = await _service.GetNextNote(userId, dateOnly);
+            if (note == null) return NotFound("There is no DailyNote created for the next day.");
+            return Ok(note);
+        }
+
+        [HttpGet("previous/{userId}/{currentDate}")]
+        public async Task<ActionResult<DailyNoteResponseDto>> GetPrevious(string userId, DateTime currentDate)
+        {
+            var dateOnly = DateTime.SpecifyKind(currentDate, DateTimeKind.Utc).ToLocalTime().Date;
+            var note = await _service.GetPreviousNote(userId, dateOnly);
+            if (note == null) return NotFound("There is no DailyNote for the previous day.");
+            return Ok(note);
+        }
+
+
+
+
+
+        [HttpGet("by-date/{userId}/{date}")]
+        [Authorize]
+        public async Task<ActionResult<DailyNoteResponseDto>> GetByDate(string userId, DateTime date)
+        {
+            var dateOnly = DateTime.SpecifyKind(date, DateTimeKind.Utc).ToLocalTime().Date;
+            var note = await _service.GetNoteByDate(userId, dateOnly);
+            if (note == null) return NotFound("There is no DailyNote available on this date.");
+            return Ok(note);
         }
 
         [HttpPost]

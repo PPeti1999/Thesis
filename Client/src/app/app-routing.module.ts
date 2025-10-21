@@ -10,6 +10,7 @@ import { CreateActivityCatalogComponent } from './pages/create-activity-catalog/
 import { CreateRecipesComponent } from './pages/create-recipes/create-recipes.component';
 import { CreateProfileComponent } from './pages/create-profile/create-profile.component';
 import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
+import { WeightHistoryComponent } from './pages/weight-history/weight-history.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'food', pathMatch: 'full' }, 
@@ -18,6 +19,8 @@ const routes: Routes = [
 { path: 'activitycatalog', component: ActivityCatalogComponent, 
 }, 
 { path: 'recipes', component: RecipesComponent, 
+}, 
+{ path: 'w', component: WeightHistoryComponent, 
 }, 
 { path: '', 
 runGuardsAndResolvers:'always',

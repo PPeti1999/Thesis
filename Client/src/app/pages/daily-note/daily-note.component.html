@@ -6,11 +6,18 @@
       <span class="fw-bold fs-5">{{ dailyNote?.createdAt | date: 'MMMM d' }}</span>
       <button class="btn btn-outline-secondary ms-2" (click)="loadNextNote()">▶</button>
     </div>
-    <div>
+
+    <div class="d-flex align-items-center">
+      <!-- ÚJ IKON: Testsúly grafikon megnyitása -->
+      <button class="btn btn-outline-info rounded-circle shadow-sm me-2" (click)="openWeightHistoryModal()" title="Testsúly Történet">
+          <i class="bi bi-graph-up-arrow fs-5"></i> <!-- Kép a grafikon/trend jelzésére -->
+      </button>
+      <!-- Meglévő Naptár gomb -->
       <button class="btn btn-outline-primary rounded-circle shadow-sm" (click)="openCalendar()" title="Open Calendar">
         <i class="bi bi-calendar fs-5"></i>
       </button>
-    </div>
+  </div>
+
   </div>
   
 
@@ -257,6 +264,27 @@
         <ngb-datepicker [(ngModel)]="selectedDateStruct
         "></ngb-datepicker>
         <button class="btn btn-primary mt-3 w-100" (click)="handleCalendarConfirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ÚJ MODAL AZ SÚLY GRAFIKONHOZ -->
+<div class="modal fade" id="weightHistoryModal" tabindex="-1" aria-labelledby="weightHistoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="weightHistoryModalLabel">Testsúly alakulásának története</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4" style="min-height: 450px;">
+          <!-- Itt ágyazzuk be a komponenst. A komponens felel az adatok lekéréséért és a megjelenítésért. -->
+          <app-weight-history #weightHistoryComponent></app-weight-history>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

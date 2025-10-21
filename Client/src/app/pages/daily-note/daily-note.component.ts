@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { MealItemSearchComponent } from '../meal-item-search/meal-item-search.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { WeightHistoryComponent } from '../weight-history/weight-history.component';
 
 @Component({
   selector: 'app-daily-note',
@@ -37,6 +38,9 @@ export class DailyNoteComponent implements OnInit{
     actual: number;
     target: number;
   }[] = [];
+  // Hivatkozás az új grafikon komponensre a frissítéshez
+  @ViewChild(WeightHistoryComponent) weightHistoryComponent?: WeightHistoryComponent;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -117,11 +121,19 @@ export class DailyNoteComponent implements OnInit{
 
 
 
-
-
-
-
-
+// ⬅️ ÚJ: Modál megnyitó metódus a grafikonhoz
+openWeightHistoryModal(): void {
+  const modalElement = document.getElementById('weightHistoryModal');
+  if (modalElement) {
+    // 1. Megnyitjuk a Bootstrap Modált
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+    // 2. Értesítjük a beágyazott komponenst, hogy frissítse az adatokat
+    // (a chart logikája csak ekkor indul el a modálban)
+    this.weightHistoryComponent?.loadWeightHistory();
+  }
+}
 
 
 
@@ -520,6 +532,8 @@ this.selectedFood = patched;
         this.dailyNote = updated;
         this.setupMacroNutrients();
         alert('Weight updated.');
+         // 🟢 ÚJ: Frissítsd a grafikont a súly frissítése után
+         this.weightHistoryComponent?.loadWeightHistory();
       },
       error: err => console.error('Error updating weight:', err)
     });
@@ -582,6 +596,7 @@ this.selectedFood = patched;
     bootstrap.Modal.getInstance(document.getElementById('foodQuantityModal')!)?.hide();
 
     bootstrap.Modal.getInstance(document.getElementById('recipeQuantityModal')!)?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('weightHistoryModal')!)?.hide(); // 🚨 Új: Bezárjuk a grafikon modált is
     this.searchComponent?.clear();
   
     // 💡 biztos ami biztos: töröljük az árnyékot is

@@ -6,8 +6,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
-import { HomeComponent } from './home/home.component';
-import { PlayComponent } from './play/play.component';
 import { SharedModule } from './shared/shared.module';
 import { NotificationComponent } from './shared/components/modals/notification/notification.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -28,13 +26,12 @@ import { MealItemSearchComponent } from './pages/meal-item-search/meal-item-sear
 import { FoodQuantityModalComponent } from './pages/food-quantity-modal/food-quantity-modal.component';
 import { RecipeQuantityModalComponent } from './pages/recipe-quantity-modal/recipe-quantity-modal.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { WeightHistoryComponent } from './pages/weight-history/weight-history.component';
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     FooterComponent,
-    HomeComponent,
-    PlayComponent,
     FoodComponent,
     ActivityCatalogComponent,
     RecipesComponent,
@@ -45,7 +42,8 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
     DailyNoteComponent,
     MealItemSearchComponent,
     FoodQuantityModalComponent,
-    RecipeQuantityModalComponent
+    RecipeQuantityModalComponent,
+    WeightHistoryComponent
   ],
   imports: [
     FormsModule,

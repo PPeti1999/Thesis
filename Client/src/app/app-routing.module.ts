@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
 import { NotFoundComponent } from './shared/components/errors/not-found/not-found.component';
-import { PlayComponent } from './play/play.component';
 import { AuthorizationGuard } from './shared/guards/authorization.guard';
 import { FoodComponent } from './pages/food/food.component';
 import { ActivityCatalogComponent } from './pages/activity-catalog/activity-catalog.component';
@@ -14,13 +12,12 @@ import { CreateProfileComponent } from './pages/create-profile/create-profile.co
 import { DailyNoteComponent } from './pages/daily-note/daily-note.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, //canActivate: [AuthGuard]
-},
-{ path: 'food', component: FoodComponent, //canActivate: [AuthGuard]
+  { path: '', redirectTo: 'food', pathMatch: 'full' }, 
+{ path: 'food', component: FoodComponent, 
 }, 
-{ path: 'activitycatalog', component: ActivityCatalogComponent, //canActivate: [AuthGuard]
+{ path: 'activitycatalog', component: ActivityCatalogComponent, 
 }, 
-{ path: 'recipes', component: RecipesComponent, //canActivate: [AuthGuard]
+{ path: 'recipes', component: RecipesComponent, 
 }, 
 { path: '', 
 runGuardsAndResolvers:'always',
@@ -34,8 +31,6 @@ children:[// ide kell tenni azokat az elereseket amiket csak belepes utan szabad
 { path: 'recipes/edit/:id', component: CreateRecipesComponent },
 { path: 'create-profile', component: CreateProfileComponent },
 { path: 'dailynote', component: DailyNoteComponent },
-{path: 'play',component: PlayComponent
-},
 ],
 
 },

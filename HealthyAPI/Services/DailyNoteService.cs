@@ -1,26 +1,38 @@
 ﻿using HealthyAPI.Data;
+using HealthyAPI.DTOs.CalendarSummary;
 using HealthyAPI.DTOs.DailyNote;
 using HealthyAPI.Models;
-using System.Threading.Tasks;
-using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using HealthyAPI.DTOs.CalendarSummary;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace HealthyAPI.Services
-{
+
     namespace HealthyAPI.Services
     {
         public class DailyNoteService : IDailyNoteService
         {
-            private readonly Context _context;
+        private readonly Context _context;
+        // KIEGÉSZÍTÉS: IHttpContextAccessor a felhasználói ID lekéréséhez
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-            public DailyNoteService(Context context)
-            {
-                _context = context;
-            }
-            public async Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month)
+        // KIEGÉSZÍTÉS: A konstruktor most már fogadja az IHttpContextAccessor-t
+        public DailyNoteService(Context context, IHttpContextAccessor httpContextAccessor)
+        {
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        // KIEGÉSZÍTÉS: Privát metódus a bejelentkezett felhasználó ID-jának lekérésére
+        private string GetUserId()
+        {
+            // A ClaimTypes.NameIdentifier a JWT tokenből származik (lásd AccountController.cs)
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+        public async Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month)
             {
                 var notes = await _context.DailyNote
                     .Where(d => d.UserID == userId &&
@@ -198,7 +210,40 @@ namespace HealthyAPI.Services
                     CreatedAt = note.CreatedAt
                 };
             }
-        }
-    }
+        public async Task<List<DailyNoteResponseDto>> GetAllDailyNotesForGraph()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId)) return new List<DailyNoteResponseDto>(); // Üres listát adunk vissza null helyett
 
+            // Lekérdezzük az összes DailyNote-ot, ahol a DailyWeight > 0, 
+            // rendezve dátum szerint, és csak a Dátum és a Súly érdekel.
+            var dailyNotes = await _context.DailyNote
+                .Where(dn => dn.UserID == userId && dn.DailyWeight > 0)
+                .OrderBy(dn => dn.CreatedAt)
+                .Select(dn => new DailyNoteResponseDto
+                {
+                    DailyNoteID = dn.DailyNoteID, // Az Id technikai okokból kell
+                    CreatedAt = dn.CreatedAt,
+                    DailyWeight = dn.DailyWeight,
+                    // A többi mezőt nem kell feltölteni, de a DTO megköveteli
+                    UserID = dn.UserID,
+                    DailyTargetCalorie = dn.DailyTargetCalorie,
+                    ActualCalorie = dn.ActualCalorie,
+                    DailyTargetProtein = dn.DailyTargetProtein,
+                    ActualSumProtein = dn.ActualSumProtein,
+                    DailyTargetCarb = dn.DailyTargetCarb,
+                    ActualSumCarb = dn.ActualSumCarb,
+                    DailyTargetFat = dn.DailyTargetFat,
+                    ActualSumFat = dn.ActualSumFat,
+                })
+                .ToListAsync();
+
+            return dailyNotes;
+        }
+
+
+
+    }
 }
+
+

@@ -16,8 +16,9 @@ namespace HealthyAPI.Services
         Task<DailyNoteResponseDto?> GetPreviousNote(string userId, DateTime currentDate);
         Task<DailyNoteResponseDto?> GetNextNote(string userId, DateTime currentDate);
 
-        Task<DailyNoteResponseDto?> GetNoteByDate(string userId, DateTime date); // 👈 új a naptárhoz
+        Task<DailyNoteResponseDto?> GetNoteByDate(string userId, DateTime date);
         Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month);
+        Task<List<DailyNoteResponseDto>> GetAllDailyNotesForGraph();
 
     }
 }

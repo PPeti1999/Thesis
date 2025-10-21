@@ -1,7 +1,6 @@
 using HealthyAPI.Data;
 using HealthyAPI.Models;
 using HealthyAPI.Services;
-using HealthyAPI.Services.HealthyAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;

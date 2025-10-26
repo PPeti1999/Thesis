@@ -10,8 +10,7 @@ dec 12 végleges doksi
 
 
 
-Diplomában a hivatkozott saját diplomám részeknél, az abban lévő eredeti hivatkozást is helyezzem el.
-
-chart js maradjon 
-home page helyett Daily Note legyen a fő
+-Diplomában a hivatkozott saját diplomám részeknél, az abban lévő eredeti hivatkozást is helyezzem el.
+- unit tesztek 20 db min egy modult fedjen le.
+-2025 Kővári bence sablonját hazsnáljam 
 

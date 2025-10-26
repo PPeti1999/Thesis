@@ -36,21 +36,22 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<DailyNoteResponseDto>> GetToday()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // 1. Megpróbáljuk lekérdezni a naplót.
             var result = await _service.GetTodayNote(userId);
+
             if (result == null)
             {
+                // 2. Ha nincs, létrehozzuk. A létrehozáskor megtörténik a kezdeti kalkuláció.
                 result = await _service.CreateDailyNote(userId);
             }
-            else
-            {
-                // 🔥 Frissítjük a napi tápanyagokat, ha már van napló
-                var dailyNoteId = result.DailyNoteID;
-                await _service.UpdateMealNutritionAsync(dailyNoteId);
-                // újra lekérjük frissítve
-                result = await _service.GetTodayNote(userId);
-            }
+
+            // 3. HA MÁR VAN, VISSZAKÜLDJÜK. NINCS FÖLÖSLEGES KALKULÁCIÓ VAGY ÚJRA-LEKÉRDEZÉS.
+            // Tegyük fel, hogy az UpdateMealNutritionAsync csak a CRUD metódusokban fut le.
+
             return Ok(result);
         }
+
 
         [HttpGet("next/{userId}/{currentDate}")]
         public async Task<ActionResult<DailyNoteResponseDto>> GetNext(string userId, DateTime currentDate)

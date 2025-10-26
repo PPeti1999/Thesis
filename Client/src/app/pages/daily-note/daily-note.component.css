@@ -5,4 +5,26 @@ button.btn-outline-primary.rounded-circle {
     text-align: center;
     line-height: 1.5;
   }
-  
+
+
+
+/* 3) Gomb pontosan a naptár szélességére igazítva */
+#calendarModal .calendar-wrap { display: inline-block; }
+#calendarModal ngb-datepicker { display: block; }
+/* Alap szélesség – keskeny, de nem törik a header */
+#calendarModal .modal-dialog { 
+  --bs-modal-width: 380px;   /* próbáld 380, ha kell emeld 400-ra */
+}
+
+/* Mobilon legyen rugalmas */
+@media (max-width: 420px) {
+  #calendarModal .modal-dialog {
+    --bs-modal-width: calc(100% - 2rem);
+  }
+}
+
+/* Kicsit kisebb oldalpárnázás, hogy még feszesebb legyen */
+#calendarModal .modal-body { 
+  padding-inline: .75rem; 
+}
+

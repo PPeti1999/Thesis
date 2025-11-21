@@ -4,6 +4,8 @@ VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthyAPI", "HealthyAPI\HealthyAPI.csproj", "{26AFEB7F-78E2-41CF-8129-B571D33FFD51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthyAPI.UnitTests", "HealthyAPI.UnitTests\HealthyAPI.UnitTests.csproj", "{4E8A6A7E-EA9D-419A-97D1-75DF00BCAD0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{26AFEB7F-78E2-41CF-8129-B571D33FFD51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26AFEB7F-78E2-41CF-8129-B571D33FFD51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26AFEB7F-78E2-41CF-8129-B571D33FFD51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E8A6A7E-EA9D-419A-97D1-75DF00BCAD0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E8A6A7E-EA9D-419A-97D1-75DF00BCAD0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E8A6A7E-EA9D-419A-97D1-75DF00BCAD0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E8A6A7E-EA9D-419A-97D1-75DF00BCAD0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

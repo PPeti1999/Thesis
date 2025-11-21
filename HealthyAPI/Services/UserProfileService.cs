@@ -73,7 +73,7 @@ namespace HealthyAPI.Services
             user.TargetCalorie = (int)tdee;
             user.TargeProtein = user.Weight * 2f;
             user.TargetFat = user.Weight * 1f;
-            user.TargetCarb = (float)((tdee - (user.TargeProtein * 4 + user.TargetFat * 9)) / 4);
+            user.TargetCarb = (float)Math.Round(((tdee - (user.TargeProtein * 4 + user.TargetFat * 9)) / 4));
             user.ActivityMultiplier = dto.ActivityMultiplier;
 
             await _context.SaveChangesAsync();

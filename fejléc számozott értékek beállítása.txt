@@ -1,0 +1,7 @@
+fejléc számozott értékek beállítása menüben, hierachikus sorrend.
+
+felsorolás legyen bentebb. 
+számos felsorolás kettőspont előtt vastag betü. 
+
+1. copy paste kód tagolásba belenyúlni!. 
+világos héttér és ugy screen shot és zoomoljak bele vagy forráskód 

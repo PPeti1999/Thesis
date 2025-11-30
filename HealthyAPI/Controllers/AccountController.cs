@@ -239,7 +239,7 @@ namespace HealthyAPI.Controllers
                 LastName = user.LastName,
                 JWT = _jWTService.CreateJWT(user),
 
-                id = user.Id,// nem szabadna de valahogy meg kell találni az értékeket 
+                //id = user.Id,// nem szabadna de valahogy meg kell találni az értékeket 
             };
         }
         private async Task<bool> CheckEmailExtistsAsyns(string email)

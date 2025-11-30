@@ -86,7 +86,7 @@ namespace HealthyAPI.Services
             // Ellenőrzés: van-e kapcsolódó bejegyzés
             bool hasDependencies = await _context.MealFoods.AnyAsync(dn => dn.FoodID == id);
             if (hasDependencies)
-                throw new InvalidOperationException("Az aktivitás már használatban van, nem törölhető.");
+                throw new InvalidOperationException("Has dependencies.");
 
             var entity = await _context.Food.FindAsync(id);
             if (entity == null) return false;

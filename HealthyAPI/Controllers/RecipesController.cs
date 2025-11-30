@@ -81,7 +81,7 @@ namespace HealthyAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Szerverhiba történt: " + ex.Message });
+                return StatusCode(500, new { message = "Server error: " + ex.Message });
             }
         }
     }

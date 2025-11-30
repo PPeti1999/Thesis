@@ -45,13 +45,13 @@ export class WeightHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
         },
         title: {
           display: true,
-          text: 'Dátum' // Date
+          text: 'Date' // Date
         }
       },
       y: {
         title: {
           display: true,
-          text: 'Testsúly (kg)' // Weight (kg)
+          text: 'Weight (kg)' // Weight (kg)
         },
         beginAtZero: false
       }
@@ -63,7 +63,7 @@ export class WeightHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
       tooltip: {
         callbacks: {
           label: (context) => {
-            return `Testsúly: ${context.parsed.y} kg`; // Weight: Y kg
+            return `Weight: ${context.parsed.y} kg`; // Weight: Y kg
           }
         }
       }

@@ -26,5 +26,11 @@ namespace HealthyAPI.Models
         public bool IsFemale { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public class ServiceResult
+    {
+      public bool Success { get; set; }
+      public string Title { get; set; }
+      public string Message { get; set; }
     }
+  }
 }

@@ -28,7 +28,10 @@ namespace HealthyAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActivityCatalogResponseDto>>> GetAll()
         {
-            var activityCatalogs = await _service.GetAll();
+            // A Service már kész DTO listát ad vissza
+            var dtos = await _service.GetAll();
+            return Ok(dtos);
+     /* var activityCatalogs = await _service.GetAll();
             return Ok(activityCatalogs.Select(f => new ActivityCatalogResponseDto
             {
                 ActivityCatalogID = f.ActivityCatalogID,
@@ -36,31 +39,38 @@ namespace HealthyAPI.Controllers
                 Minute = f.Minute,
                 Calories = f.Calories,
                 CreatedAt = f.CreatedAt
-            }));
+            }));*/
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ActivityCatalogResponseDto>> GetById(string id)
         {
-            var activityCatalogs = await _service.GetById(id);
-            if (activityCatalogs == null) return NotFound();
-            return Ok(new ActivityCatalogResponseDto
-            {
-                ActivityCatalogID = activityCatalogs.ActivityCatalogID,
-                Name = activityCatalogs.Name,
-                Minute = activityCatalogs.Minute,
-                Calories = activityCatalogs.Calories,
-                CreatedAt = activityCatalogs.CreatedAt
-            });
-        }
+      /* var activityCatalogs = await _service.GetById(id);
+       if (activityCatalogs == null) return NotFound();
+       return Ok(new ActivityCatalogResponseDto
+       {
+           ActivityCatalogID = activityCatalogs.ActivityCatalogID,
+           Name = activityCatalogs.Name,
+           Minute = activityCatalogs.Minute,
+           Calories = activityCatalogs.Calories,
+           CreatedAt = activityCatalogs.CreatedAt
+       });*/
+      var dto = await _service.GetById(id);
+      if (dto == null) return NotFound();
+
+      return Ok(dto);
+    }
 
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ActivityCatalogResponseDto>> Create([FromBody] ActivityCatalogCreateDto dto)
         {
+      // A CreateDto-t adjuk át, és ResponseDto-t kapunk vissza
+      var createdDto = await _service.Create(dto);
 
-
-            var activityCatalog = new ActivityCatalog
+      return Ok(createdDto);
+      /*
+      var activityCatalog = new ActivityCatalog
             {
                 ActivityCatalogID = Guid.NewGuid().ToString(),
                 Name = dto.Name,
@@ -79,14 +89,19 @@ namespace HealthyAPI.Controllers
                 Minute = activityCatalogs.Minute,
                 Calories = activityCatalogs.Calories,
                 CreatedAt = activityCatalogs.CreatedAt
-            });
+            });*/
         }
 
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<ActivityCatalogResponseDto>> Update(string id, [FromBody] ActivityCatalogCreateDto dto)
         {
-            var activityCatalogs = await _service.GetById(id);
+      var updatedDto = await _service.Update(id, dto);
+
+      if (updatedDto == null) return NotFound();
+
+      return Ok(updatedDto);/*
+      var activityCatalogs = await _service.GetById(id);
             if (activityCatalogs == null) return NotFound();
             activityCatalogs.Name = dto.Name;
             activityCatalogs.Minute = dto.Minute;
@@ -104,7 +119,7 @@ namespace HealthyAPI.Controllers
                 Minute = activityCatalog.Minute,
                 Calories = activityCatalog.Calories,
                 CreatedAt = activityCatalog.CreatedAt
-            });
+            });*/
         }
 
         [HttpDelete("{id}")]

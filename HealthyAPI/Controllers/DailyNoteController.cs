@@ -37,17 +37,16 @@ namespace HealthyAPI.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // 1. Megpróbáljuk lekérdezni a naplót.
+           
             var result = await _service.GetTodayNote(userId);
 
             if (result == null)
             {
-                // 2. Ha nincs, létrehozzuk. A létrehozáskor megtörténik a kezdeti kalkuláció.
+               
                 result = await _service.CreateDailyNote(userId);
             }
 
-            // 3. HA MÁR VAN, VISSZAKÜLDJÜK. NINCS FÖLÖSLEGES KALKULÁCIÓ VAGY ÚJRA-LEKÉRDEZÉS.
-            // Tegyük fel, hogy az UpdateMealNutritionAsync csak a CRUD metódusokban fut le.
+       
 
             return Ok(result);
         }
@@ -104,16 +103,16 @@ namespace HealthyAPI.Controllers
             var refreshed = await _service.GetTodayNote(updated.UserID);
             return Ok(refreshed);
         }
-        // KIEGÉSZÍTÉS: ÚJ VÉGPONT A TESTSÚLY ELŐZMÉNYEK LEKÉRÉSÉRE
+       
         [HttpGet("weight-history")]
         [Authorize]
         [ProducesResponseType(typeof(List<DailyNoteResponseDto>), 200)]
         public async Task<ActionResult<List<DailyNoteResponseDto>>> GetWeightHistory()
         {
-            // A Service lekéri a felhasználó ID-t a HttpContext-ből
+           
             var weightHistory = await _service.GetAllDailyNotesForGraph();
 
-            // Az üres lista is sikeres válasz (200 OK), ha nincs adat.
+         
             return Ok(weightHistory);
         }
 

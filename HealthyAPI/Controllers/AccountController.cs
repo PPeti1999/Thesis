@@ -63,18 +63,6 @@ namespace HealthyAPI.Controllers
             return Ok(updated);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
         [Authorize]
         [HttpGet("refresh-user-token")]
         public async Task<ActionResult<UserDto>> RefreshUserToken()
@@ -88,10 +76,10 @@ namespace HealthyAPI.Controllers
         public async Task<ActionResult<UserDto>> Login(LoginDto model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
-            if (user == null) return Unauthorized("Invalid username or password"); // rossz user name
+            if (user == null) return Unauthorized("Invalid username or password"); 
             if (user.EmailConfirmed == false) return Unauthorized("Please confirm your email.");
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-            if (!result.Succeeded) return Unauthorized("Invalid username or password");// rossz jelszó 
+            if (!result.Succeeded) return Unauthorized("Invalid username or password");
             return CreateApplicationUserDto(user);
 
         }
@@ -112,8 +100,6 @@ namespace HealthyAPI.Controllers
             };
             var result = await _userManager.CreateAsync(userToAdd, model.Password);
             if (!result.Succeeded) return BadRequest(result.Errors);
-
-
             try
             {
                 if (await SendConfirmEMailAsync(userToAdd))
@@ -281,93 +267,6 @@ namespace HealthyAPI.Controllers
 
             return await _emailService.SendEmailAsync(emailSend);
         }
-        /*
-        private async Task<bool> FacebookValidatedAsync(string accessToken, string userId)
-        {
-            var facebookKeys = _config["Facebook:AppId"] + "|" + _config["Facebook:AppSecret"];
-            var fbResult = await _facebookHttpClient.GetFromJsonAsync<FacebookResultDto>($"debug_token?input_token={accessToken}&access_token={facebookKeys}");
-
-            if (fbResult == null || fbResult.Data.Is_Valid == false || !fbResult.Data.User_Id.Equals(userId))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task<bool> GoogleValidatedAsync(string accessToken, string userId)
-        {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(accessToken);
-
-            if (!payload.Audience.Equals(_config["Google:ClientId"]))
-            {
-                return false;
-            }
-
-            if (!payload.Issuer.Equals("accounts.google.com") && !payload.Issuer.Equals("https://accounts.google.com"))
-            {
-                return false;
-            }
-
-            if (payload.ExpirationTimeSeconds == null)
-            {
-                return false;
-            }
-
-            DateTime now = DateTime.Now.ToUniversalTime();
-            DateTime expiration = DateTimeOffset.FromUnixTimeSeconds((long)payload.ExpirationTimeSeconds).DateTime;
-            if (now > expiration)
-            {
-                return false;
-            }
-
-            if (!payload.Subject.Equals(userId))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task SaveRefreshTokenAsync(User user)
-        {
-            var refreshToken = _jWTService.CreateRefreshToken(user);
-
-            var existingRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.UserId == user.Id);
-            if (existingRefreshToken != null)
-            {
-                existingRefreshToken.Token = refreshToken.Token;
-                existingRefreshToken.DateCreatedUtc = refreshToken.DateCreatedUtc;
-                existingRefreshToken.DateExpiresUtc = refreshToken.DateExpiresUtc;
-            }
-            else
-            {
-                user.RefreshTokens.Add(refreshToken);
-            }
-
-            await _context.SaveChangesAsync();
-
-            var cookieOptions = new CookieOptions
-            {
-                Expires = refreshToken.DateExpiresUtc,
-                IsEssential = true,
-                HttpOnly = true,
-            };
-
-            Response.Cookies.Append("identityAppRefreshToken", refreshToken.Token, cookieOptions);
-        }
-
-        public async Task<bool> IsValidRefreshTokenAsync(string userId, string token)
-        {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token)) return false;
-
-            var fetchedRefreshToken = await _context.RefreshTokens
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.Token == token);
-            if (fetchedRefreshToken == null) return false;
-            if (fetchedRefreshToken.IsExpired) return false;
-
-            return true;
-        }*/
         #endregion
     }
 }

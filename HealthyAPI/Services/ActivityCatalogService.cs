@@ -12,49 +12,93 @@ namespace HealthyAPI.Services
     public class ActivityCatalogService : IActivityCatalogService
     {
         private readonly Context _context;
-        private readonly IUserActivityService _iuseractivityservice;
 
         public ActivityCatalogService(Context context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<ActivityCatalog>> GetAll()
+        public async Task<IEnumerable<ActivityCatalogResponseDto>> GetAll()
         {
-            return await _context.ActivityCatalog.ToListAsync();
+            var entities = await _context.ActivityCatalog.ToListAsync();
+
+     
+            return entities.Select(f => new ActivityCatalogResponseDto
+            {
+              ActivityCatalogID = f.ActivityCatalogID,
+              Name = f.Name,
+              Minute = f.Minute,
+              Calories = f.Calories,
+              CreatedAt = f.CreatedAt
+            });
+         }
+
+        public async Task<ActivityCatalogResponseDto> GetById(string id)
+        {
+
+          var entity = await _context.ActivityCatalog.FindAsync(id);
+          if (entity == null) return null;
+          return new ActivityCatalogResponseDto
+          {
+            ActivityCatalogID = entity.ActivityCatalogID,
+            Name = entity.Name,
+            Minute = entity.Minute,
+            Calories = entity.Calories,
+            CreatedAt = entity.CreatedAt
+          };
         }
 
-        public async Task<ActivityCatalog?> GetById(string id)
+        public async Task<ActivityCatalogResponseDto> Create(ActivityCatalogCreateDto dto)
         {
 
-            return await _context.ActivityCatalog.FindAsync(id);
+          var activityCatalog = new ActivityCatalog
+          {
+            Name = dto.Name,
+            Minute = dto.Minute,
+            Calories = dto.Calories,
+            CreatedAt = DateTime.UtcNow
+          };
+
+          _context.ActivityCatalog.Add(activityCatalog);
+          await _context.SaveChangesAsync();
+          return new ActivityCatalogResponseDto
+          {
+            ActivityCatalogID = activityCatalog.ActivityCatalogID,
+            Name = activityCatalog.Name,
+            Minute = activityCatalog.Minute,
+            Calories = activityCatalog.Calories,
+            CreatedAt = activityCatalog.CreatedAt
+          };
         }
 
-        public async Task<ActivityCatalog> Create(ActivityCatalog dto)
+
+        public async Task<ActivityCatalogResponseDto?> Update(string id, ActivityCatalogCreateDto dto)
         {
+          var existing = await _context.ActivityCatalog.FindAsync(id);
+          if (existing == null) return null;
 
+          existing.Name = dto.Name;
+          existing.Minute = dto.Minute;
+          existing.Calories = dto.Calories;
 
-            _context.ActivityCatalog.Add(dto);
-            await _context.SaveChangesAsync();
-            return dto;
-        }
+          _context.ActivityCatalog.Update(existing);
+          await _context.SaveChangesAsync();
 
-        public async Task<ActivityCatalog?> Update(string id, ActivityCatalog dto)
-        {
-            var existing = await _context.ActivityCatalog.FindAsync(id);
-            if (existing == null) return null;
-
-            _context.ActivityCatalog.Update(existing);
-            await _context.SaveChangesAsync();
-            return existing;
+          return new ActivityCatalogResponseDto
+          {
+            ActivityCatalogID = existing.ActivityCatalogID,
+            Name = existing.Name,
+            Minute = existing.Minute,
+            Calories = existing.Calories,
+            CreatedAt = existing.CreatedAt
+          };
         }
 
         public async Task<bool> Delete(string id)
         {
-            // Ellenőrzés: van-e kapcsolódó bejegyzés
             bool hasDependencies = await _context.UserActivity.AnyAsync(dn => dn.ActivityCatalogID == id);
             if (hasDependencies)
-                throw new InvalidOperationException("Az aktivitás már használatban van, nem törölhető.");
+                throw new InvalidOperationException("Has dependency");
 
             var entity = await _context.ActivityCatalog.FindAsync(id);
             if (entity == null) return false;

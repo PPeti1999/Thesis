@@ -6,7 +6,7 @@ namespace HealthyAPI.Models
     public class RecipeFoods
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string RecipeFoodID { get; set; }
         public string RecipeID { get; set; }
         [ForeignKey("RecipeID")]

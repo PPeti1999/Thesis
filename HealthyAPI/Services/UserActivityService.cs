@@ -22,7 +22,6 @@ namespace HealthyAPI.Services
         {
             var activities = await _context.UserActivity
                 .Include(ua => ua.ActivityCatalog)
-                .Include(ua => ua.Photo)
                 .ToListAsync();
 
             return activities.Select(ua => new UserActivityResponseDto
@@ -33,8 +32,6 @@ namespace HealthyAPI.Services
                 ActivityName = ua.ActivityCatalog?.Name ?? string.Empty,
                 Duration = ua.Duration,
                 Calories = ua.Calories,
-                PhotoID = ua.PhotoID ?? string.Empty,
-                PhotoData = ua.Photo?.PhotoData ?? string.Empty
             });
         }
 
@@ -42,7 +39,6 @@ namespace HealthyAPI.Services
         {
             var entity = await _context.UserActivity
                 .Include(ua => ua.ActivityCatalog)
-                .Include(ua => ua.Photo)
                 .FirstOrDefaultAsync(ua => ua.UserActivityID == id);
 
             if (entity == null) return null;
@@ -55,18 +51,13 @@ namespace HealthyAPI.Services
                 ActivityName = entity.ActivityCatalog?.Name ?? string.Empty,
                 Duration = entity.Duration,
                 Calories = entity.Calories,
-                PhotoID = entity.PhotoID ?? string.Empty,
-                PhotoData = entity.Photo?.PhotoData ?? string.Empty
             };
         }
 
         public async Task<UserActivityResponseDto> Create(UserActivityCreateDto dto)
         {
             var catalog = await _context.ActivityCatalog.FindAsync(dto.ActivityCatalogID);
-            if (catalog == null) throw new ArgumentException("Invalid activity catalog ID");
-
             var calories = (int)(dto.Duration / (float)catalog.Minute * catalog.Calories);
-
             var entity = new UserActivity
             {
                 UserActivityID = Guid.NewGuid().ToString(),
@@ -74,12 +65,9 @@ namespace HealthyAPI.Services
                 ActivityCatalogID = dto.ActivityCatalogID,
                 Duration = dto.Duration,
                 Calories = calories,
-                PhotoID = dto.PhotoID
             };
 
             _context.UserActivity.Add(entity);
-
-            // 🔥 Itt frissítjük a DailyNote célkalória értékét
             var dailyNote = await _context.DailyNote.FindAsync(dto.DailyNoteID);
             if (dailyNote != null)
             {
@@ -88,7 +76,7 @@ namespace HealthyAPI.Services
 
             await _context.SaveChangesAsync();
 
-            return await GetById(entity.UserActivityID) ?? throw new Exception("Entity not found after creation.");
+            return await GetById(entity.UserActivityID);
         }
 
         public async Task<UserActivityResponseDto?> Update(string id, UserActivityCreateDto dto)
@@ -97,7 +85,6 @@ namespace HealthyAPI.Services
             if (entity == null) return null;
 
             var catalog = await _context.ActivityCatalog.FindAsync(dto.ActivityCatalogID);
-            if (catalog == null) throw new ArgumentException("Invalid activity catalog ID");
 
             int oldCalories = entity.Calories;
             int newCalories = (int)(dto.Duration / (float)catalog.Minute * catalog.Calories);
@@ -107,9 +94,6 @@ namespace HealthyAPI.Services
             entity.ActivityCatalogID = dto.ActivityCatalogID;
             entity.Duration = dto.Duration;
             entity.Calories = newCalories;
-            entity.PhotoID = dto.PhotoID;
-
-            // 🔥 Itt frissítjük a DailyNote célkalória értékét a különbséggel
             var dailyNote = await _context.DailyNote.FindAsync(dto.DailyNoteID);
             if (dailyNote != null)
             {
@@ -124,8 +108,6 @@ namespace HealthyAPI.Services
         {
             var entity = await _context.UserActivity.FindAsync(id);
             if (entity == null) return false;
-
-            // 🔥 Kalória levonása a kapcsolódó DailyNote-ból
             var dailyNote = await _context.DailyNote.FindAsync(entity.DailyNoteID);
             if (dailyNote != null)
             {

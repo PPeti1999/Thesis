@@ -31,7 +31,6 @@ namespace HealthyAPI.Data
          */
         public DbSet<Food> Food { get; set; } = default!;
         public DbSet<Recipe> Recipe { get; set; } = default!;
-        public DbSet<Photo> Photo { get; set; } = default!;
         public DbSet<UserActivity> UserActivity { get; set; } = default!;
         public DbSet<MealTypes> MealTypes { get; set; } = default!;
         public DbSet<DailyNote> DailyNote { get; set; } = default!;
@@ -45,15 +44,10 @@ namespace HealthyAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Photo
-            var photo1 = new Photo { PhotoID = "photo1", PhotoData = "https://example.com/photo1.png" };
-            var photo2 = new Photo { PhotoID = "photo2", PhotoData = "https://example.com/photo2.png" };
-            modelBuilder.Entity<Photo>().HasData(photo1, photo2);
-
             // MealTypes
             modelBuilder.Entity<MealTypes>().HasData(
-                new MealTypes { MealTypeID = "1", Name = "Reggeli", PhotoID = "photo1" },
-                new MealTypes { MealTypeID = "2", Name = "Ebéd", PhotoID = "photo2" }
+                new MealTypes { MealTypeID = "1", Name = "Reggeli"},
+                new MealTypes { MealTypeID = "2", Name = "Ebéd"}
             );
 
             // Food
@@ -122,7 +116,7 @@ namespace HealthyAPI.Data
 
             // UserActivity
             modelBuilder.Entity<UserActivity>().HasData(
-                new UserActivity { UserActivityID = "ua1", DailyNoteID = "dn1", Duration = 30, Calories = 300, PhotoID = "photo2" }
+                new UserActivity { UserActivityID = "ua1", DailyNoteID = "dn1", Duration = 30, Calories = 300 }
             );
 
            modelBuilder.Entity<User>().HasData(
@@ -142,7 +136,6 @@ namespace HealthyAPI.Data
                TargetFat  =70,
                ActivityMultiplier=1,
                IsFemale = false,
-               PhotoID = "photo1",
                CreatedAt = new DateTime(2024, 04, 09, 8, 0, 0),
                UserName = "pasztoripeti@gmail.com",
                NormalizedUserName = "PASZTORIPETI@GMAIL.COM",

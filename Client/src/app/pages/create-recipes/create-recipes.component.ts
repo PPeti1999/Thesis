@@ -52,7 +52,7 @@ export class CreateRecipesComponent  {
             this.updateNutrition();
           },
           error: err => {
-            console.error('Nem sikerült lekérni a receptet:', err);
+            console.error( err);
             this.router.navigate(['/recipes']);
           }
         });
@@ -63,7 +63,7 @@ export class CreateRecipesComponent  {
   loadFoods(): void {
     this.foodClient.getAllFoods().subscribe({
       next: foods => this.foodOptions = foods,
-      error: err => console.error('Hiba az ételek lekérdezésénél:', err)
+      error: err => console.error( err)
     });
   }
 
@@ -110,7 +110,7 @@ export class CreateRecipesComponent  {
 
     request.subscribe({
       next: () => this.router.navigate(['/recipes']),
-      error: err => console.error('Mentés sikertelen:', err)
+      error: err => console.error( err)
     });
   }
 

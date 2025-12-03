@@ -26,7 +26,6 @@ export class FoodQuantityModalComponent implements OnInit, OnChanges  {
 
 
   ngOnInit() {
-    console.log('MODAL INIT FOOD:', this.food); // 👈 itt már az Angularhoz érkezett input érték
   
     if (!this.food) return;
   
@@ -41,8 +40,6 @@ export class FoodQuantityModalComponent implements OnInit, OnChanges  {
     }
   }
   
-
-
   recalculateMacros() {
     if (!this.food) return;
   
@@ -50,24 +47,13 @@ export class FoodQuantityModalComponent implements OnInit, OnChanges  {
     const base = food.gram || 100;
     const f = this.quantity / base;
   
-    console.log('RECALCULATE FROM FOOD:', food);
-  
     this.protein = +((food.protein ?? 0) * f).toFixed(1);
     this.carb    = +((food.carb ?? 0) * f).toFixed(1);
     this.fat     = +((food.fat ?? 0) * f).toFixed(1);
     this.calorie = +((food.calorie ?? 0) * f).toFixed(0);
-    // 💡 erőltetett újrarender
 this.cdr.detectChanges();
-console.log('protein: ', this.protein,
-  ',carb: ', this.carb,
-  ',fat: ', this.fat,
-  ',calorie: ', this.calorie
 
-);
   }
-  
-  
-  
   
 
   onQuantityChange(val: number) {
@@ -78,7 +64,6 @@ console.log('protein: ', this.protein,
   }
 
   save() {
-    console.log('[MODAL] editingMealFoodId:', this.editingMealFoodId); // 💥 EZT TEDD BE
   
     if (!this.food || !this.mealEntryId) return;
   
@@ -88,17 +73,15 @@ console.log('protein: ', this.protein,
     dto.quantity = this.quantity;
   
     if (this.editingMealFoodId) {
-      console.log('[MODAL] Performing UPDATE');
       this.mealFoodsClient.update(this.editingMealFoodId, dto).subscribe({
         next: res => {
           this.added.emit(res);
-          this.reset(); // 💡 Ez itt jó helyen van
+          this.reset(); 
           this.closeModal();
         },
         error: err => console.error(err)
       });
     } else {
-      console.log('[MODAL] Performing CREATE');
       this.mealFoodsClient.create(dto).subscribe({
         next: res => {
           this.added.emit(res);
@@ -121,15 +104,12 @@ console.log('protein: ', this.protein,
       const instance = bootstrap.Modal.getInstance(modalEl);
       bootstrap.Modal.getInstance(modalEl)?.hide();
       instance?.hide();
-      // 💡 Biztonsági törlés: backdrop eltávolítása
       const backdrops = document.querySelectorAll('.modal-backdrop');
       backdrops.forEach(el => el.remove());
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
     }
   }
-  
-  
 
   cancel() {
     const modalEl = document.getElementById('foodQuantityModal');

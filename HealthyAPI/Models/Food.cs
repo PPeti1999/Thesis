@@ -8,7 +8,7 @@ namespace HealthyAPI.Models
     public class Food
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string FoodID { get; set; }
         public string Title { get; set; }
         public int Protein { get; set; }
@@ -17,13 +17,7 @@ namespace HealthyAPI.Models
         public int Calorie { get; set; }
         public int Gram { get; set; }
 
-      /*  public string PhotoID { get; set; }
-        [ForeignKey("PhotoID")]
-        public virtual Photo Photo { get; set; }
-      */
         public DateTime CreatedAt { get; set; }
 
-        //     public virtual ICollection<MealFoods> MealFoods { get; set; }
-        //    public virtual ICollection<RecipeFoods> RecipeFoods { get; set; }
     }
 }

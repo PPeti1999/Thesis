@@ -15,8 +15,6 @@
         <h6 class="card-subtitle mb-2 text-muted">
           {{ activity.calories }} kcal / {{ activity.minute }} minutes
         </h6>
-
-        <!-- Gombok csak bejelentkezve -->
         <div *ngIf="(accountService.user$ | async) as user">
           <button class="btn btn-sm btn-primary me-2" (click)="onEdit(activity)">
             Edit

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivityCatalogClient, ActivityCatalogResponseDto } from '../../shared/models/Nswag generated/NswagGenerated';
 import { AccountService } from '../../account/account.service';
 import { Router } from '@angular/router';
+import { SharedService } from '../../shared/shared.service';
 
 @Component({
   selector: 'app-activity-catalog',
@@ -12,7 +13,7 @@ import { Router } from '@angular/router';
 export class ActivityCatalogComponent implements OnInit {
   activities: ActivityCatalogResponseDto[] = [];
 
-  constructor(public accountService: AccountService,private router: Router, private activityClient: ActivityCatalogClient) {}
+  constructor(public accountService: AccountService,private router: Router,private sharedService :SharedService, private activityClient: ActivityCatalogClient) {}
 
   ngOnInit(): void {
     this.loadActivities();
@@ -21,7 +22,7 @@ export class ActivityCatalogComponent implements OnInit {
   loadActivities(): void {
     this.activityClient.getAll().subscribe({
       next: data => this.activities = data,
-      error: err => console.error('Hiba az aktivitáskatalógus betöltésekor:', err)
+      error: err => console.error('Error:', err)
     });
   }
   onEdit(activity: ActivityCatalogResponseDto): void {
@@ -32,28 +33,36 @@ export class ActivityCatalogComponent implements OnInit {
 onDelete(activity: ActivityCatalogResponseDto): void {
   if (!activity.activityCatalogID) return;
 
-  const confirmed = confirm(`You wanna delete this: "${activity.name}"?`);
-  if (!confirmed) return;
+ this.sharedService.showConfirmation(
+  'Confirm', 
+  `Are you sure you want to delete: "${activity.name}"?`
+).subscribe((confirmed: boolean) => {
+  if (confirmed) {
+    this.activityClient.delete(activity.activityCatalogID!).subscribe({
+      next: () => {
+        this.activities = this.activities.filter(a => a.activityCatalogID !== activity.activityCatalogID);
+        this.sharedService.showNotification(true, 'Success', 'Success delete!');
+      },
+      error: (err) => {
+        const errorTitle = 'Error';
 
-  this.activityClient.delete(activity.activityCatalogID).subscribe({
-    next: () => {
-      this.activities = this.activities.filter(a => a.activityCatalogID !== activity.activityCatalogID);
-    },
-    error: err => {
-      if (err.error instanceof Blob) {
-        err.error.text().then((text: string) => {
-          try {
-            const parsed = JSON.parse(text);
-            alert(parsed.message || 'Nem törölhető: ismeretlen hiba.');
-          } catch {
-            alert('Nem törölhető: nyers válasz.');
-          }
-        });
-      } else {
-        alert('You use this activity.');
+        if (err.response) {
+           let errorMessage = 'Error'; 
+           try {
+              const parsed = JSON.parse(err.response);
+              errorMessage = parsed.message || parsed.title || parsed.detail || errorMessage;
+           } catch {
+              errorMessage = err.message || errorMessage;
+           }
+           this.sharedService.showNotification(false, errorTitle, errorMessage);
+        }
+        else {
+          this.sharedService.showNotification(false, errorTitle, 'Error');
+        }
       }
-    }
-  });
+    });
+  }
+});
 }
 
 

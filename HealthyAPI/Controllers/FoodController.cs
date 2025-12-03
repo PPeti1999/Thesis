@@ -19,137 +19,55 @@ namespace HealthyAPI.Controllers
     public class FoodController : ControllerBase
     {
         private readonly IFoodService _foodService;
-        private readonly IPhotoService _photoService;
 
-        public FoodController(IPhotoService photoService, IFoodService foodService)
+        public FoodController(IFoodService foodService)
         {
             _foodService = foodService;
-            _photoService = photoService;
         }
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<FoodResponseDto>>> Search([FromQuery] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("Query is required");
-
-            var results = await _foodService.SearchAsync(query);
+            var results = await _foodService.Search(query);
             return Ok(results);
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FoodResponseDto>>> GetAllFoods()
         {
-            var foods = await _foodService.ListFoods();
-            return Ok(foods.Select(f => new FoodResponseDto
-            {
-                FoodID = f.FoodID,
-                Title = f.Title,
-                Protein = f.Protein,
-                Fat = f.Fat,
-                Carb = f.Carb,
-                Calorie = f.Calorie,
-                Gram = f.Gram,
-           
-                CreatedAt = f.CreatedAt
-            }));
+          var foods = await _foodService.ListFoods();
+          return Ok(foods);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<FoodResponseDto>> GetFood(string id)
         {
-            var food = await _foodService.GetFood(id);
-            if (food == null) return NotFound();
-
-            return Ok(new FoodResponseDto
-            {
-                FoodID = food.FoodID,
-                Title = food.Title,
-                Protein = food.Protein,
-                Fat = food.Fat,
-                Carb = food.Carb,
-                Calorie = food.Calorie,
-                Gram = food.Gram,
-            
-                CreatedAt = food.CreatedAt
-            });
+          var dto = await _foodService.GetFood(id);
+          if (dto == null) return NotFound();
+          return Ok(dto);
         }
 
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<FoodResponseDto>> AddFood([FromBody] FoodCreateDto dto)
         {
-         
-
-            var food = new Food
-            {
-              //  FoodID = Guid.NewGuid().ToString(),
-                Title = dto.Title,
-                Protein = dto.Protein,
-                Fat = dto.Fat,
-                Carb = dto.Carb,
-                Calorie = dto.Calorie,
-                Gram = dto.Gram,
-            
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var created = await _foodService.AddFood(food);
-
-            return Ok(new FoodResponseDto
-            {
-                FoodID = created.FoodID,
-                Title = created.Title,
-                Protein = created.Protein,
-                Fat = created.Fat,
-                Carb = created.Carb,
-                Calorie = created.Calorie,
-                Gram = created.Gram,
-              
-                CreatedAt = created.CreatedAt
-            });
+          var createdDto = await _foodService.AddFood(dto);
+          return Ok(createdDto);
         }
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult<FoodResponseDto>> UpdateFood(string id, [FromBody] FoodUpdateDto dto)
+        public async Task<ActionResult<FoodResponseDto>> UpdateFood(string id, [FromBody] FoodCreateDto dto)
         {
-            var food = await _foodService.GetFood(id);
-            if (food == null) return NotFound();
-
-            food.Title = dto.Title;
-            food.Protein = dto.Protein;
-            food.Fat = dto.Fat;
-            food.Carb = dto.Carb;
-            food.Calorie = dto.Calorie;
-            food.Gram = dto.Gram;
-
-           /* if (!string.IsNullOrEmpty(dto.PhotoData))
-            {
-                var uploadedPhoto = await _photoService.UploadPhoto(new Photo { PhotoData = dto.PhotoData });
-                food.PhotoID = uploadedPhoto.PhotoID;
-            }*/
-
-            var updated = await _foodService.UpdateFood(id, food);
-
-            return Ok(new FoodResponseDto
-            {
-                FoodID = updated.FoodID,
-                Title = updated.Title,
-                Protein = updated.Protein,
-                Fat = updated.Fat,
-                Carb = updated.Carb,
-                Calorie = updated.Calorie,
-                Gram = updated.Gram,
-               /* PhotoID = updated.PhotoID,
-                PhotoData = updated.Photo?.PhotoData,*/
-                CreatedAt = updated.CreatedAt
-            });
+          var updatedDto = await _foodService.UpdateFood(id, dto);
+          if (updatedDto == null) return NotFound();
+          return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteFood(string id)
         {
-
             try
             {
                 var success = await _foodService.DeleteFood(id);

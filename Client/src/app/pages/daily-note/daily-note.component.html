@@ -6,22 +6,17 @@
       <span class="fw-bold fs-5">{{ dailyNote?.createdAt | date: 'MMMM d' }}</span>
       <button class="btn btn-outline-secondary ms-2" (click)="loadNextNote()">▶</button>
     </div>
-
     <div class="d-flex align-items-center">
-      <!-- ÚJ IKON: Testsúly grafikon megnyitása -->
       <button class="btn btn-outline-info rounded-circle shadow-sm me-2" (click)="openWeightHistoryModal()" title="Testsúly Történet">
-          <i class="bi bi-graph-up-arrow fs-5"></i> <!-- Kép a grafikon/trend jelzésére -->
+          <i class="bi bi-graph-up-arrow fs-5"></i> 
       </button>
-      <!-- Meglévő Naptár gomb -->
       <button class="btn btn-outline-primary rounded-circle shadow-sm" (click)="openCalendar()" title="Open Calendar">
         <i class="bi bi-calendar fs-5"></i>
       </button>
   </div>
 
   </div>
-  
 
-  <!-- Summary Cards -->
   <div class="row text-center mb-4">
     <div class="col bg-light rounded shadow-sm py-3 mx-1">
       <div class="text-muted small">Consumed</div>
@@ -39,7 +34,6 @@
     </div>
   </div>
 
-  <!-- Macronutrients Progress -->
   <div class="mb-4">
     <div *ngFor="let nutrient of macroNutrients" class="mb-3">
       <div class="d-flex justify-content-between small text-muted">
@@ -56,7 +50,6 @@
     </div>
   </div>
 
-  <!-- Meal Entries Section -->
   <div class="mb-4">
     <h5 class="mb-3">Meals</h5>
     <div *ngFor="let meal of mealEntries" class="card mb-2 shadow-sm" (click)="openMealDetails(meal)" style="cursor: pointer;">
@@ -70,8 +63,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Activities Section -->
   <div class="mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0">Activities</h5>
@@ -89,8 +80,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Daily Weight Input -->
   <div class="card shadow-sm p-3">
     <h5 class="card-title">Daily Weight</h5>
     <div class="form-group">
@@ -109,7 +98,6 @@
     </button>
   </div>
 </div>
-<!-- Activity Catalog Modal -->
 <div class="modal fade" id="activityCatalogModal" tabindex="-1" aria-labelledby="activityCatalogModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
@@ -201,7 +189,6 @@
   </div>
 </div>
 
-<!-- Meal Item Search Modal -->
 <div class="modal fade" id="mealItemSearchModal" tabindex="-1" aria-labelledby="mealItemSearchModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -219,8 +206,6 @@
   </div>
 </div>
 
-
-<!-- Ez a helyes, modal belsejében -->
 <div class="modal fade" id="foodQuantityModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -233,7 +218,7 @@
     </div>
   </div>
 </div>
-<!-- Recipe Quantity Modal -->
+
 <div class="modal fade" id="recipeQuantityModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -272,12 +257,6 @@
   </div>
 </div>
 
-
-
-
-
-
-<!-- ÚJ MODAL AZ SÚLY GRAFIKONHOZ -->
 <div class="modal fade" id="weightHistoryModal" tabindex="-1" aria-labelledby="weightHistoryModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -286,7 +265,6 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4" style="min-height: 450px;">
-          <!-- Itt ágyazzuk be a komponenst. A komponens felel az adatok lekéréséért és a megjelenítésért. -->
           <app-weight-history #weightHistoryComponent></app-weight-history>
       </div>
       <div class="modal-footer">

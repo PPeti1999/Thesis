@@ -17,7 +17,7 @@ namespace HealthyAPI.Services
 
         public async Task<UserProfileResponseDto?> GetCurrentUserProfile(string userId)
         {
-            var user = await _context.Users.Include(u => u.Photo).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return null;
 
             return new UserProfileResponseDto
@@ -35,8 +35,6 @@ namespace HealthyAPI.Services
                 TargetProtein = user.TargeProtein,
                 TargetCarb = user.TargetCarb,
                 TargetFat = user.TargetFat,
-                PhotoID = user.PhotoID,
-                PhotoData = user.Photo?.PhotoData,
                 IsFemale = user.IsFemale,
                 GoalType = user.GoalType,
                 ActivityMultiplier = user.ActivityMultiplier
@@ -47,7 +45,7 @@ namespace HealthyAPI.Services
 
         public async Task<UserProfileResponseDto?> UpdateProfile(string userId, UpdateUserProfileDto dto)
         {
-            var user = await _context.Users.Include(u => u.Photo).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return null;
 
             user.FirstName = dto.FirstName;
@@ -59,14 +57,14 @@ namespace HealthyAPI.Services
             user.GoalWeight = dto.GoalWeight;
             user.GoalType = dto.GoalType;
 
-            // 🔢 BMR + TDEE
+            // BMR + TDEE
             double bmr = dto.IsFemale
                 ? 10 * user.Weight + 6.25 * user.Height - 5 * user.Age - 161
                 : 10 * user.Weight + 6.25 * user.Height - 5 * user.Age + 5;
 
             double tdee = bmr * dto.ActivityMultiplier;
 
-            // 🎯 Cél módosítás (tömegelés / fogyás)
+            // tömeg / fogyass
             if (dto.GoalType == 1) tdee += 500;
             else if (dto.GoalType == 2) tdee -= 500;
 
@@ -77,11 +75,8 @@ namespace HealthyAPI.Services
             user.ActivityMultiplier = dto.ActivityMultiplier;
 
             await _context.SaveChangesAsync();
-
-            // 🔁 Frissítjük a mai DailyNote célértékeit is, ha létezik
             var todayNote = await _context.DailyNote
                 .FirstOrDefaultAsync(d => d.UserID == user.Id && d.CreatedAt.Date == DateTime.Today);
-
             if (todayNote != null)
             {
                 todayNote.DailyTargetCalorie = user.TargetCalorie;

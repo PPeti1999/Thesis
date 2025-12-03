@@ -8,23 +8,14 @@ namespace HealthyAPI.Models
     public class Recipe
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string RecipeID { get; set; }
-        public string Title { get; set; }            // ✅ új mező
+        public string Title { get; set; }           
         public string Description { get; set; }
         public float SumProtein { get; set; }
         public float SumCarb { get; set; }
         public float SumFat { get; set; }
         public float SumCalorie { get; set; }
-
-
-     /*   public string PhotoID { get; set; }
-        [ForeignKey("PhotoID")]
-        public virtual Photo Photo { get; set; }*/
-
         public DateTime CreatedAt { get; set; }
-
-       /* public virtual ICollection<MealRecipes> MealRecipes { get; set; }
-        public virtual ICollection<RecipeFoods> RecipeFoods { get; set; }*/
     }
 }

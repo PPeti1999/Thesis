@@ -10,10 +10,7 @@ import { User } from '../shared/models/account/user';
 })
 export class NavbarComponent {
   currentUser: User | null = null;
-  isLoading: Boolean = true; // Flag to track loading state
- /* constructor(  private _homeBodyDiaryService: HomeBodydiaryService, public _accountService: AccountService
-    )  {}
-*/
+  isLoading: Boolean = true; 
 constructor(   public _accountService: AccountService
 )  {}
   logout() {

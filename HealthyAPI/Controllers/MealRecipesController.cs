@@ -18,7 +18,6 @@ namespace HealthyAPI.Controllers
     public class MealRecipesController : ControllerBase
     {
         private readonly IMealRecipesService _service;
-
         public MealRecipesController(IMealRecipesService service)
         {
             _service = service;
@@ -29,6 +28,7 @@ namespace HealthyAPI.Controllers
             var result = await _service.GetByMealEntryIdAsync(mealEntryId);
             return Ok(result);
         }
+
 
 
         [HttpGet]
@@ -42,9 +42,9 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<MealRecipeResponseDto>> GetById(string id)
         {
-            var item = await _service.GetById(id);
-            if (item == null) return NotFound();
-            return Ok(item);
+            var result = await _service.GetById(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPost]

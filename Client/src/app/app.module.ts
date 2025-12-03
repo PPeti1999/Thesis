@@ -27,6 +27,7 @@ import { FoodQuantityModalComponent } from './pages/food-quantity-modal/food-qua
 import { RecipeQuantityModalComponent } from './pages/recipe-quantity-modal/recipe-quantity-modal.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { WeightHistoryComponent } from './pages/weight-history/weight-history.component';
+import { ConfirmDialogComponent } from './shared/components/modals/confirm-dialog/confirm-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,7 +44,7 @@ import { WeightHistoryComponent } from './pages/weight-history/weight-history.co
     MealItemSearchComponent,
     FoodQuantityModalComponent,
     RecipeQuantityModalComponent,
-    WeightHistoryComponent
+    WeightHistoryComponent,
   ],
   imports: [
     FormsModule,
@@ -56,7 +57,7 @@ import { WeightHistoryComponent } from './pages/weight-history/weight-history.co
     ReactiveFormsModule,
     SharedModule,
     FormsModule,
-    NgbDatepickerModule, // 👉 ezt add hozzá
+    NgbDatepickerModule, 
     
   ],
   providers: [ {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor,multi:true},

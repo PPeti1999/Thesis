@@ -19,19 +19,16 @@ namespace HealthyAPI.Controllers
     public class MealEntriesController : ControllerBase
     {
         private readonly IMealEntriesService _service;
-
         public MealEntriesController(IMealEntriesService service)
         {
             _service = service;
         }
-
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<MealEntryResponseDto>>> GetAll()
         {
             return Ok(await _service.GetAll());
         }
-
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<MealEntryResponseDto>> GetById(string id)
@@ -47,15 +44,13 @@ namespace HealthyAPI.Controllers
             var results = await _service.GetByDailyNoteId(dailyNoteId);
             return Ok(results);
         }
-
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<MealEntryResponseDto>> Create(MealEntryCreateDto dto)
         {
-            var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.MealEntryID }, created);
+            var creeated = await _service.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { id = creeated.MealEntryID }, creeated);
         }
-
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<MealEntryResponseDto>> Update(string id, MealEntryCreateDto dto)
@@ -64,7 +59,6 @@ namespace HealthyAPI.Controllers
             if (updated == null) return NotFound();
             return Ok(updated);
         }
-
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string id)

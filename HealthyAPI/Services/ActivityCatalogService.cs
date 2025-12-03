@@ -21,8 +21,6 @@ namespace HealthyAPI.Services
         public async Task<IEnumerable<ActivityCatalogResponseDto>> GetAll()
         {
             var entities = await _context.ActivityCatalog.ToListAsync();
-
-     
             return entities.Select(f => new ActivityCatalogResponseDto
             {
               ActivityCatalogID = f.ActivityCatalogID,
@@ -32,10 +30,8 @@ namespace HealthyAPI.Services
               CreatedAt = f.CreatedAt
             });
          }
-
         public async Task<ActivityCatalogResponseDto> GetById(string id)
         {
-
           var entity = await _context.ActivityCatalog.FindAsync(id);
           if (entity == null) return null;
           return new ActivityCatalogResponseDto
@@ -47,10 +43,8 @@ namespace HealthyAPI.Services
             CreatedAt = entity.CreatedAt
           };
         }
-
         public async Task<ActivityCatalogResponseDto> Create(ActivityCatalogCreateDto dto)
         {
-
           var activityCatalog = new ActivityCatalog
           {
             Name = dto.Name,
@@ -58,7 +52,6 @@ namespace HealthyAPI.Services
             Calories = dto.Calories,
             CreatedAt = DateTime.UtcNow
           };
-
           _context.ActivityCatalog.Add(activityCatalog);
           await _context.SaveChangesAsync();
           return new ActivityCatalogResponseDto
@@ -76,14 +69,11 @@ namespace HealthyAPI.Services
         {
           var existing = await _context.ActivityCatalog.FindAsync(id);
           if (existing == null) return null;
-
           existing.Name = dto.Name;
           existing.Minute = dto.Minute;
           existing.Calories = dto.Calories;
-
           _context.ActivityCatalog.Update(existing);
           await _context.SaveChangesAsync();
-
           return new ActivityCatalogResponseDto
           {
             ActivityCatalogID = existing.ActivityCatalogID,
@@ -99,10 +89,8 @@ namespace HealthyAPI.Services
             bool hasDependencies = await _context.UserActivity.AnyAsync(dn => dn.ActivityCatalogID == id);
             if (hasDependencies)
                 throw new InvalidOperationException("Has dependency");
-
             var entity = await _context.ActivityCatalog.FindAsync(id);
             if (entity == null) return false;
-
             _context.ActivityCatalog.Remove(entity);
             await _context.SaveChangesAsync();
             return true;

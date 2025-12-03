@@ -69,7 +69,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<IFoodService, FoodService>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IMealFoodsService, MealFoodsService>();
 builder.Services.AddScoped<IMealTypeService, MealTypeService>();
 builder.Services.AddScoped<IRecipeFoodService, RecipeFoodService>();

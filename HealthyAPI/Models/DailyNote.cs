@@ -10,7 +10,7 @@ namespace HealthyAPI.Models
     public class DailyNote
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string DailyNoteID { get; set; }
         public string UserID { get; set; }
         [ForeignKey("UserID")]
@@ -33,8 +33,5 @@ namespace HealthyAPI.Models
 
         public DateTime CreatedAt { get; set; }
 
-       /* // Navigáció: A DailyNote több étkezést (MealEntry) és aktivitást tartalmazhat.
-            public virtual ICollection<MealEntries> MealEntries { get; set; }
-            public virtual ICollection<UserActivity> UserActivities { get; set; }*/
     }
 }

@@ -37,13 +37,13 @@ clear(): void {
     this.searchSubject.next(value);
   }
 selectFood(food: FoodResponseDto): void {
-  console.log('[SELECT] Food:', food);
+
   this.itemSelected.emit({ type: 'food', item: food });
 }
 
 selectRecipe(recipeId: string): void {
   this.recipeClient.getById(recipeId).subscribe(fullRecipe => {
-    console.log('[SELECT] Recipe (full):', fullRecipe);
+
     this.itemSelected.emit({ type: 'recipe', item: fullRecipe });
   });
 }
@@ -56,16 +56,11 @@ selectRecipe(recipeId: string): void {
 
     this.foodClient.search(query).subscribe(res => {
       this.foodResults = res;
-      console.log('FOOD RESULTS:', res); // 👈 itt listázzuk az étel találatokat
     });
   
     this.recipeClient.search(query).subscribe(res => {
       this.recipeResults = res;
-      console.log('RECIPE RESULTS:', res); // 👈 itt a recept találatok
     });
   }
 
- /* selectItem(item: FoodResponseDto | RecipeResponseDto) {
-    this.itemSelected.emit(item);
-  }*/
 }

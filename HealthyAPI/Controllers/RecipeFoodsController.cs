@@ -27,78 +27,38 @@ namespace HealthyAPI.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable<RecipeFoodResponseDto>>> GetAll()
         {
-            var items = await _service.GetAll();
-            return Ok(items.Select(rf => new RecipeFoodResponseDto
-            {
-                RecipeFoodID = rf.RecipeFoodID,
-                RecipeID = rf.RecipeID,
-                FoodID = rf.FoodID,
-                FoodName = rf.Food?.Title,
-                Quantity = rf.Quantity
-            }));
+          var items = await _service.GetAll();
+          return Ok(items);
         }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<RecipeFoodResponseDto>> GetById(string id)
         {
-            var rf = await _service.GetById(id);
-            if (rf == null) return NotFound();
+          var dto = await _service.GetById(id);
+          if (dto == null) return NotFound();
 
-            return Ok(new RecipeFoodResponseDto
-            {
-                RecipeFoodID = rf.RecipeFoodID,
-                RecipeID = rf.RecipeID,
-                FoodID = rf.FoodID,
-                FoodName = rf.Food?.Title,
-                Quantity = rf.Quantity
-            });
+          return Ok(dto);
         }
 
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<RecipeFoodResponseDto>> Create(RecipeFoodCreateDto dto)
         {
-            var entity = new RecipeFoods
-            {
-                RecipeID = dto.RecipeID,
-                FoodID = dto.FoodID,
-                Quantity = dto.Quantity
-            };
+          var createdDto = await _service.Create(dto);
 
-            var created = await _service.Create(entity);
-            return CreatedAtAction(nameof(GetById), new { id = created.RecipeFoodID }, new RecipeFoodResponseDto
-            {
-                RecipeFoodID = created.RecipeFoodID,
-                RecipeID = created.RecipeID,
-                FoodID = created.FoodID,
-                FoodName = created.Food?.Title,
-                Quantity = created.Quantity
-            });
+          return Ok(createdDto);
         }
 
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<RecipeFoodResponseDto>> Update(string id, RecipeFoodCreateDto dto)
         {
-            var updated = new RecipeFoods
-            {
-                RecipeID = dto.RecipeID,
-                FoodID = dto.FoodID,
-                Quantity = dto.Quantity
-            };
+          var updatedDto = await _service.Update(id, dto);
 
-            var result = await _service.Update(id, updated);
-            if (result == null) return NotFound();
+          if (updatedDto == null) return NotFound();
 
-            return Ok(new RecipeFoodResponseDto
-            {
-                RecipeFoodID = result.RecipeFoodID,
-                RecipeID = result.RecipeID,
-                FoodID = result.FoodID,
-                FoodName = result.Food?.Title,
-                Quantity = result.Quantity
-            });
+          return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]

@@ -18,86 +18,45 @@ namespace HealthyAPI.Controllers
     public class MealTypesController : ControllerBase
     {
         private readonly IMealTypeService _service;
-        private readonly IPhotoService _photoService;
-
-        public MealTypesController(IMealTypeService service, IPhotoService photoService)
+        public MealTypesController(IMealTypeService service)
         {
             _service = service;
-            _photoService = photoService;
         }
 
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<MealTypeResponseDto>>> GetAll()
         {
-            var items = await _service.GetAll();
-            return Ok(items.Select(mt => new MealTypeResponseDto
-            {
-                MealTypeID = mt.MealTypeID,
-                Name = mt.Name,
-                PhotoID = mt.PhotoID,
-                PhotoData = mt.Photo?.PhotoData
-            }));
+          var items = await _service.GetAll();
+          return Ok(items);
         }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<MealTypeResponseDto>> GetById(string id)
         {
-            var mt = await _service.GetById(id);
-            if (mt == null) return NotFound();
+          var dto = await _service.GetById(id);
+          if (dto == null) return NotFound();
 
-            return Ok(new MealTypeResponseDto
-            {
-                MealTypeID = mt.MealTypeID,
-                Name = mt.Name,
-                PhotoID = mt.PhotoID,
-                PhotoData = mt.Photo?.PhotoData
-            });
+          return Ok(dto);
         }
 
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<MealTypeResponseDto>> Create(MealTypeCreateDto dto)
         {
-            var entity = new MealTypes
-            {
-                Name = dto.Name,
-                PhotoID = dto.PhotoID
-            };
 
-            var created = await _service.Create(entity);
-            var photo = await _photoService.GetPhoto(created.PhotoID);
-
-            return CreatedAtAction(nameof(GetById), new { id = created.MealTypeID }, new MealTypeResponseDto
-            {
-                MealTypeID = created.MealTypeID,
-                Name = created.Name,
-                PhotoID = created.PhotoID,
-                PhotoData = photo?.PhotoData
-            });
+          var createdDto = await _service.Create(dto);
+          return Ok(createdDto);
         }
 
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<MealTypeResponseDto>> Update(string id, MealTypeCreateDto dto)
         {
-            var updated = new MealTypes
-            {
-                Name = dto.Name,
-                PhotoID = dto.PhotoID
-            };
-
-            var result = await _service.Update(id, updated);
-            if (result == null) return NotFound();
-
-            return Ok(new MealTypeResponseDto
-            {
-                MealTypeID = result.MealTypeID,
-                Name = result.Name,
-                PhotoID = result.PhotoID,
-                PhotoData = result.Photo?.PhotoData
-            });
+          var updatedDto = await _service.Update(id, dto);
+          if (updatedDto == null) return NotFound();
+          return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]

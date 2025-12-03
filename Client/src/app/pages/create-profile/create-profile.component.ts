@@ -27,7 +27,7 @@ export class CreateProfileComponent implements OnInit {
       goalWeight: [0, [Validators.required, Validators.min(1)]],
       bodyFat: [0, [Validators.required, Validators.min(1)]],
       isFemale: [false],
-      goalType: [0], // auto-calculated
+      goalType: [0], 
       activityMultiplier: [1.2, [Validators.required]]
     });
   }
@@ -36,7 +36,6 @@ export class CreateProfileComponent implements OnInit {
     this.accountClient.getProfile().subscribe({
       next: (profile: UserProfileResponseDto) => {
         if (profile) {
-          // Base values
           this.profileForm.patchValue({
             firstName: profile.firstName ?? '',
             lastName: profile.lastName ?? '',
@@ -47,8 +46,6 @@ export class CreateProfileComponent implements OnInit {
             bodyFat: profile.bodyFat ?? 0,
             isFemale: profile.isFemale ?? false
           });
-
-          // Handle activityMultiplier with valid rounding
           const rawMultiplier = profile.activityMultiplier ?? 1.2;
           const validMultipliers = [1.2, 1.375, 1.55, 1.725, 1.9];
           const roundedMultiplier = validMultipliers.find(m =>
@@ -56,8 +53,6 @@ export class CreateProfileComponent implements OnInit {
           ) ?? 1.2;
 
           this.profileForm.patchValue({ activityMultiplier: roundedMultiplier });
-
-          // Calculate goal type
           this.updateGoalType();
         }
 

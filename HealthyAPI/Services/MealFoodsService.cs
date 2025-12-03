@@ -19,31 +19,26 @@ namespace HealthyAPI.Services
             _context = context;
             _dailyNoteService = dailyNoteService;
         }
-
         public async Task<IEnumerable<MealFoodResponseDto>> GetByMealEntryIdAsync(string mealEntryId)
         {
             return await GetMealFoodsByMealEntryId(mealEntryId);
         }
-
         public async Task<IEnumerable<MealFoodResponseDto>> GetAllMealFoods()
         {
             var entities = await _context.MealFoods.Include(mf => mf.Food).ToListAsync();
             return entities.Select(MapToDto);
         }
-
-        public async Task<MealFoodResponseDto?> GetByIdMealFoods(string id)
+        public async Task<MealFoodResponseDto> GetByIdMealFoods(string id)
         {
             var mf = await _context.MealFoods.Include(mf => mf.Food).FirstOrDefaultAsync(mf => mf.MealFoodID == id);
             return mf == null ? null : MapToDto(mf);
         }
-
         public async Task<IEnumerable<MealFoodResponseDto>> GetMealFoodsByMealEntryId(string mealEntryId)
         {
             var entities = await _context.MealFoods.Include(mf => mf.Food)
                 .Where(mf => mf.MealEntryID == mealEntryId).ToListAsync();
             return entities.Select(MapToDto);
         }
-
         public async Task<MealFoodResponseDto> CreateMealFoods(MealFoodCreateDto dto)
         {
             var entity = new MealFoods
@@ -53,16 +48,12 @@ namespace HealthyAPI.Services
                 FoodID = dto.FoodID,
                 Quantity = dto.Quantity
             };
-
             _context.MealFoods.Add(entity);
             await _context.SaveChangesAsync();
             await RecalculateMealEntryNutrition(entity.MealEntryID);
-
-            // újra lekérjük includolt Food-dal
             var result = await _context.MealFoods
                 .Include(mf => mf.Food)
                 .FirstOrDefaultAsync(mf => mf.MealFoodID == entity.MealFoodID);
-
             return new MealFoodResponseDto
             {
                 MealFoodID = result.MealFoodID,
@@ -72,26 +63,18 @@ namespace HealthyAPI.Services
                 Quantity = result.Quantity
             };
         }
-
-
-
-        public async Task<MealFoodResponseDto?> UpdateMealFoods(string id, MealFoodCreateDto dto)
+        public async Task<MealFoodResponseDto> UpdateMealFoods(string id, MealFoodCreateDto dto)
         {
             var entity = await _context.MealFoods.FindAsync(id);
             if (entity == null) return null;
-
             entity.FoodID = dto.FoodID;
             entity.MealEntryID = dto.MealEntryID;
             entity.Quantity = dto.Quantity;
-
             await _context.SaveChangesAsync();
             await RecalculateMealEntryNutrition(entity.MealEntryID);
-
-            // újra lekérjük includolt Food-dal
             var result = await _context.MealFoods
                 .Include(mf => mf.Food)
                 .FirstOrDefaultAsync(mf => mf.MealFoodID == entity.MealFoodID);
-
             return new MealFoodResponseDto
             {
                 MealFoodID = result.MealFoodID,
@@ -101,9 +84,6 @@ namespace HealthyAPI.Services
                 Quantity = result.Quantity
             };
         }
-
-
-
         public async Task<bool> DeleteMealFoods(string id)
         {
             var entity = await _context.MealFoods.FindAsync(id);
@@ -116,7 +96,6 @@ namespace HealthyAPI.Services
             await RecalculateMealEntryNutrition(mealEntryId);
             return true;
         }
-
         public async Task RecalculateMealEntryNutrition(string mealEntryId)
         {
             var entry = await _context.MealEntries.FindAsync(mealEntryId);
@@ -129,7 +108,6 @@ namespace HealthyAPI.Services
             entry.SumCarb = foods.Sum(mf => mf.Quantity / 100f * mf.Food.Carb) + recipes.Sum(mr => mr.Quantity * mr.Recipe.SumCarb);
             entry.SumFat = foods.Sum(mf => mf.Quantity / 100f * mf.Food.Fat) + recipes.Sum(mr => mr.Quantity * mr.Recipe.SumFat);
             entry.SumCalorie = foods.Sum(mf => mf.Quantity / 100f * mf.Food.Calorie) + recipes.Sum(mr => mr.Quantity * mr.Recipe.SumCalorie);
-
             _context.MealEntries.Update(entry);
             await _context.SaveChangesAsync();
             await _dailyNoteService.UpdateMealNutritionAsync(entry.DailyNoteID);

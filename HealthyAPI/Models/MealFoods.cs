@@ -6,17 +6,16 @@ namespace HealthyAPI.Models
     public class MealFoods
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]// szöveges id generálás
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string MealFoodID { get; set; }
-        public string MealEntryID { get; set; }//melyik étkezéshez
+        public string MealEntryID { get; set; }
         [ForeignKey("MealEntryID")]
         public virtual MealEntries MealEntry { get; set; }
 
-        public string FoodID { get; set; } //melyik alapanyagból
+        public string FoodID { get; set; } 
         [ForeignKey("FoodID")]
         public virtual Food Food { get; set; }
 
-        // Mennyiség grammban
         public int Quantity { get; set; }
     }
 }

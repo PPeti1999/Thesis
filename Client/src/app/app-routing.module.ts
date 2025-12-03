@@ -38,11 +38,10 @@ children:[// ide kell tenni azokat az elereseket amiket csak belepes utan szabad
 
 },
 
-//path: 'exercise/:id',component: ExerciseDetailsPageComponent,},
 
 {path: 'account',loadChildren:()=>import('./account/account.module').then(module=>module.AccountModule) },
 { path: 'not-found', component: NotFoundComponent,},
-{ path: '**', component: NotFoundComponent,pathMatch:'full'// érvénytelen kérés esetén ezt tölti be 
+{ path: '**', component: NotFoundComponent,pathMatch:'full'                               // érvénytelen kérés esetén ezt tölti be 
 },
 ];
 @NgModule({

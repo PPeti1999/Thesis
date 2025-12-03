@@ -13,7 +13,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
   @Input() mealEntryId!: string | undefined;
   @Input() editingMealRecipeId?: string;
   @Output() added = new EventEmitter<MealRecipeResponseDto>();
-  @Input() initialQuantity: number = 1; // 🍽️ alapértelmezett 1
+  @Input() initialQuantity: number = 1;
   quantity: number = 1;
   protein = 0;
   carb = 0;
@@ -29,7 +29,6 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
   ngOnInit(): void {
     if (!this.recipe) return;
   
-    // ✅ Ha edit módban vagyunk, állítsuk be a meglévő adagot
     if (this.editingMealRecipeId) {
       this.quantity = this.initialQuantity ?? 1;
     }
@@ -46,7 +45,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['recipe'] && this.recipe) {
       if (this.editingMealRecipeId) {
-        this.quantity = this.initialQuantity ?? 1;  // << ez hiányzott
+        this.quantity = this.initialQuantity ?? 1;  
       }
       this.recalculateMacros();
     }
@@ -54,7 +53,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
   onQuantityChange(val: number): void {
     if (val > 0) {
       this.quantity = val;
-      this.recalculateMacros(); // 👈 ez itt a lényeg!
+      this.recalculateMacros(); 
     }
   }
   
@@ -62,38 +61,14 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
     if (!this.recipe) return;
   
     const f = this.quantity;
-    console.log('RECALCULATE FROM RECIPE:', this.recipe);
+
     this.protein = +(((this.recipe.sumProtein ?? 0) * f).toFixed(1));
     this.carb    = +(((this.recipe.sumCarb ?? 0) * f).toFixed(2));
     this.fat     = +(((this.recipe.sumFat ?? 0) * f).toFixed(2));
     this.calorie = +(((this.recipe.sumCalorie ?? 0) * f).toFixed(0));
-    console.log('protein: ', this.protein,
-      ',carb: ', this.carb,
-      ',fat: ', this.fat,
-      ',calorie: ', this.calorie
-    
-    );
-  }
-  /*
-  recalculateMacros(): void {
-    if (!this.recipe) return;
-    const recipe = this.recipe;
-    const f = this.quantity;
-    console.log('RECALCULATE FROM RECIPE:', recipe);
-    this.protein = +(this.recipe.sumProtein ?? 0* f).toFixed(1);
-    this.carb    = +(this.recipe.sumCarb ?? 0* f).toFixed(1);
-    this.fat     = +(this.recipe.sumFat?? 0 * f).toFixed(1);
-    this.calorie = +(this.recipe.sumCalorie?? 0 * f).toFixed(0);
-    this.cdr.detectChanges();
-    console.log('protein: ', this.protein,
-      ',carb: ', this.carb,
-      ',fat: ', this.fat,
-      ',calorie: ', this.calorie
-    
-    );
 
-  }*/
- 
+  }
+
 
   save(): void {
     if (!this.recipe || !this.mealEntryId) return;
@@ -104,7 +79,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
     dto.quantity = this.quantity;
   
     if (this.editingMealRecipeId) {
-      // UPDATE mód
+
       this.mealRecipesClient.update(this.editingMealRecipeId, dto).subscribe({
         next: res => {
           this.added.emit(res);
@@ -114,7 +89,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
         error: err => console.error(err)
       });
     } else {
-      // CREATE mód
+
       this.mealRecipesClient.create(dto).subscribe({
         next: res => {
           this.added.emit(res);
@@ -150,8 +125,7 @@ export class RecipeQuantityModalComponent implements OnInit,OnChanges {
     if (modalEl) {
       const instance = bootstrap.Modal.getInstance(modalEl);
       bootstrap.Modal.getInstance(modalEl)?.hide();
-  
-      // 💡 Biztonsági törlés: backdrop eltávolítása
+
       const backdrops = document.querySelectorAll('.modal-backdrop');
       backdrops.forEach(el => el.remove());
       document.body.classList.remove('modal-open');

@@ -23,7 +23,6 @@
           </li>
         </ul>
 
-        <!-- Csak bejelentkezve -->
         <div *ngIf="(accountService.user$ | async) as user">
           <button class="btn btn-sm btn-primary me-2" (click)="onEdit(recipe)">
             Edit

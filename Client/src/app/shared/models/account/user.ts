@@ -1,6 +1,6 @@
-export interface User {//ez jo
+export interface User {
     id:string
-    firstName: string;// user dto val megegyezik 
+    firstName: string;
     lastName: string;
     jwt: string;
 }

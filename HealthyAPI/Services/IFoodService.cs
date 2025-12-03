@@ -8,12 +8,12 @@ namespace HealthyAPI.Services
 
     public interface IFoodService
     {
-        Task<IEnumerable<Food>> ListFoods();
-        Task<Food> GetFood(string id);
-        Task<Food> AddFood(Food food);
-        Task<Food> UpdateFood(string id, Food food);
+        Task<IEnumerable<FoodResponseDto>> ListFoods();
+        Task<FoodResponseDto> GetFood(string id);
+        Task<FoodResponseDto> AddFood(FoodCreateDto food);
+        Task<FoodResponseDto> UpdateFood(string id, FoodCreateDto food);
         Task<bool> DeleteFood(string id);
-        Task<IEnumerable<FoodResponseDto>> SearchAsync(string query);
+        Task<IEnumerable<FoodResponseDto>> Search(string query);
 
     }
 

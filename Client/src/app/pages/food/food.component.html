@@ -20,7 +20,6 @@
           <strong>Carb:</strong> {{ food.carb }} g
         </p>
 
-        <!-- Gombok csak ha be van jelentkezve -->
         <div *ngIf="(_accountService.user$ | async) as user">
           <button class="btn btn-sm btn-primary me-2" (click)="onEdit(food)">
             Edit

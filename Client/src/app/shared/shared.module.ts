@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NotificationComponent } from './components/modals/notification/notification.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ConfirmDialogComponent } from './components/modals/confirm-dialog/confirm-dialog.component';
 
 
 
@@ -13,7 +14,8 @@ import { HttpClientModule } from '@angular/common/http';
   declarations: [
     NotFoundComponent,
     ValidationMessagesComponent,
-    NotificationComponent
+    NotificationComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { HttpClientModule } from '@angular/common/http';
     RouterModule,
     ReactiveFormsModule,
     HttpClientModule,
-    ValidationMessagesComponent
+    ValidationMessagesComponent,
+    ConfirmDialogComponent
   ]
 })
 export class SharedModule { }

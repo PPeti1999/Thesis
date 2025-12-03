@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FoodClient, FoodCreateDto, FoodResponseDto, FoodUpdateDto } from '../../shared/models/Nswag generated/NswagGenerated';
+import { FoodClient, FoodCreateDto, FoodResponseDto } from '../../shared/models/Nswag generated/NswagGenerated';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
 
@@ -24,7 +24,6 @@ export class CreateFoodComponent {
       this.foodId = params.get('id');
       if (this.foodId) {
         this.editing = true;
-        console.log('Szerkesztés módban vagyunk, ID:', this.foodId);
         this.foodClient.getFood(this.foodId).subscribe({
           next: (data: FoodResponseDto) => {
             this.food = new FoodCreateDto();
@@ -38,13 +37,11 @@ export class CreateFoodComponent {
             });
           },
           error: err => {
-            console.error('Nem sikerült lekérni az ételt:', err);
+            console.error('Error', err);
             this.router.navigate(['/food']);
           }
         });
-      } else {
-        console.log('Új étel létrehozása módban vagyunk.');
-      }
+      } 
     });
   }
 
@@ -65,29 +62,23 @@ export class CreateFoodComponent {
 
   
     if (this.editing && this.foodId) {
-      const updateDto = new FoodUpdateDto();
+      const updateDto = new FoodCreateDto();
       Object.assign(updateDto, cleanDto);
-      console.log('Frissítés DTO:', updateDto);
       this.foodClient.updateFood(this.foodId, updateDto).subscribe({
         next: () => {
-          console.log('Sikeres frissítés');
           this.router.navigate(['/food']);
         },
         error: err => {
-          console.error('Frissítés sikertelen:', err);
+          console.error( err);
         }
       });
     } else {
-      console.log('Létrehozás DTO:', cleanDto);
-      console.log('Beküldendő JSON:', JSON.stringify(cleanDto));
-
       this.foodClient.addFood(cleanDto.toJSON()).subscribe({
         next: () => {
-          console.log('Sikeres létrehozás');
           this.router.navigate(['/food']);
         },
         error: err => {
-          console.error('Létrehozás sikertelen:', err);
+          console.error( err);
         }
       });
     }

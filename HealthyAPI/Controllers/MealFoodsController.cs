@@ -16,7 +16,6 @@ namespace HealthyAPI.Controllers
     public class MealFoodsController : ControllerBase
     {
         private readonly IMealFoodsService _service;
-
         public MealFoodsController(IMealFoodsService service)
         {
             _service = service;
@@ -28,7 +27,6 @@ namespace HealthyAPI.Controllers
             return Ok(result);
         }
 
-
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<MealFoodResponseDto>>> GetAll()
@@ -36,8 +34,6 @@ namespace HealthyAPI.Controllers
             var items = await _service.GetAllMealFoods();
             return Ok(items);
         }
-
-
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<MealFoodResponseDto>> GetById(string id)
@@ -47,7 +43,6 @@ namespace HealthyAPI.Controllers
             return Ok(dto);
         }
 
-
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<MealFoodResponseDto>> Create(MealFoodCreateDto dto)
@@ -55,8 +50,6 @@ namespace HealthyAPI.Controllers
             var created = await _service.CreateMealFoods(dto);
             return Ok(created);
         }
-
-
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult<MealFoodResponseDto>> Update(string id, MealFoodCreateDto dto)
@@ -65,8 +58,6 @@ namespace HealthyAPI.Controllers
             if (updated == null) return NotFound();
             return Ok(updated);
         }
-
-
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(string id)

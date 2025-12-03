@@ -32,7 +32,7 @@ children:[// ide kell tenni azokat az elereseket amiket csak belepes utan szabad
 { path: 'food/edit/:id', component: CreateFoodComponent },
 { path: 'recipes/create', component: CreateRecipesComponent },
 { path: 'recipes/edit/:id', component: CreateRecipesComponent },
-{ path: 'create-profile', component: CreateProfileComponent },
+{ path: 'edit-profile', component: CreateProfileComponent },
 { path: 'dailynote', component: DailyNoteComponent },
 ],
 

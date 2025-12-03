@@ -189,24 +189,48 @@ const cleanDate = new Date(raw.getFullYear(), raw.getMonth(), raw.getDate());
   
     });
   }
+  ngOnInit(): void {
+    this.userClient.getProfile().subscribe(profile => {
+      const missingProfile = !profile.age || !profile.height || !profile.weight;
+      if (missingProfile) {
+        this.router.navigate(['/edit-profile']);
+      } else {
+        this.loadDailyNote();
+      }
+    });
+  }
+  /*
   loadMealEntries(): void {
     if (!this.dailyNote?.dailyNoteID) return;
     this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID).subscribe({
       next: entries => this.mealEntries = entries,
       error: err => console.error('Error loading meal entries:', err)
     });
-  }
-  ngOnInit(): void {
-    this.userClient.getProfile().subscribe(profile => {
-      const missingProfile = !profile.age || !profile.height || !profile.weight;
-      if (missingProfile) {
-        this.router.navigate(['/create-profile']);
-      } else {
-        this.loadDailyNote();
-      }
+  }*/
+
+  loadMealEntries(): void {
+    if (!this.dailyNote?.dailyNoteID) return;
+  
+    this.mealEntriesClient.getByDailyNote(this.dailyNote.dailyNoteID).subscribe({
+      next: entries => {
+
+        const sorrend = ['Reggeli','Ebéd', 'Vacsora'];
+  
+        this.mealEntries = entries.sort((a, b) => {
+          const nameA = a.mealTypeName ?? '';
+          const nameB = b.mealTypeName ?? '';
+  
+          let indexA = sorrend.indexOf(nameA);
+          let indexB = sorrend.indexOf(nameB);
+          if (indexA === -1) indexA = 999;
+          if (indexB === -1) indexB = 999;
+  
+          return indexA - indexB;
+        });
+      },
+      error: err => console.error('Error loading meal entries:', err)
     });
   }
-
   
 
   

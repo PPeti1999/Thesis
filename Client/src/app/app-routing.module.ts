@@ -20,8 +20,6 @@ const routes: Routes = [
 }, 
 { path: 'recipes', component: RecipesComponent, 
 }, 
-{ path: 'w', component: WeightHistoryComponent, 
-}, 
 { path: '', 
 runGuardsAndResolvers:'always',
 canActivate:[AuthorizationGuard],

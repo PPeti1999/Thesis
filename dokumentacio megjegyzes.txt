@@ -1,0 +1,17 @@
+nswag bakit beleirni h elvesztettem a nswag beallitasaimat és idobe telt kitalálni félév távlatában hogyan is volt beállitva
+
+
+confirmdialog komponenst belevenni
+
+
+technológiánál bootsrap css html emet belerakni a másik diploma munka forrásaival egyutt
+
+meglevo technologiakat a forrasok alapján átolvasni
+
+
+use case dia csre
+
+
+
+
+ai: 1.1 fejezet  3,4. bekezdés

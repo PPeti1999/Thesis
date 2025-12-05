@@ -78,8 +78,7 @@ namespace HealthyAPI.Controllers
       var (succeeded, errors) = await _userProfileService.RegisterAsync(model);
 
       if (succeeded)
-      {
-        return Ok(new JsonResult(new { title = "Account Created", message = "Your account has been created, please confirm your email address" }));
+      {return Ok(new JsonResult(new { title = "Account Created", message = "Your account has been created, please confirm your email address" }));
       }
 
       return BadRequest(errors);
@@ -90,8 +89,7 @@ namespace HealthyAPI.Controllers
     {
       var result = await _userProfileService.ConfirmEmailAsync(model);
       if (result.Success)
-      {
-        return Ok(new JsonResult(new { title = result.Title, message = result.Message }));
+      { return Ok(new JsonResult(new { title = result.Title, message = result.Message }));
       }
       return BadRequest(result.Message);
     }
@@ -108,7 +106,6 @@ namespace HealthyAPI.Controllers
       }
       return BadRequest(result.Message);
     }
-
     [HttpPost("forgot-username-or-password/{email}")]
     public async Task<IActionResult> ForgotUsernameOrPassword(string email)
     {
@@ -116,12 +113,10 @@ namespace HealthyAPI.Controllers
 
       var result = await _userProfileService.ForgotUsernameOrPasswordAsync(email);
       if (result.Success)
-      {
-        return Ok(new JsonResult(new { title = result.Title, message = result.Message }));
+      {return Ok(new JsonResult(new { title = result.Title, message = result.Message }));
       }
       return BadRequest(result.Message);
     }
-
     [HttpPut("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
     {

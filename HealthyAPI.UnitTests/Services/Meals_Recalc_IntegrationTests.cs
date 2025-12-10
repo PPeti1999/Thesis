@@ -14,7 +14,6 @@ using Xunit;
 
 namespace HealthyAPI.Tests
 {
-    // Ezek a tesztek a meglévő TestFixture-t használják
     public class MealFoodsServiceIntegrationTests : IClassFixture<TestFixture>
     {
         private readonly TestFixture _fixture;
@@ -31,16 +30,14 @@ namespace HealthyAPI.Tests
         {
             using var context = _fixture.CreateContext();
 
-            // Készítünk egy üres MealEntry-t a mai naplóhoz
             var entry = new MealEntries { MealEntryID = "ME_F1", DailyNoteID = TestFixture.TodayNoteId };
             context.MealEntries.Add(entry);
             await context.SaveChangesAsync();
 
-            // Használjuk a seedelt "Csirkemell" ételt (Food1Id)
+
             var chicken = await context.Food.FindAsync(TestFixture.Food1Id);
             chicken.Should().NotBeNull();
 
-            // Mock DailyNoteService: ellenőrizzük, hogy UpdateMealNutritionAsync meghívódik a TODAY note-tal
             var dn = new Mock<IDailyNoteService>(MockBehavior.Strict);
             dn.Setup(x => x.UpdateMealNutritionAsync(TestFixture.TodayNoteId))
               .Returns(Task.CompletedTask)
@@ -57,9 +54,9 @@ namespace HealthyAPI.Tests
             });
 
             var refreshed = await context.MealEntries.FindAsync(entry.MealEntryID);
-            refreshed!.SumProtein.Should().BeApproximately(62f, 0.001f); // 31 * 2.0
-            refreshed.SumFat.Should().BeApproximately(6f, 1.5f); // nálad Fat=3 (nem 4), ezért ~6 (3*2) – toleranciával
-            refreshed.SumCalorie.Should().Be(330);               // 165 * 2
+            refreshed!.SumProtein.Should().BeApproximately(62f, 0.001f); 
+            refreshed.SumFat.Should().BeApproximately(6f, 1.5f); 
+            refreshed.SumCalorie.Should().Be(330);               
 
             dn.Verify();
         }
@@ -82,7 +79,6 @@ namespace HealthyAPI.Tests
 
             var sut = new MealFoodsService(context, dn.Object);
 
-            // 100 g → C=28
             var mf = await sut.CreateMealFoods(new MealFoodCreateDto
             {
                 MealEntryID = entry.MealEntryID,
@@ -92,7 +88,7 @@ namespace HealthyAPI.Tests
             (await context.MealEntries.FindAsync(entry.MealEntryID))!
                 .SumCarb.Should().BeApproximately(28f, 0.001f);
 
-            // 150 g → C=42
+
             await sut.UpdateMealFoods(mf.MealFoodID, new MealFoodCreateDto
             {
                 MealEntryID = entry.MealEntryID,
@@ -129,7 +125,6 @@ namespace HealthyAPI.Tests
 
             await sut.DeleteMealFoods(a.MealFoodID);
 
-            // Várakozás: csak a rizs marad (100 g)
             var after = await context.MealEntries.FindAsync(entry.MealEntryID);
             after!.SumProtein.Should().BeApproximately(2f, 0.001f);   // Rizs 2 g / 100 g
             after.SumCarb.Should().BeApproximately(28f, 0.001f);   // Rizs 28 g / 100 g
@@ -152,7 +147,7 @@ namespace HealthyAPI.Tests
             context.MealEntries.Add(entry);
             await context.SaveChangesAsync();
 
-            // Seedben van egy "Csirkerizs" recept (Recipe1Id) Sum* mezőkkel
+           
             var recipe = await context.Recipe.FindAsync(TestFixture.Recipe1Id);
             recipe.Should().NotBeNull();
 
@@ -204,7 +199,7 @@ namespace HealthyAPI.Tests
             var baseEntry = await context.MealEntries.FindAsync(entry.MealEntryID);
             baseEntry!.SumProtein.Should().BeApproximately(33f, 0.001f);
 
-            // 2.5 adagra növeljük
+            // 2.5 adagra 
             await sut.Update(created.MealRecipeID, new MealRecipeCreateDto
             {
                 MealEntryID = entry.MealEntryID,
@@ -246,7 +241,7 @@ namespace HealthyAPI.Tests
             before.SumCarb.Should().BeApproximately(28f, 0.001f);
             before.SumFat.Should().BeApproximately(3f, 0.001f);
 
-            // Törlés
+
             await sut.Delete(created.MealRecipeID);
 
             var after = await context.MealEntries.FindAsync(entry.MealEntryID);
@@ -269,15 +264,15 @@ namespace HealthyAPI.Tests
 
             var dnId = TestFixture.TodayNoteId;
 
-            // Készítünk két belső étkezést
+
             var me1 = new MealEntries { MealEntryID = "ME_E2E_1", DailyNoteID = dnId };
             var me2 = new MealEntries { MealEntryID = "ME_E2E_2", DailyNoteID = dnId };
             context.MealEntries.AddRange(me1, me2);
             await context.SaveChangesAsync();
 
-            // me1: 200 g csirke
+
             context.MealFoods.Add(new MealFoods { MealEntryID = me1.MealEntryID, FoodID = TestFixture.Food1Id, Quantity = 200 });
-            // me2: 1.5 adag „Csirkerizs”
+  
             context.MealRecipes.Add(new MealRecipes { MealEntryID = me2.MealEntryID, RecipeID = TestFixture.Recipe1Id, Quantity = 1.5f });
             await context.SaveChangesAsync();
 
@@ -288,7 +283,7 @@ namespace HealthyAPI.Tests
             var dn = await context.DailyNote.FindAsync(dnId);
             dn!.ActualSumProtein.Should().BeApproximately(62f + 33f * 1.5f, 0.01f);
             dn.ActualSumCarb.Should().BeApproximately(0f + 28f * 1.5f, 0.01f);
-            dn.ActualSumFat.Should().BeApproximately(6f + 3f * 1.5f, 0.5f); // csirke zsírja nálad 3/100g → 6
+            dn.ActualSumFat.Should().BeApproximately(6f + 3f * 1.5f, 0.5f); 
             dn.ActualCalorie.Should().BeGreaterThan(0);
         }
     }

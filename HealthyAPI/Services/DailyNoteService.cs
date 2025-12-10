@@ -16,20 +16,18 @@ using System.Threading.Tasks;
         public class DailyNoteService : IDailyNoteService
         {
         private readonly Context _context;
-        // KIEGÉSZÍTÉS: IHttpContextAccessor a felhasználói ID lekéréséhez
+
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        // KIEGÉSZÍTÉS: A konstruktor most már fogadja az IHttpContextAccessor-t
         public DailyNoteService(Context context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // KIEGÉSZÍTÉS: Privát metódus a bejelentkezett felhasználó ID-jának lekérésére
         private string GetUserId()
         {
-            // A ClaimTypes.NameIdentifier a JWT tokenből származik (lásd AccountController.cs)
+
             return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
         public async Task<List<CalendarSummaryDto>> GetMonthlySummaryAsync(string userId, int year, int month)
@@ -174,11 +172,11 @@ using System.Threading.Tasks;
                 var dailyNote = await _context.DailyNote.FindAsync(dailyNoteId);
                 if (dailyNote != null)
                 {
-                    dailyNote.ActualSumProtein = protein;
-                    dailyNote.ActualSumFat = fat;
-                    dailyNote.ActualSumCarb = carb;
-                    dailyNote.ActualCalorie = calorie;
-                    await _context.SaveChangesAsync();
+                    dailyNote.ActualSumProtein = (float)Math.Round((double)protein, 2);
+                  dailyNote.ActualSumFat = (float)Math.Round((double)fat, 2);
+                  dailyNote.ActualSumCarb = (float)Math.Round((double)carb, 2);
+                  dailyNote.ActualCalorie = calorie;
+                  await _context.SaveChangesAsync();
                 }
             }
 

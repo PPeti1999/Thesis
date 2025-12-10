@@ -138,12 +138,12 @@ namespace HealthyAPI.Services
             var mealFoods = await _context.MealFoods.Include(mf => mf.Food).Where(mf => mf.MealEntryID == mealEntryId).ToListAsync();
             var mealRecipes = await _context.MealRecipes.Include(mr => mr.Recipe).Where(mr => mr.MealEntryID == mealEntryId).ToListAsync();
 
-            entry.SumProtein = mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Protein) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumProtein);
-            entry.SumCarb = mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Carb) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumCarb);
-            entry.SumFat = mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Fat) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumFat);
-            entry.SumCalorie = mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Calorie) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumCalorie);
+            entry.SumProtein = (float)Math.Round(mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Protein) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumProtein), 2);
+      entry.SumCarb = (float)Math.Round(mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Carb) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumCarb), 2);
+      entry.SumFat = (float)Math.Round(mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Fat) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumFat), 2);
+      entry.SumCalorie = (float)Math.Round(mealFoods.Sum(mf => mf.Quantity / 100f * mf.Food.Calorie) + mealRecipes.Sum(mr => mr.Quantity * mr.Recipe.SumCalorie), 2);
 
-            _context.MealEntries.Update(entry);
+      _context.MealEntries.Update(entry);
             await _context.SaveChangesAsync();
 
             await _dailyNoteService.UpdateMealNutritionAsync(entry.DailyNoteID);

@@ -38,7 +38,7 @@
     <div *ngFor="let nutrient of macroNutrients" class="mb-3">
       <div class="d-flex justify-content-between small text-muted">
         <span>{{ nutrient.label }}</span>
-        <span>{{ nutrient.actual }} / {{ nutrient.target }} g</span>
+        <span>{{ nutrient.actual| number:'1.0-2' }} / {{ nutrient.target| number:'1.0-2' }} g</span>
       </div>
       <div class="progress" style="height: 10px">
         <div
@@ -56,10 +56,10 @@
 
       <div class="card-body">
         <h6 class="card-title">{{ meal.mealTypeName }}</h6>
-        <p class="card-text small mb-0">Calories: {{ meal.sumCalorie }} kcal</p>
-        <p class="card-text small mb-0">Protein: {{ meal.sumProtein }} g</p>
-        <p class="card-text small mb-0">Carbs: {{ meal.sumCarb }} g</p>
-        <p class="card-text small mb-0">Fat: {{ meal.sumFat }} g</p>
+        <p class="card-text small mb-0">Calories: {{ meal.sumCalorie | number:'1.0-2'}} kcal</p>
+        <p class="card-text small mb-0">Protein: {{ meal.sumProtein| number:'1.0-2' }} g</p>
+        <p class="card-text small mb-0">Carbs: {{ meal.sumCarb | number:'1.0-2'}} g</p>
+        <p class="card-text small mb-0">Fat: {{ meal.sumFat | number:'1.0-2'}} g</p>
       </div>
     </div>
   </div>
@@ -153,10 +153,10 @@
       <div class="modal-body">
         <div *ngIf="selectedMeal">
           <div class="mb-3">
-            <strong>Calories:</strong> {{ selectedMeal.sumCalorie }} kcal<br>
-            <strong>Protein:</strong> {{ selectedMeal.sumProtein }} g<br>
-            <strong>Carbs:</strong> {{ selectedMeal.sumCarb }} g<br>
-            <strong>Fat:</strong> {{ selectedMeal.sumFat }} g
+            <strong>Calories:</strong> {{ selectedMeal.sumCalorie | number:'1.0-2'}} kcal<br>
+            <strong>Protein:</strong> {{ selectedMeal.sumProtein | number:'1.0-2'}} g<br>
+            <strong>Carbs:</strong> {{ selectedMeal.sumCarb | number:'1.0-2'}} g<br>
+            <strong>Fat:</strong> {{ selectedMeal.sumFat | number:'1.0-2'}} g
           </div>
 
           <h6>Foods</h6>

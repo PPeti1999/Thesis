@@ -137,11 +137,11 @@ namespace HealthyAPI.Services
             var recipeFoods = await _context.RecipeFoods.Include(rf => rf.Food)
                 .Where(rf => rf.RecipeID == recipe.RecipeID).ToListAsync();
 
-            recipe.SumProtein = recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Protein);
-            recipe.SumCarb = recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Carb);
-            recipe.SumFat = recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Fat);
+            recipe.SumProtein = (float)Math.Round((double)recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Protein),2);
+            recipe.SumCarb = (float)Math.Round((double)recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Carb),2);
+            recipe.SumFat = (float)Math.Round((double)recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Fat),2);
             recipe.SumCalorie = recipeFoods.Sum(rf => rf.Quantity / 100 * rf.Food.Calorie);
-        }
+         }
 
         private async Task<RecipeResponseDto> MapToDto(Recipe recipe)
         {

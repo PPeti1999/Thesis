@@ -76,8 +76,9 @@ export class DailyNoteComponent implements OnInit{
         this.loadUserActivities();
         bootstrap.Modal.getInstance(document.getElementById('calendarModal')!)?.hide();
       },
-      error: err => {
-        alert(err.error || 'No DailyNote available for this day.');
+      error: (err) => {
+        let title = "Error";
+        this.sharedService.showNotification(false, title, 'No DailyNote available for this day.');
       }
     });
   }

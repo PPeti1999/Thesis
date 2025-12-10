@@ -211,19 +211,18 @@ using System.Threading.Tasks;
         public async Task<List<DailyNoteResponseDto>> GetAllDailyNotesForGraph()
         {
             var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId)) return new List<DailyNoteResponseDto>(); // Üres listát adunk vissza null helyett
+            if (string.IsNullOrEmpty(userId)) return new List<DailyNoteResponseDto>(); 
 
-            // Lekérdezzük az összes DailyNote-ot, ahol a DailyWeight > 0, 
-            // rendezve dátum szerint, és csak a Dátum és a Súly érdekel.
+
             var dailyNotes = await _context.DailyNote
                 .Where(dn => dn.UserID == userId && dn.DailyWeight > 0)
                 .OrderBy(dn => dn.CreatedAt)
                 .Select(dn => new DailyNoteResponseDto
                 {
-                    DailyNoteID = dn.DailyNoteID, // Az Id technikai okokból kell
+                    DailyNoteID = dn.DailyNoteID, 
                     CreatedAt = dn.CreatedAt,
                     DailyWeight = dn.DailyWeight,
-                    // A többi mezőt nem kell feltölteni, de a DTO megköveteli
+
                     UserID = dn.UserID,
                     DailyTargetCalorie = dn.DailyTargetCalorie,
                     ActualCalorie = dn.ActualCalorie,

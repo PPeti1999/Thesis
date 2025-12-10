@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core'; // <-- Hozzáadva: ChangeDetectorRef
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DailyNoteClient, DailyNoteResponseDto } from '../../shared/models/Nswag generated/NswagGenerated'; 
 import { SharedService } from '../../shared/shared.service';
 import { Chart, ChartData, ChartOptions, ChartType, registerables } from 'chart.js'; 

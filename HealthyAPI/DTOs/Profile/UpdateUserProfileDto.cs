@@ -9,8 +9,8 @@
         public int BodyFat { get; set; }
         public int Weight { get; set; }
         public int GoalWeight { get; set; }
-        public float ActivityMultiplier { get; set; } // pl. 1.2 vagy 1.55
-        public int GoalType { get; set; } // 0 = megtartás, 1 = tömegnövelés, 2 = fogyás
+        public float ActivityMultiplier { get; set; } // pl. 1.2 v 1.55
+        public int GoalType { get; set; } // 0 = megtartás,1 = tömegnövelés,2 = fogyás
         public bool IsFemale { get; set; } // true = nő, false = férfi
     }
 

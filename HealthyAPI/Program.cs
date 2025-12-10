@@ -15,7 +15,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -26,11 +26,11 @@ builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 });
-// be able inject JWTSERVICES class inside COntroller
+
 builder.Services.AddScoped<JWTservice>();
 builder.Services.AddScoped<EmailService>();
 
-//defining our IdentityCore Service
+
 builder.Services.AddIdentityCore<User>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -40,31 +40,25 @@ builder.Services.AddIdentityCore<User>(options =>
     options.Password.RequireNonAlphanumeric = false;
 
     options.SignIn.RequireConfirmedEmail = true;
-}).AddRoles<IdentityRole>()//abble to add roles
-   .AddRoleManager<RoleManager<IdentityRole>>()//abel to make use RoleManager
-   .AddEntityFrameworkStores<Context>()//providing  context
-   .AddSignInManager<SignInManager<User>>()// make use of signin manager
-   .AddUserManager<UserManager<User>>()// usermanager create users
-   .AddDefaultTokenProviders();// able to create tokens for email confirm 
+}).AddRoles<IdentityRole>()
+   .AddRoleManager<RoleManager<IdentityRole>>()
+   .AddEntityFrameworkStores<Context>()
+   .AddSignInManager<SignInManager<User>>()
+   .AddUserManager<UserManager<User>>()
+   .AddDefaultTokenProviders();
 
-// able to auth users using JWT
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            // validate the token based on the key we have provided inside appsettings.development.json JWT:Key
+           
             ValidateIssuerSigningKey = true,
-            // the issuer singning key based on JWT:Key
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
-            // the issuer which in here is the api project url we are using
             ValidIssuer = builder.Configuration["JWT:Issuer"],
-            // validate the issuer (who ever is issuing the JWT)
             ValidateIssuer = true,
-            // don't validate audience (angular side)
             ValidateAudience = false,
-            // ValidateLifetime = true,
-            // ClockSkew = TimeSpan.Zero
         };
     });
 

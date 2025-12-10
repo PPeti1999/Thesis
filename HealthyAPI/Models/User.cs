@@ -22,7 +22,7 @@ namespace HealthyAPI.Models
         public float TargetCarb { get; set; }
         public float TargetFat { get; set; }
         public float ActivityMultiplier { get; set; } // pl. 1.2, 1.55
-        public int GoalType { get; set; } // 0 = megtartás, 1 = tömegnövelés, 2 = fogyás
+        public int GoalType { get; set; } // 0 = megtartás,1 = tömegnövelés,2 = fogyás
         public bool IsFemale { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

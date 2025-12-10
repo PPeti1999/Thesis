@@ -16,7 +16,7 @@ namespace HealthyAPI.Services
     public JWTservice(IConfiguration configuration)
     {
       _config = configuration;
-      //jwtkey is used for both encripting and decripting the JWT token
+
       _jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
     }
     public string CreateJWT(User user)

@@ -87,18 +87,15 @@ export class AccountService {
       )
     }
     private setUser(user: User) {
-     // this.stopRefreshTokenTimer();
-     // this.startRefreshTokenTimer(user.jwt);
+
       localStorage.setItem(environment.userKey, JSON.stringify(user));// enviroment userkey e local storageben eltaroljuk //jo
       this.userSource.next(user);// itt is
-      
-      //this.sharedService.displayingExpiringSessionModal = false;
-      //this.checkUserIdleTimout();
+  
     }
     logout() {
       localStorage.removeItem(environment.userKey);
       this.userSource.next(null);
       this.router.navigateByUrl('/');
-     // this.stopRefreshTokenTimer();
+
     }
 }

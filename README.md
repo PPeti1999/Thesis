@@ -10,9 +10,8 @@ A comprehensive Full-Stack Single Page Application (SPA) designed to support a h
 
 ## 📚 Hungarian Documentation / Magyar Dokumentáció
 
-*   📄 **Dokumentáció:** [Megnyitás GitHub nézetben](docs/Szakdolgozat.pdf) <!-- Ellenőrizd az elérési utat! -->
-*   📊 **Prezentáció:** [Letöltés / megnyitás](docs/Prezentacio.pdf) <!-- Ellenőrizd az elérési utat! -->
-
+*   📄 **Dokumentáció:** [Megnyitás GitHub nézetben](docs/Egeszseges-eletmodot-tamogato-webalkalmazas.pdf) 
+*   📊 **Prezentáció:** [Letöltés / megnyitás](docs/Net-alapu-fejlesztes-prezentacio.pptx) 
 ---
 
 ## 📖 About The Project
